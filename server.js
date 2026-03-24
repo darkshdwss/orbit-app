@@ -216,6 +216,111 @@ app.delete('/api/tasks/:id', auth, (req, res) => {
 });
 
 // ══════════════════════════════════════════════
+//  FRIENDS ROUTES
+// ══════════════════════════════════════════════
+
+// GET /api/friends — get my friends + pending requests
+app.get('/api/friends', auth, (req, res) => {
+  const db = readDB();
+  if (!db.friends) db.friends = [];
+  const myId = req.user.id;
+
+  const accepted = db.friends
+    .filter(f => f.status === 'accepted' && (f.from === myId || f.to === myId))
+    .map(f => {
+      const friendId = f.from === myId ? f.to : f.from;
+      const user = db.users.find(u => u.id === friendId);
+      return user ? { id: user.id, username: user.username, since: f.created_at } : null;
+    }).filter(Boolean);
+
+  const incoming = db.friends
+    .filter(f => f.status === 'pending' && f.to === myId)
+    .map(f => {
+      const user = db.users.find(u => u.id === f.from);
+      return user ? { requestId: f.id, id: user.id, username: user.username, sent_at: f.created_at } : null;
+    }).filter(Boolean);
+
+  const outgoing = db.friends
+    .filter(f => f.status === 'pending' && f.from === myId)
+    .map(f => {
+      const user = db.users.find(u => u.id === f.to);
+      return user ? { requestId: f.id, id: user.id, username: user.username, sent_at: f.created_at } : null;
+    }).filter(Boolean);
+
+  res.json({ friends: accepted, incoming, outgoing });
+});
+
+// POST /api/friends/request — send friend request by username
+app.post('/api/friends/request', auth, (req, res) => {
+  const { username } = req.body;
+  if (!username) return res.status(400).json({ error: 'Username is required' });
+  const db = readDB();
+  if (!db.friends) db.friends = [];
+  const myId = req.user.id;
+
+  const target = db.users.find(u => u.username.toLowerCase() === username.trim().toLowerCase());
+  if (!target) return res.status(404).json({ error: 'User not found' });
+  if (target.id === myId) return res.status(400).json({ error: 'You cannot add yourself' });
+
+  const existing = db.friends.find(f =>
+    (f.from === myId && f.to === target.id) ||
+    (f.from === target.id && f.to === myId)
+  );
+  if (existing) {
+    if (existing.status === 'accepted') return res.status(409).json({ error: 'Already friends' });
+    return res.status(409).json({ error: 'Friend request already sent' });
+  }
+
+  const request = { id: uid(), from: myId, to: target.id, status: 'pending', created_at: new Date().toISOString() };
+  db.friends.push(request);
+  writeDB(db);
+  res.json({ success: true, message: `Friend request sent to ${target.username}` });
+});
+
+// POST /api/friends/accept — accept a friend request
+app.post('/api/friends/accept', auth, (req, res) => {
+  const { requestId } = req.body;
+  const db = readDB();
+  if (!db.friends) db.friends = [];
+  const req_ = db.friends.find(f => f.id === requestId && f.to === req.user.id && f.status === 'pending');
+  if (!req_) return res.status(404).json({ error: 'Request not found' });
+  req_.status = 'accepted';
+  req_.created_at = new Date().toISOString();
+  writeDB(db);
+  res.json({ success: true });
+});
+
+// POST /api/friends/decline — decline or cancel a request
+app.post('/api/friends/decline', auth, (req, res) => {
+  const { requestId } = req.body;
+  const db = readDB();
+  if (!db.friends) db.friends = [];
+  const idx = db.friends.findIndex(f =>
+    f.id === requestId && (f.to === req.user.id || f.from === req.user.id)
+  );
+  if (idx === -1) return res.status(404).json({ error: 'Request not found' });
+  db.friends.splice(idx, 1);
+  writeDB(db);
+  res.json({ success: true });
+});
+
+// DELETE /api/friends/:id — remove a friend
+app.delete('/api/friends/:id', auth, (req, res) => {
+  const db = readDB();
+  if (!db.friends) db.friends = [];
+  const myId = req.user.id;
+  const idx = db.friends.findIndex(f =>
+    f.status === 'accepted' &&
+    ((f.from === myId && f.to === req.params.id) ||
+     (f.from === req.params.id && f.to === myId))
+  );
+  if (idx === -1) return res.status(404).json({ error: 'Friend not found' });
+  db.friends.splice(idx, 1);
+  writeDB(db);
+  res.json({ success: true });
+});
+
+// ══════════════════════════════════════════════
 //  ADMIN ROUTES (protect with secret key)
 // ══════════════════════════════════════════════
 const ADMIN_KEY = process.env.ADMIN_KEY || 'orbit-admin-secret-2026';
