@@ -25,121 +25,60 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--text); font-family: 'Outfit', sans-serif; min-height: 100vh; overflow-x: hidden; }
-
+ 
     /* STARS */
     #stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
     .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle var(--dur) ease-in-out infinite; opacity: 0; }
     @keyframes twinkle { 0%,100%{opacity:0;transform:scale(.8)}50%{opacity:var(--op);transform:scale(1)} }
-
-    /* ═══════════════════════════════════════
-       AUTH SCREEN
-    ═══════════════════════════════════════ */
+ 
+    /* AUTH SCREEN */
     #authScreen {
       position: relative; z-index: 10;
-      min-height: 100vh;
-      display: flex; align-items: center; justify-content: center;
-      padding: 24px;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px;
     }
     .auth-box {
-      background: var(--card);
-      border: 1px solid var(--border2);
-      border-radius: 22px;
-      padding: 40px 36px;
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: 22px; padding: 40px 36px;
       width: 100%; max-width: 400px;
       animation: fadeUp 0.4s ease;
     }
     @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-
-    .auth-brand {
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      font-family: 'Space Mono', monospace; font-size: 1.4rem; font-weight: 700;
-      letter-spacing: 0.12em; margin-bottom: 6px;
-    }
-    .auth-ring {
-      width: 34px; height: 34px; border-radius: 50%;
-      background: conic-gradient(from 0deg, var(--accent), var(--purple), var(--accent));
-      animation: spin 7s linear infinite;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .auth-brand { display: flex; align-items: center; justify-content: center; gap: 10px; font-family: 'Space Mono', monospace; font-size: 1.4rem; font-weight: 700; letter-spacing: 0.12em; margin-bottom: 6px; }
+    .auth-ring { width: 34px; height: 34px; border-radius: 50%; background: conic-gradient(from 0deg,var(--accent),var(--purple),var(--accent)); animation: spin 7s linear infinite; display: flex; align-items: center; justify-content: center; }
     .auth-ring::after { content:''; width:18px; height:18px; background:var(--card); border-radius:50%; }
     @keyframes spin { to{transform:rotate(360deg)} }
-
     .auth-tagline { text-align: center; color: var(--muted); font-size: 0.84rem; margin-bottom: 30px; }
     .auth-tabs { display: flex; background: var(--surface); border-radius: 10px; padding: 4px; margin-bottom: 26px; }
-    .auth-tab {
-      flex: 1; padding: 8px; border-radius: 8px; border: none; background: none;
-      color: var(--muted); font-family: 'Outfit', sans-serif; font-size: 0.88rem;
-      font-weight: 600; cursor: pointer; transition: all 0.2s;
-    }
+    .auth-tab { flex: 1; padding: 8px; border-radius: 8px; border: none; background: none; color: var(--muted); font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
     .auth-tab.active { background: var(--card); color: var(--text); }
-
     .auth-form { display: flex; flex-direction: column; gap: 14px; }
     .auth-field { display: flex; flex-direction: column; gap: 5px; }
     .auth-field label { font-size: 0.74rem; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
-    .auth-field input {
-      padding: 11px 14px;
-      background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 10px; color: var(--text);
-      font-family: 'Outfit', sans-serif; font-size: 0.9rem; outline: none;
-      transition: border-color 0.2s;
-    }
+    .auth-field input { padding: 11px 14px; background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
     .auth-field input:focus { border-color: var(--accent); }
-    .auth-error {
-      background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3);
-      color: var(--red); padding: 10px 14px; border-radius: 10px;
-      font-size: 0.82rem; display: none;
-    }
-    .auth-submit {
-      width: 100%; padding: 12px;
-      background: linear-gradient(135deg, var(--accent), var(--purple));
-      border: none; color: #060811;
-      border-radius: 10px; font-family: 'Outfit', sans-serif;
-      font-size: 0.95rem; font-weight: 700; cursor: pointer;
-      transition: transform 0.18s, box-shadow 0.18s; margin-top: 4px;
-    }
+    .auth-error { background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.3); color: var(--red); padding: 10px 14px; border-radius: 10px; font-size: 0.82rem; display: none; }
+    .auth-submit { width: 100%; padding: 12px; background: linear-gradient(135deg,var(--accent),var(--purple)); border: none; color: #060811; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: transform 0.18s,box-shadow 0.18s; margin-top: 4px; }
     .auth-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(110,231,247,0.3); }
     .auth-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-
-    /* ═══════════════════════════════════════
-       APP SCREEN
-    ═══════════════════════════════════════ */
+ 
+    /* APP SCREEN */
     #appScreen { display: none; position: relative; z-index: 1; }
-
     .app { display: grid; grid-template-columns: 256px 1fr; grid-template-rows: 64px 1fr; min-height: 100vh; }
-
+ 
     /* TOPBAR */
-    .topbar {
-      grid-column: 1 / -1;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 26px;
-      background: rgba(6,8,17,0.85); backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 50;
-    }
+    .topbar { grid-column: 1/-1; display: flex; align-items: center; justify-content: space-between; padding: 0 26px; background: rgba(6,8,17,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 50; }
     .brand { display: flex; align-items: center; gap: 10px; font-family: 'Space Mono', monospace; font-size: 1rem; font-weight: 700; letter-spacing: 0.12em; }
     .brand-ring { width: 28px; height: 28px; border-radius: 50%; background: conic-gradient(from 0deg,var(--accent),var(--purple),var(--accent)); animation: spin 7s linear infinite; display: flex; align-items: center; justify-content: center; }
     .brand-ring::after { content:''; width:14px; height:14px; background:var(--bg); border-radius:50%; }
-
     .topbar-right { display: flex; align-items: center; gap: 14px; }
     .progress-wrap { display: flex; align-items: center; gap: 8px; }
     .progress-label { font-family: 'Space Mono', monospace; font-size: 0.66rem; color: var(--muted); }
     .progress-bar { width: 100px; height: 5px; background: var(--border2); border-radius: 99px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg,var(--accent),var(--purple)); border-radius: 99px; transition: width 0.5s ease; }
-    .user-chip {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--surface); border: 1px solid var(--border2);
-      border-radius: 50px; padding: 5px 14px 5px 8px;
-      font-size: 0.82rem; font-weight: 600; cursor: pointer;
-      transition: border-color 0.2s;
-    }
+    .user-chip { display: flex; align-items: center; gap: 8px; background: var(--surface); border: 1px solid var(--border2); border-radius: 50px; padding: 5px 14px 5px 8px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: border-color 0.2s; }
     .user-chip:hover { border-color: var(--red); }
-    .user-avatar {
-      width: 24px; height: 24px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--purple));
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.72rem; font-weight: 700; color: #060811;
-    }
-
+    .user-avatar { width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: #060811; }
+ 
     /* SIDEBAR */
     .sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 18px 13px; display: flex; flex-direction: column; gap: 4px; overflow-y: auto; }
     .section-label { font-family: 'Space Mono', monospace; font-size: 0.61rem; letter-spacing: 0.14em; color: var(--dim); text-transform: uppercase; padding: 8px 10px 4px; margin-top: 6px; }
@@ -149,33 +88,38 @@
     .nav-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .nav-name { flex: 1; font-size: 0.85rem; font-weight: 500; }
     .nav-badge { font-family: 'Space Mono', monospace; font-size: 0.65rem; color: var(--muted); background: var(--card); padding: 2px 7px; border-radius: 99px; }
+    .nav-badge.red { background: rgba(248,113,113,0.2); color: var(--red); }
     .add-proj-btn { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 10px; cursor: pointer; color: var(--muted); font-size: 0.83rem; border: 1px dashed var(--border2); background: none; font-family: 'Outfit', sans-serif; width: 100%; margin-top: 4px; transition: all 0.18s; }
     .add-proj-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(110,231,247,0.04); }
-
+ 
+    /* PAGES */
+    .page { display: none; }
+    .page.active { display: flex; flex-direction: column; }
+ 
     /* MAIN */
     .main { padding: 24px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 18px; }
     .main-header { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
     .main-title { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 10px; }
     .title-dot { width: 11px; height: 11px; border-radius: 50%; }
     .main-sub { color: var(--muted); font-size: 0.84rem; margin-top: 3px; }
-    .add-btn { display: flex; align-items: center; gap: 7px; background: linear-gradient(135deg,var(--accent),var(--purple)); border: none; color: #060811; padding: 10px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: transform 0.18s, box-shadow 0.18s; }
+    .add-btn { display: flex; align-items: center; gap: 7px; background: linear-gradient(135deg,var(--accent),var(--purple)); border: none; color: #060811; padding: 10px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: transform 0.18s,box-shadow 0.18s; }
     .add-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(110,231,247,0.3); }
-
+ 
     /* STATS */
     .stats { display: grid; grid-template-columns: repeat(auto-fill,minmax(125px,1fr)); gap: 12px; }
     .stat { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; }
     .stat-val { font-family: 'Space Mono', monospace; font-size: 1.65rem; font-weight: 700; line-height: 1; margin-bottom: 4px; }
     .stat-lbl { font-size: 0.74rem; color: var(--muted); font-weight: 500; }
-
+ 
     /* TABS */
     .tabs { display: flex; gap: 6px; flex-wrap: wrap; }
     .tab { padding: 6px 14px; border-radius: 8px; font-size: 0.79rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: none; color: var(--muted); font-family: 'Outfit', sans-serif; transition: all 0.15s; }
     .tab:hover { border-color: var(--border2); color: var(--text); }
     .tab.active { background: var(--card); border-color: var(--border2); color: var(--text); }
-
+ 
     /* TASKS */
     .task-list { display: flex; flex-direction: column; gap: 7px; }
-    .task-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 13px 15px; display: flex; align-items: flex-start; gap: 12px; transition: border-color 0.2s, transform 0.2s; animation: fadeUp 0.22s ease; }
+    .task-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 13px 15px; display: flex; align-items: flex-start; gap: 12px; transition: border-color 0.2s,transform 0.2s; animation: fadeUp 0.22s ease; }
     .task-card:hover { border-color: var(--border2); transform: translateX(2px); }
     .task-card.done { opacity: 0.4; }
     .task-card.done .task-name { text-decoration: line-through; color: var(--muted); }
@@ -198,14 +142,40 @@
     .ibtn { background: none; border: none; color: var(--dim); cursor: pointer; width: 27px; height: 27px; border-radius: 7px; display: flex; align-items: center; justify-content: center; transition: background 0.14s,color 0.14s; font-size: 0.88rem; }
     .ibtn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
     .ibtn.del:hover { color: var(--red); background: rgba(248,113,113,0.1); }
-
     .empty { text-align: center; padding: 50px 20px; color: var(--muted); }
     .empty .eicon { font-size: 3rem; margin-bottom: 12px; opacity: 0.45; }
     .empty p { font-size: 0.87rem; line-height: 1.6; }
-
-    /* LOADING */
-    .loading { text-align: center; padding: 40px; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 0.8rem; }
-
+    .loading { text-align: center; padding: 40px; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 0.78rem; }
+ 
+    /* ═══════════════════════════
+       FRIENDS PAGE
+    ═══════════════════════════ */
+    .friends-page { padding: 24px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; }
+    .friends-search { display: flex; gap: 10px; }
+    .friends-search input { flex: 1; padding: 11px 14px; background: var(--card); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+    .friends-search input:focus { border-color: var(--accent); }
+    .friends-search button { background: linear-gradient(135deg,var(--accent),var(--purple)); border: none; color: #060811; padding: 11px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: transform 0.18s; }
+    .friends-search button:hover { transform: translateY(-1px); }
+ 
+    .friends-section { display: flex; flex-direction: column; gap: 10px; }
+    .friends-section-title { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Space Mono', monospace; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+ 
+    .friend-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; display: flex; align-items: center; gap: 14px; animation: fadeUp 0.22s ease; transition: border-color 0.2s; }
+    .friend-card:hover { border-color: var(--border2); }
+    .friend-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700; color: #060811; flex-shrink: 0; }
+    .friend-info { flex: 1; }
+    .friend-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
+    .friend-since { font-size: 0.74rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .friend-actions { display: flex; gap: 7px; }
+    .fbtn { padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.15s; border: 1px solid; }
+    .fbtn-accept { background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.3); color: var(--green); }
+    .fbtn-accept:hover { background: rgba(74,222,128,0.25); }
+    .fbtn-decline { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.25); color: var(--red); }
+    .fbtn-decline:hover { background: rgba(248,113,113,0.22); }
+    .fbtn-remove { background: rgba(255,255,255,0.05); border-color: var(--border2); color: var(--muted); }
+    .fbtn-remove:hover { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.25); color: var(--red); }
+    .fbtn-pending { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.25); color: var(--gold); cursor: default; }
+ 
     /* MODALS */
     .overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.72); backdrop-filter: blur(9px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
     .overlay.open { opacity: 1; pointer-events: all; }
@@ -225,43 +195,35 @@
     .bcn:hover { background: rgba(255,255,255,0.08); color: var(--text); }
     .bsv { padding: 9px 22px; border-radius: 10px; background: linear-gradient(135deg,var(--accent),var(--purple)); border: none; color: #060811; font-family: 'Outfit', sans-serif; font-size: 0.84rem; font-weight: 700; cursor: pointer; transition: transform 0.15s,box-shadow 0.15s; }
     .bsv:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(110,231,247,0.3); }
-
     .swatches { display: flex; gap: 9px; flex-wrap: wrap; }
     .swatch { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; transition: transform 0.14s; border: 3px solid transparent; }
     .swatch.picked { border-color: #fff; transform: scale(1.2); }
-
+ 
     /* TOAST */
     .toast { position: fixed; bottom: 22px; right: 22px; z-index: 300; background: var(--card); border: 1px solid var(--border2); color: var(--text); padding: 11px 18px; border-radius: 12px; font-size: 0.82rem; font-weight: 500; transform: translateY(55px); opacity: 0; transition: all 0.28s cubic-bezier(.23,1,.32,1); pointer-events: none; box-shadow: 0 8px 28px rgba(0,0,0,0.4); }
     .toast.show { transform: translateY(0); opacity: 1; }
-
-    /* RESPONSIVE */
+ 
     @media (max-width: 680px) {
       .app { grid-template-columns: 1fr; }
       .sidebar { display: none; }
-      .main { padding: 14px 13px; }
+      .main, .friends-page { padding: 14px 13px; }
       .frow { grid-template-columns: 1fr; }
       .main-title { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
-
 <div id="stars"></div>
-
-<!-- ══ AUTH SCREEN ══════════════════════════ -->
+ 
+<!-- AUTH SCREEN -->
 <div id="authScreen">
   <div class="auth-box">
-    <div class="auth-brand">
-      <div class="auth-ring"></div>
-      ORBIT
-    </div>
+    <div class="auth-brand"><div class="auth-ring"></div>ORBIT</div>
     <p class="auth-tagline">Your personal mission control</p>
-
     <div class="auth-tabs">
       <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
       <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
     </div>
-
     <div class="auth-form">
       <div id="regField" class="auth-field" style="display:none">
         <label>Username</label>
@@ -280,16 +242,13 @@
     </div>
   </div>
 </div>
-
-<!-- ══ APP SCREEN ═══════════════════════════ -->
+ 
+<!-- APP SCREEN -->
 <div id="appScreen">
   <div class="app">
-
+ 
     <header class="topbar">
-      <div class="brand">
-        <div class="brand-ring"></div>
-        ORBIT
-      </div>
+      <div class="brand"><div class="brand-ring"></div>ORBIT</div>
       <div class="topbar-right">
         <div class="progress-wrap">
           <span class="progress-label" id="progLbl">0 / 0</span>
@@ -301,23 +260,27 @@
         </div>
       </div>
     </header>
-
+ 
     <aside class="sidebar">
       <div class="section-label">Projects</div>
       <div id="projList"></div>
       <button class="add-proj-btn" onclick="openProjModal()">＋ New Project</button>
-      <div class="section-label" style="margin-top:auto;">Views</div>
+      <div class="section-label" style="margin-top:12px;">Views</div>
       <div class="nav-item" id="qv-all"   onclick="setView('all')"><span>🌌</span><span class="nav-name">All Tasks</span></div>
       <div class="nav-item" id="qv-today" onclick="setView('today')"><span>☀️</span><span class="nav-name">Due Today</span></div>
       <div class="nav-item" id="qv-done"  onclick="setView('done')"><span>✅</span><span class="nav-name">Completed</span></div>
+      <div class="section-label" style="margin-top:12px;">Social</div>
+      <div class="nav-item" id="qv-friends" onclick="showFriendsPage()">
+        <span>👥</span><span class="nav-name">Friends</span>
+        <span class="nav-badge red" id="friendsRequestBadge" style="display:none">0</span>
+      </div>
     </aside>
-
-    <main class="main">
+ 
+    <!-- TASKS PAGE -->
+    <main class="main page active" id="tasksPage">
       <div class="main-header">
         <div>
-          <div class="main-title" id="mainTitle">
-            <div class="title-dot" style="background:var(--accent)"></div>All Tasks
-          </div>
+          <div class="main-title" id="mainTitle"><div class="title-dot" style="background:var(--accent)"></div>All Tasks</div>
           <div class="main-sub" id="mainSub">All your missions in one view</div>
         </div>
         <button class="add-btn" onclick="openTaskModal()">＋ Add Task</button>
@@ -333,9 +296,47 @@
       </div>
       <div class="task-list" id="taskList"></div>
     </main>
+ 
+    <!-- FRIENDS PAGE -->
+    <div class="friends-page page" id="friendsPage">
+      <div class="main-header">
+        <div>
+          <div class="main-title"><div class="title-dot" style="background:var(--purple)"></div>Friends</div>
+          <div class="main-sub">Add and manage your friends</div>
+        </div>
+      </div>
+ 
+      <!-- ADD FRIEND -->
+      <div class="friends-section">
+        <div class="friends-section-title">Add Friend by Username</div>
+        <div class="friends-search">
+          <input type="text" id="friendSearchInput" placeholder="Enter username..." />
+          <button onclick="sendFriendRequest()">Send Request</button>
+        </div>
+      </div>
+ 
+      <!-- INCOMING REQUESTS -->
+      <div class="friends-section" id="incomingSection" style="display:none">
+        <div class="friends-section-title">⚡ Incoming Requests</div>
+        <div id="incomingList"></div>
+      </div>
+ 
+      <!-- OUTGOING REQUESTS -->
+      <div class="friends-section" id="outgoingSection" style="display:none">
+        <div class="friends-section-title">📤 Sent Requests</div>
+        <div id="outgoingList"></div>
+      </div>
+ 
+      <!-- FRIENDS LIST -->
+      <div class="friends-section">
+        <div class="friends-section-title">🌌 My Friends</div>
+        <div id="friendsList"><div class="empty"><div class="eicon">👥</div><p>No friends yet.<br>Search for users above to add them!</p></div></div>
+      </div>
+    </div>
+ 
   </div>
 </div>
-
+ 
 <!-- TASK MODAL -->
 <div class="overlay" id="taskMod">
   <div class="modal">
@@ -359,7 +360,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- PROJECT MODAL -->
 <div class="overlay" id="projMod">
   <div class="modal">
@@ -372,11 +373,11 @@
     </div>
   </div>
 </div>
-
+ 
 <div class="toast" id="toast"></div>
-
+ 
 <script>
-/* ── STARS ── */
+/* STARS */
 (function(){
   const c=document.getElementById('stars');
   for(let i=0;i<130;i++){
@@ -386,140 +387,107 @@
     c.appendChild(s);
   }
 })();
-
-/* ── CONFIG ── */
-const API = ''; // empty = same origin. If running separately use 'http://localhost:3000'
-
-/* ── STATE ── */
+ 
+const API='';
 const COLORS=['#6ee7f7','#c084fc','#f472b6','#fbbf24','#4ade80','#f87171','#60a5fa','#fb923c'];
-let token     = localStorage.getItem('orbit_token') || null;
-let username  = localStorage.getItem('orbit_user')  || null;
-let projects  = [];
-let tasks     = [];
-let pickedColor = COLORS[0];
-let editId    = null;
-let activeView = 'all';
-let activeTab  = 'all';
-let authMode   = 'login';
-
-/* ── HELPERS ── */
-function today(){ return new Date().toISOString().split('T')[0]; }
-function fmtDate(s){
-  if(!s)return'';
-  const[,m,d]=s.split('-');
-  return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+(+d);
-}
-function overdue(due){ return due && due < today(); }
-
-async function api(method, path, body){
-  const opts = { method, headers: {'Content-Type':'application/json'} };
-  if(token) opts.headers['Authorization'] = 'Bearer '+token;
-  if(body)  opts.body = JSON.stringify(body);
-  const res = await fetch(API+path, opts);
-  const data = await res.json();
-  if(!res.ok) throw new Error(data.error || 'Request failed');
+let token=localStorage.getItem('orbit_token')||null;
+let username=localStorage.getItem('orbit_user')||null;
+let projects=[],tasks=[];
+let pickedColor=COLORS[0],editId=null,activeView='all',activeTab='all',authMode='login';
+ 
+function today(){return new Date().toISOString().split('T')[0];}
+function fmtDate(s){if(!s)return'';const[,m,d]=s.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+(+d);}
+function overdue(due){return due&&due<today();}
+function fmtFull(iso){if(!iso)return'';const d=new Date(iso);return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
+ 
+async function api(method,path,body){
+  const opts={method,headers:{'Content-Type':'application/json'}};
+  if(token)opts.headers['Authorization']='Bearer '+token;
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(API+path,opts);
+  const data=await res.json();
+  if(!res.ok)throw new Error(data.error||'Request failed');
   return data;
 }
-
-/* ══════════════════════════════════════════
-   AUTH
-══════════════════════════════════════════ */
+ 
+/* AUTH */
 function switchAuthTab(mode){
-  authMode = mode;
-  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active', (i===0&&mode==='login')||(i===1&&mode==='register')));
-  document.getElementById('regField').style.display = mode==='register' ? 'flex' : 'none';
-  document.getElementById('authBtn').textContent = mode==='register' ? 'Create Account' : 'Sign In';
-  document.getElementById('authError').style.display = 'none';
+  authMode=mode;
+  document.querySelectorAll('.auth-tab').forEach((t,i)=>t.classList.toggle('active',(i===0&&mode==='login')||(i===1&&mode==='register')));
+  document.getElementById('regField').style.display=mode==='register'?'flex':'none';
+  document.getElementById('authBtn').textContent=mode==='register'?'Create Account':'Sign In';
+  document.getElementById('authError').style.display='none';
 }
-
 async function submitAuth(){
-  const btn = document.getElementById('authBtn');
-  const errEl = document.getElementById('authError');
-  errEl.style.display = 'none';
-  const email    = document.getElementById('aEmail').value.trim();
-  const password = document.getElementById('aPassword').value;
-  const uname    = document.getElementById('aUsername').value.trim();
-
-  if(!email || !password){ showAuthError('Please fill in all fields.'); return; }
-  btn.disabled = true; btn.textContent = '...';
-
-  try {
+  const btn=document.getElementById('authBtn');
+  const errEl=document.getElementById('authError');
+  errEl.style.display='none';
+  const email=document.getElementById('aEmail').value.trim();
+  const password=document.getElementById('aPassword').value;
+  const uname=document.getElementById('aUsername').value.trim();
+  if(!email||!password){showAuthError('Please fill in all fields.');return;}
+  btn.disabled=true;btn.textContent='...';
+  try{
     let data;
     if(authMode==='register'){
-      if(!uname){ showAuthError('Username is required.'); btn.disabled=false; btn.textContent='Create Account'; return; }
-      data = await api('POST','/api/register',{username:uname,email,password});
-    } else {
-      data = await api('POST','/api/login',{email,password});
+      if(!uname){showAuthError('Username is required.');btn.disabled=false;btn.textContent='Create Account';return;}
+      data=await api('POST','/api/register',{username:uname,email,password});
+    }else{
+      data=await api('POST','/api/login',{email,password});
     }
-    token    = data.token;
-    username = data.username;
-    localStorage.setItem('orbit_token', token);
-    localStorage.setItem('orbit_user', username);
+    token=data.token;username=data.username;
+    localStorage.setItem('orbit_token',token);localStorage.setItem('orbit_user',username);
     await bootApp();
-  } catch(e){
+  }catch(e){
     showAuthError(e.message);
-    btn.disabled = false;
-    btn.textContent = authMode==='register' ? 'Create Account' : 'Sign In';
+    btn.disabled=false;btn.textContent=authMode==='register'?'Create Account':'Sign In';
   }
 }
-
-function showAuthError(msg){
-  const el = document.getElementById('authError');
-  el.textContent = msg; el.style.display = 'block';
-}
-
+function showAuthError(msg){const el=document.getElementById('authError');el.textContent=msg;el.style.display='block';}
 function logout(){
-  if(!confirm('Sign out of ORBIT?')) return;
-  token = null; username = null;
-  localStorage.removeItem('orbit_token');
-  localStorage.removeItem('orbit_user');
-  document.getElementById('appScreen').style.display = 'none';
-  document.getElementById('authScreen').style.display = 'flex';
+  if(!confirm('Sign out of ORBIT?'))return;
+  token=null;username=null;
+  localStorage.removeItem('orbit_token');localStorage.removeItem('orbit_user');
+  document.getElementById('appScreen').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
   toast('👋 Signed out');
 }
-
-/* ── BOOT ── */
+ 
+/* BOOT */
 async function bootApp(){
-  document.getElementById('authScreen').style.display = 'none';
-  document.getElementById('appScreen').style.display  = 'block';
-  document.getElementById('userChipName').textContent = username;
-  document.getElementById('userAvatar').textContent   = username.charAt(0).toUpperCase();
-
-  document.getElementById('taskList').innerHTML = '<div class="loading">Loading missions...</div>';
-  try {
-    [projects, tasks] = await Promise.all([
-      api('GET','/api/projects'),
-      api('GET','/api/tasks'),
-    ]);
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('appScreen').style.display='block';
+  document.getElementById('userChipName').textContent=username;
+  document.getElementById('userAvatar').textContent=username.charAt(0).toUpperCase();
+  document.getElementById('taskList').innerHTML='<div class="loading">Loading missions...</div>';
+  try{
+    [projects,tasks]=await Promise.all([api('GET','/api/projects'),api('GET','/api/tasks')]);
     setView('all');
-  } catch(e) {
-    if(e.message.includes('Invalid') || e.message.includes('expired')){
-      logout();
-    } else {
-      document.getElementById('taskList').innerHTML = `<div class="empty"><div class="eicon">⚠️</div><p>Could not connect to server.<br>Is it running?</p></div>`;
-    }
+    loadFriends();
+  }catch(e){
+    if(e.message.includes('Invalid')||e.message.includes('expired')){logout();}
+    else{document.getElementById('taskList').innerHTML=`<div class="empty"><div class="eicon">⚠️</div><p>Could not connect to server.</p></div>`;}
   }
 }
-
-/* ── INIT ── */
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeTaskModal();closeProjModal();}
-  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();if(token)openTaskModal();}
-  if(document.getElementById('authScreen').style.display!=='none' && e.key==='Enter') submitAuth();
-});
-
-if(token){ bootApp(); }
-else {
-  document.getElementById('authScreen').style.display = 'flex';
-  document.getElementById('appScreen').style.display  = 'none';
+ 
+/* PAGE SWITCHING */
+function showTasksPage(){
+  document.getElementById('tasksPage').classList.add('active');
+  document.getElementById('friendsPage').classList.remove('active');
+  document.getElementById('qv-friends').classList.remove('active');
 }
-
-/* ══════════════════════════════════════════
-   SIDEBAR
-══════════════════════════════════════════ */
+function showFriendsPage(){
+  document.getElementById('friendsPage').classList.add('active');
+  document.getElementById('tasksPage').classList.remove('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('qv-friends').classList.add('active');
+  loadFriends();
+}
+ 
+/* SIDEBAR */
 function renderSidebar(){
-  document.getElementById('projList').innerHTML = projects.map(p=>{
-    const cnt = tasks.filter(t=>t.proj_id===p.id&&!t.done).length;
+  document.getElementById('projList').innerHTML=projects.map(p=>{
+    const cnt=tasks.filter(t=>t.proj_id===p.id&&!t.done).length;
     return`<div class="nav-item${activeView===p.id?' active':''}" onclick="setView('${p.id}')">
       <div class="nav-dot" style="background:${p.color}"></div>
       <span class="nav-name">${p.name}</span>
@@ -528,48 +496,47 @@ function renderSidebar(){
   }).join('');
   ['all','today','done'].forEach(id=>{
     const el=document.getElementById('qv-'+id);
-    if(el) el.classList.toggle('active', activeView===id);
+    if(el)el.classList.toggle('active',activeView===id);
   });
 }
-
-/* ── VIEW ── */
+ 
+/* VIEW */
 function setView(v){
-  activeView = v; activeTab = 'all';
+  showTasksPage();
+  activeView=v;activeTab='all';
   document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',i===0));
-  const proj = projects.find(p=>p.id===v);
-  const titles = {all:'All Tasks',today:'Due Today',done:'Completed'};
-  const subs   = {all:'All your missions in one view',today:'Everything on your plate today',done:'Missions accomplished'};
-  const colors = {all:'var(--accent)',today:'var(--gold)',done:'var(--green)'};
+  const proj=projects.find(p=>p.id===v);
+  const titles={all:'All Tasks',today:'Due Today',done:'Completed'};
+  const subs={all:'All your missions in one view',today:'Everything on your plate today',done:'Missions accomplished'};
+  const colors={all:'var(--accent)',today:'var(--gold)',done:'var(--green)'};
   if(titles[v]){
     document.getElementById('mainTitle').innerHTML=`<div class="title-dot" style="background:${colors[v]}"></div>${titles[v]}`;
     document.getElementById('mainSub').textContent=subs[v];
-  } else if(proj){
+  }else if(proj){
     document.getElementById('mainTitle').innerHTML=`<div class="title-dot" style="background:${proj.color}"></div>${proj.name}`;
     document.getElementById('mainSub').textContent=`${tasks.filter(t=>t.proj_id===v).length} tasks in this project`;
   }
   renderAll();
 }
-
-/* ── FILTER ── */
+ 
 function getView(){
   let l=[...tasks];
-  if(activeView==='today')      l=l.filter(t=>t.due===today());
-  else if(activeView==='done')  l=l.filter(t=>t.done);
-  else if(activeView!=='all')   l=l.filter(t=>t.proj_id===activeView);
+  if(activeView==='today')l=l.filter(t=>t.due===today());
+  else if(activeView==='done')l=l.filter(t=>t.done);
+  else if(activeView!=='all')l=l.filter(t=>t.proj_id===activeView);
   return l;
 }
 function getTab(){
   let l=getView();
-  if(activeTab==='todo')   l=l.filter(t=>!t.done);
-  if(activeTab==='done')   l=l.filter(t=>t.done);
-  if(activeTab==='high')   l=l.filter(t=>t.priority==='high');
-  if(activeTab==='medium') l=l.filter(t=>t.priority==='medium');
-  if(activeTab==='low')    l=l.filter(t=>t.priority==='low');
+  if(activeTab==='todo')l=l.filter(t=>!t.done);
+  if(activeTab==='done')l=l.filter(t=>t.done);
+  if(activeTab==='high')l=l.filter(t=>t.priority==='high');
+  if(activeTab==='medium')l=l.filter(t=>t.priority==='medium');
+  if(activeTab==='low')l=l.filter(t=>t.priority==='low');
   const ord={high:0,medium:1,low:2};
   return l.sort((a,b)=>a.done!==b.done?a.done?1:-1:ord[a.priority]-ord[b.priority]);
 }
-
-/* ── STATS ── */
+ 
 function renderStats(){
   const v=getView();
   const done=v.filter(t=>t.done).length;
@@ -586,22 +553,18 @@ function renderStats(){
   document.getElementById('progFill').style.width=pct+'%';
   document.getElementById('progLbl').textContent=`${allD} / ${tasks.length}`;
 }
-
-/* ── TASKS RENDER ── */
+ 
 function setTab(tab,btn){
   activeTab=tab;
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   renderTasks();
 }
-
+ 
 function renderTasks(){
   const list=getTab();
   const el=document.getElementById('taskList');
-  if(!list.length){
-    el.innerHTML=`<div class="empty"><div class="eicon">🌌</div><p>No tasks here yet.<br>Launch your first mission!</p></div>`;
-    return;
-  }
+  if(!list.length){el.innerHTML=`<div class="empty"><div class="eicon">🌌</div><p>No tasks here yet.<br>Launch your first mission!</p></div>`;return;}
   el.innerHTML=list.map(t=>{
     const p=projects.find(p=>p.id===t.proj_id);
     const ov=overdue(t.due)&&!t.done;
@@ -623,115 +586,185 @@ function renderTasks(){
     </div>`;
   }).join('');
 }
-
-function renderAll(){ renderSidebar(); renderStats(); renderTasks(); }
-
-/* ── TOGGLE DONE ── */
+ 
+function renderAll(){renderSidebar();renderStats();renderTasks();}
+ 
 async function toggleDone(id){
-  const t=tasks.find(t=>t.id===id); if(!t) return;
-  try {
-    const updated = await api('PUT',`/api/tasks/${id}`,{done:!t.done});
-    tasks = tasks.map(x=>x.id===id?updated:x);
-    renderAll();
-    toast(updated.done?'✅ Task completed!':'↩ Task reopened');
-  } catch(e){ toast('⚠ '+e.message); }
+  const t=tasks.find(t=>t.id===id);if(!t)return;
+  try{const u=await api('PUT',`/api/tasks/${id}`,{done:!t.done});tasks=tasks.map(x=>x.id===id?u:x);renderAll();toast(u.done?'✅ Task completed!':'↩ Task reopened');}
+  catch(e){toast('⚠ '+e.message);}
 }
-
-/* ── DELETE TASK ── */
 async function delTask(id){
-  try {
-    await api('DELETE',`/api/tasks/${id}`);
-    tasks = tasks.filter(t=>t.id!==id);
-    renderAll(); toast('🗑 Task deleted');
-  } catch(e){ toast('⚠ '+e.message); }
+  try{await api('DELETE',`/api/tasks/${id}`);tasks=tasks.filter(t=>t.id!==id);renderAll();toast('🗑 Task deleted');}
+  catch(e){toast('⚠ '+e.message);}
 }
-
-/* ── TASK MODAL ── */
+ 
 function openTaskModal(){
   editId=null;
   document.getElementById('taskModTitle').textContent='New Task';
-  document.getElementById('iName').value='';
-  document.getElementById('iNotes').value='';
-  document.getElementById('iDue').value='';
-  document.getElementById('iPrio').value='medium';
+  document.getElementById('iName').value='';document.getElementById('iNotes').value='';
+  document.getElementById('iDue').value='';document.getElementById('iPrio').value='medium';
   const def=projects.find(p=>p.id===activeView)||projects[0];
   fillProjSel(def?.id||'');
   document.getElementById('taskMod').classList.add('open');
   setTimeout(()=>document.getElementById('iName').focus(),200);
 }
 function openEdit(id){
-  const t=tasks.find(t=>t.id===id); if(!t) return;
+  const t=tasks.find(t=>t.id===id);if(!t)return;
   editId=id;
   document.getElementById('taskModTitle').textContent='Edit Task';
-  document.getElementById('iName').value=t.name;
-  document.getElementById('iNotes').value=t.notes||'';
-  document.getElementById('iDue').value=t.due||'';
-  document.getElementById('iPrio').value=t.priority;
+  document.getElementById('iName').value=t.name;document.getElementById('iNotes').value=t.notes||'';
+  document.getElementById('iDue').value=t.due||'';document.getElementById('iPrio').value=t.priority;
   fillProjSel(t.proj_id||'');
   document.getElementById('taskMod').classList.add('open');
   setTimeout(()=>document.getElementById('iName').focus(),200);
 }
-function closeTaskModal(){ document.getElementById('taskMod').classList.remove('open'); }
-function fillProjSel(sel){
-  document.getElementById('iProj').innerHTML=projects.map(p=>`<option value="${p.id}"${p.id===sel?' selected':''}>${p.name}</option>`).join('');
-}
-
+function closeTaskModal(){document.getElementById('taskMod').classList.remove('open');}
+function fillProjSel(sel){document.getElementById('iProj').innerHTML=projects.map(p=>`<option value="${p.id}"${p.id===sel?' selected':''}>${p.name}</option>`).join('');}
+ 
 async function saveTask(){
   const name=document.getElementById('iName').value.trim();
-  if(!name){ document.getElementById('iName').focus(); return; }
-  const body={
-    name,
-    notes:   document.getElementById('iNotes').value.trim(),
-    proj_id: document.getElementById('iProj').value,
-    priority:document.getElementById('iPrio').value,
-    due:     document.getElementById('iDue').value,
-  };
-  try {
-    if(editId){
-      const updated=await api('PUT',`/api/tasks/${editId}`,body);
-      tasks=tasks.map(t=>t.id===editId?updated:t);
-      toast('✏️ Task updated');
-    } else {
-      const created=await api('POST','/api/tasks',body);
-      tasks.unshift(created);
-      toast('🚀 Task added!');
-    }
-    closeTaskModal(); renderAll();
-  } catch(e){ toast('⚠ '+e.message); }
+  if(!name){document.getElementById('iName').focus();return;}
+  const body={name,notes:document.getElementById('iNotes').value.trim(),proj_id:document.getElementById('iProj').value,priority:document.getElementById('iPrio').value,due:document.getElementById('iDue').value};
+  try{
+    if(editId){const u=await api('PUT',`/api/tasks/${editId}`,body);tasks=tasks.map(t=>t.id===editId?u:t);toast('✏️ Task updated');}
+    else{const c=await api('POST','/api/tasks',body);tasks.unshift(c);toast('🚀 Task added!');}
+    closeTaskModal();renderAll();
+  }catch(e){toast('⚠ '+e.message);}
 }
-
-/* ── PROJECT MODAL ── */
+ 
 function openProjModal(){
-  document.getElementById('iProjName').value='';
-  pickedColor=COLORS[0]; renderSwatches();
+  document.getElementById('iProjName').value='';pickedColor=COLORS[0];renderSwatches();
   document.getElementById('projMod').classList.add('open');
   setTimeout(()=>document.getElementById('iProjName').focus(),200);
 }
-function closeProjModal(){ document.getElementById('projMod').classList.remove('open'); }
-function renderSwatches(){
-  document.getElementById('swatches').innerHTML=COLORS.map(c=>`
-    <div class="swatch${c===pickedColor?' picked':''}" style="background:${c}" onclick="pickColor('${c}')"></div>
-  `).join('');
-}
-function pickColor(c){ pickedColor=c; renderSwatches(); }
-
+function closeProjModal(){document.getElementById('projMod').classList.remove('open');}
+function renderSwatches(){document.getElementById('swatches').innerHTML=COLORS.map(c=>`<div class="swatch${c===pickedColor?' picked':''}" style="background:${c}" onclick="pickColor('${c}')"></div>`).join('');}
+function pickColor(c){pickedColor=c;renderSwatches();}
 async function saveProject(){
   const name=document.getElementById('iProjName').value.trim();
-  if(!name){ document.getElementById('iProjName').focus(); return; }
-  try {
-    const p=await api('POST','/api/projects',{name,color:pickedColor});
-    projects.push(p);
-    closeProjModal(); renderAll();
-    toast('🛸 Project created!');
-  } catch(e){ toast('⚠ '+e.message); }
+  if(!name){document.getElementById('iProjName').focus();return;}
+  try{const p=await api('POST','/api/projects',{name,color:pickedColor});projects.push(p);closeProjModal();renderAll();toast('🛸 Project created!');}
+  catch(e){toast('⚠ '+e.message);}
 }
-
-/* ── TOAST ── */
-function toast(msg){
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  clearTimeout(window._tt); window._tt=setTimeout(()=>el.classList.remove('show'),2400);
+ 
+/* ═══════════════════════════════════
+   FRIENDS SYSTEM
+═══════════════════════════════════ */
+async function loadFriends(){
+  try{
+    const data=await api('GET','/api/friends');
+    renderFriends(data);
+    // update badge
+    const badge=document.getElementById('friendsRequestBadge');
+    if(data.incoming.length>0){badge.textContent=data.incoming.length;badge.style.display='flex';}
+    else{badge.style.display='none';}
+  }catch(e){console.error(e);}
 }
+ 
+function renderFriends(data){
+  // incoming
+  const inSec=document.getElementById('incomingSection');
+  const inList=document.getElementById('incomingList');
+  if(data.incoming.length>0){
+    inSec.style.display='flex';
+    inList.innerHTML=data.incoming.map(f=>`
+      <div class="friend-card">
+        <div class="friend-avatar">${f.username.charAt(0).toUpperCase()}</div>
+        <div class="friend-info">
+          <div class="friend-name">${f.username}</div>
+          <div class="friend-since">Sent ${fmtFull(f.sent_at)}</div>
+        </div>
+        <div class="friend-actions">
+          <button class="fbtn fbtn-accept" onclick="acceptRequest('${f.requestId}')">✓ Accept</button>
+          <button class="fbtn fbtn-decline" onclick="declineRequest('${f.requestId}')">✕ Decline</button>
+        </div>
+      </div>
+    `).join('');
+  }else{inSec.style.display='none';}
+ 
+  // outgoing
+  const outSec=document.getElementById('outgoingSection');
+  const outList=document.getElementById('outgoingList');
+  if(data.outgoing.length>0){
+    outSec.style.display='flex';
+    outList.innerHTML=data.outgoing.map(f=>`
+      <div class="friend-card">
+        <div class="friend-avatar">${f.username.charAt(0).toUpperCase()}</div>
+        <div class="friend-info">
+          <div class="friend-name">${f.username}</div>
+          <div class="friend-since">Request sent ${fmtFull(f.sent_at)}</div>
+        </div>
+        <div class="friend-actions">
+          <span class="fbtn fbtn-pending">⏳ Pending</span>
+          <button class="fbtn fbtn-decline" onclick="declineRequest('${f.requestId}')">Cancel</button>
+        </div>
+      </div>
+    `).join('');
+  }else{outSec.style.display='none';}
+ 
+  // friends
+  const fList=document.getElementById('friendsList');
+  if(data.friends.length>0){
+    fList.innerHTML=data.friends.map(f=>`
+      <div class="friend-card">
+        <div class="friend-avatar">${f.username.charAt(0).toUpperCase()}</div>
+        <div class="friend-info">
+          <div class="friend-name">${f.username}</div>
+          <div class="friend-since">Friends since ${fmtFull(f.since)}</div>
+        </div>
+        <div class="friend-actions">
+          <button class="fbtn fbtn-remove" onclick="removeFriend('${f.id}','${f.username}')">Remove</button>
+        </div>
+      </div>
+    `).join('');
+  }else{
+    fList.innerHTML=`<div class="empty"><div class="eicon">👥</div><p>No friends yet.<br>Search for users above to add them!</p></div>`;
+  }
+}
+ 
+async function sendFriendRequest(){
+  const input=document.getElementById('friendSearchInput');
+  const uname=input.value.trim();
+  if(!uname)return;
+  try{
+    await api('POST','/api/friends/request',{username:uname});
+    input.value='';
+    toast(`📨 Friend request sent to ${uname}!`);
+    loadFriends();
+  }catch(e){toast('⚠ '+e.message);}
+}
+ 
+async function acceptRequest(requestId){
+  try{await api('POST','/api/friends/accept',{requestId});toast('🎉 Friend added!');loadFriends();}
+  catch(e){toast('⚠ '+e.message);}
+}
+ 
+async function declineRequest(requestId){
+  try{await api('POST','/api/friends/decline',{requestId});toast('Request removed');loadFriends();}
+  catch(e){toast('⚠ '+e.message);}
+}
+ 
+async function removeFriend(friendId,fname){
+  if(!confirm(`Remove ${fname} from friends?`))return;
+  try{await api('DELETE',`/api/friends/${friendId}`);toast(`Removed ${fname}`);loadFriends();}
+  catch(e){toast('⚠ '+e.message);}
+}
+ 
+/* TOAST */
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>el.classList.remove('show'),2400);}
+ 
+/* KEYBOARD */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeTaskModal();closeProjModal();}
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){e.preventDefault();if(token)openTaskModal();}
+});
+document.getElementById('friendSearchInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')sendFriendRequest();});
+ 
+/* INIT */
+if(token){bootApp();}
+else{document.getElementById('authScreen').style.display='flex';document.getElementById('appScreen').style.display='none';}
 </script>
 </body>
 </html>
+ 
