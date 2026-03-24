@@ -15,7 +15,7 @@
     @keyframes twinkle{0%,100%{opacity:0;transform:scale(.8)}50%{opacity:var(--op);transform:scale(1)}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
     @keyframes spin{to{transform:rotate(360deg)}}
- 
+
     /* AUTH */
     #authScreen{position:relative;z-index:10;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
     .auth-box{background:var(--card);border:1px solid var(--border2);border-radius:22px;padding:40px 36px;width:100%;max-width:400px;animation:fadeUp .4s ease;}
@@ -36,11 +36,11 @@
     .auth-submit{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:#060811;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:700;cursor:pointer;transition:transform .18s,box-shadow .18s;margin-top:4px;}
     .auth-submit:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(110,231,247,.3);}
     .auth-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
- 
+
     /* APP */
     #appScreen{display:none;position:relative;z-index:1;}
     .app{display:grid;grid-template-columns:256px 1fr;grid-template-rows:64px 1fr;min-height:100vh;}
- 
+
     /* TOPBAR */
     .topbar{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 26px;background:rgba(6,8,17,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;}
     .brand{display:flex;align-items:center;gap:10px;font-family:'Space Mono',monospace;font-size:1rem;font-weight:700;letter-spacing:.12em;}
@@ -52,7 +52,7 @@
     .user-chip{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border2);border-radius:50px;padding:5px 14px 5px 8px;font-size:.82rem;font-weight:600;cursor:pointer;transition:border-color .2s;}
     .user-chip:hover{border-color:var(--red);}
     .user-avatar{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:700;color:#060811;}
- 
+
     /* SIDEBAR */
     .sidebar{background:var(--surface);border-right:1px solid var(--border);padding:18px 13px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
     .section-label{font-family:'Space Mono',monospace;font-size:.61rem;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;padding:8px 10px 4px;margin-top:6px;}
@@ -65,11 +65,11 @@
     .nav-badge.red{background:rgba(248,113,113,.2);color:var(--red);}
     .add-proj-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:10px;cursor:pointer;color:var(--muted);font-size:.83rem;border:1px dashed var(--border2);background:none;font-family:'Outfit',sans-serif;width:100%;margin-top:4px;transition:all .18s;}
     .add-proj-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(110,231,247,.04);}
- 
+
     /* PAGES */
     .page{display:none;flex-direction:column;}
     .page.active{display:flex;}
- 
+
     /* TASKS */
     .main{padding:24px 28px;overflow-y:auto;flex-direction:column;gap:18px;}
     .main-header{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;}
@@ -114,7 +114,7 @@
     .empty .eicon{font-size:3rem;margin-bottom:12px;opacity:.45;}
     .empty p{font-size:.87rem;line-height:1.6;}
     .loading{text-align:center;padding:40px;color:var(--muted);font-family:'Space Mono',monospace;font-size:.78rem;}
- 
+
     /* FRIENDS */
     .friends-page{padding:24px 28px;overflow-y:auto;gap:22px;}
     .friends-search{display:flex;gap:10px;}
@@ -143,7 +143,7 @@
     .fbtn-pending{background:rgba(251,191,36,.12);border-color:rgba(251,191,36,.3);color:var(--gold);cursor:default;}
     .fbtn-chat{background:rgba(110,231,247,.12);border-color:rgba(110,231,247,.3);color:var(--accent);}
     .fbtn-chat:hover{background:rgba(110,231,247,.22);}
- 
+
     /* CHAT */
     .chat-page{padding:0;overflow:hidden;height:calc(100vh - 64px);}
     .chat-header{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-shrink:0;background:var(--surface);}
@@ -171,7 +171,7 @@
     .chat-input:focus{border-color:var(--accent);}
     .chat-send{background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:#060811;width:42px;height:42px;border-radius:50%;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .18s,box-shadow .18s;}
     .chat-send:hover{transform:scale(1.1);box-shadow:0 4px 16px rgba(110,231,247,.4);}
- 
+
     /* MODALS */
     .overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);backdrop-filter:blur(9px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .22s;}
     .overlay.open{opacity:1;pointer-events:all;}
@@ -196,20 +196,89 @@
     .swatch.picked{border-color:#fff;transform:scale(1.2);}
     .toast{position:fixed;bottom:22px;right:22px;z-index:300;background:var(--card);border:1px solid var(--border2);color:var(--text);padding:11px 18px;border-radius:12px;font-size:.82rem;font-weight:500;transform:translateY(55px);opacity:0;transition:all .28s cubic-bezier(.23,1,.32,1);pointer-events:none;box-shadow:0 8px 28px rgba(0,0,0,.4);}
     .toast.show{transform:translateY(0);opacity:1;}
- 
-    @media(max-width:680px){
-      .app{grid-template-columns:1fr;}
+
+    @media(max-width:768px){
+      /* Layout */
+      .app{grid-template-columns:1fr;grid-template-rows:56px auto 1fr;}
       .sidebar{display:none;}
-      .main,.friends-page{padding:14px 13px;}
+      .topbar{padding:0 14px;height:56px;}
+      .progress-wrap{display:none;}
+
+      /* Auth */
+      .auth-box{padding:28px 20px;}
+      .auth-brand{font-size:1.1rem;}
+
+      /* Tasks page */
+      .main{padding:14px 14px;gap:14px;}
+      .main-title{font-size:1.4rem;}
+      .stats{grid-template-columns:1fr 1fr;}
+      .stat{padding:12px 14px;}
+      .stat-val{font-size:1.3rem;}
+      .tabs{gap:5px;}
+      .tab{padding:5px 10px;font-size:.74rem;}
+      .add-btn{padding:9px 14px;font-size:.82rem;}
+      .task-card{padding:11px 12px;gap:10px;}
+      .task-name{font-size:.88rem;}
+
+      /* Friends page */
+      .friends-page{padding:14px 14px;gap:16px;}
+      .friends-search{flex-direction:column;}
+      .friends-search input{width:100%;}
+      .friends-search button{width:100%;padding:11px;}
+      .friend-card{padding:12px 14px;gap:10px;}
+      .friend-av{width:36px;height:36px;font-size:.95rem;}
+      .friend-name{font-size:.88rem;}
+      .friend-since{font-size:.68rem;}
+      .friend-actions{width:100%;justify-content:flex-end;}
+      .fbtn{padding:6px 12px;font-size:.76rem;}
+
+      /* Chat page */
+      .chat-page{height:calc(100vh - 56px);}
+      .chat-header{padding:12px 14px;gap:10px;}
+      .chat-av{width:36px;height:36px;font-size:1rem;}
+      .chat-name{font-size:.95rem;}
       .chat-msgs{padding:12px 14px;}
-      .chat-input-row{padding:10px 12px;}
+      .msg{max-width:85%;}
+      .msg-bubble{font-size:.84rem;padding:8px 12px;}
+      .chat-input-row{padding:10px 12px;gap:8px;}
+      .chat-input{font-size:.86rem;padding:9px 14px;}
+      .chat-send{width:38px;height:38px;font-size:.9rem;}
+
+      /* Modals */
+      .modal{padding:18px 16px;border-radius:14px;}
       .frow{grid-template-columns:1fr;}
+
+      /* Nav bar at bottom for mobile */
+      .mobile-nav{display:flex;}
+    }
+
+    /* Mobile bottom navigation bar */
+    .mobile-nav{
+      display:none;position:fixed;bottom:0;left:0;right:0;
+      background:rgba(13,17,23,.95);backdrop-filter:blur(20px);
+      border-top:1px solid var(--border2);
+      padding:8px 0 12px;z-index:60;
+      justify-content:space-around;align-items:center;
+    }
+    .mobile-nav-item{
+      display:flex;flex-direction:column;align-items:center;gap:3px;
+      cursor:pointer;padding:4px 12px;border-radius:10px;
+      transition:background .15s;position:relative;
+    }
+    .mobile-nav-item:hover{background:rgba(255,255,255,.06);}
+    .mobile-nav-item.active .mnav-icon{filter:drop-shadow(0 0 6px var(--accent));}
+    .mnav-icon{font-size:1.2rem;}
+    .mnav-label{font-size:.62rem;color:var(--muted);font-weight:600;font-family:'Space Mono',monospace;}
+    .mobile-nav-item.active .mnav-label{color:var(--accent);}
+    .mnav-badge{position:absolute;top:2px;right:8px;background:var(--red);color:#fff;border-radius:99px;font-size:.58rem;font-weight:700;padding:1px 5px;font-family:'Space Mono',monospace;}
+    @media(max-width:768px){
+      .main,.friends-page,.chat-page{padding-bottom:72px!important;}
     }
   </style>
 </head>
 <body>
 <div id="stars"></div>
- 
+
 <!-- AUTH -->
 <div id="authScreen">
   <div class="auth-box">
@@ -230,7 +299,7 @@
     </div>
   </div>
 </div>
- 
+
 <!-- APP -->
 <div id="appScreen">
   <div class="app">
@@ -247,7 +316,7 @@
         </div>
       </div>
     </header>
- 
+
     <aside class="sidebar">
       <div class="section-label">Projects</div>
       <div id="projList"></div>
@@ -262,7 +331,7 @@
         <span class="nav-badge red" id="friendsBadge" style="display:none">0</span>
       </div>
     </aside>
- 
+
     <!-- TASKS PAGE -->
     <main class="main page active" id="tasksPage">
       <div class="main-header">
@@ -283,7 +352,7 @@
       </div>
       <div class="task-list" id="taskList"></div>
     </main>
- 
+
     <!-- FRIENDS PAGE -->
     <div class="friends-page page" id="friendsPage">
       <div class="main-header">
@@ -312,7 +381,7 @@
         <div id="friendsList"><div class="empty"><div class="eicon">👥</div><p>No friends yet.<br>Search for users above!</p></div></div>
       </div>
     </div>
- 
+
     <!-- CHAT PAGE -->
     <div class="chat-page page" id="chatPage">
       <div class="chat-header">
@@ -329,10 +398,10 @@
         <button class="chat-send" onclick="sendMsg()">➤</button>
       </div>
     </div>
- 
+
   </div>
 </div>
- 
+
 <!-- TASK MODAL -->
 <div class="overlay" id="taskMod">
   <div class="modal">
@@ -349,7 +418,7 @@
     <div class="mft"><button class="bcn" onclick="closeTaskModal()">Cancel</button><button class="bsv" onclick="saveTask()">Save Task</button></div>
   </div>
 </div>
- 
+
 <!-- PROJECT MODAL -->
 <div class="overlay" id="projMod">
   <div class="modal">
@@ -359,9 +428,26 @@
     <div class="mft"><button class="bcn" onclick="closeProjModal()">Cancel</button><button class="bsv" onclick="saveProject()">Create</button></div>
   </div>
 </div>
- 
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-item active" id="mn-tasks" onclick="setView('all');updateMobileNav('tasks')">
+    <span class="mnav-icon">🌌</span>
+    <span class="mnav-label">Tasks</span>
+  </div>
+  <div class="mobile-nav-item" id="mn-friends" onclick="showFriendsPage();updateMobileNav('friends')">
+    <span class="mnav-icon">👥</span>
+    <span class="mnav-label">Friends</span>
+    <span class="mnav-badge" id="mnBadge" style="display:none">0</span>
+  </div>
+  <div class="mobile-nav-item" id="mn-add" onclick="openTaskModal()">
+    <span class="mnav-icon">＋</span>
+    <span class="mnav-label">Add</span>
+  </div>
+</nav>
+
 <div class="toast" id="toast"></div>
- 
+
 <script>
 (function(){
   const c=document.getElementById('stars');
@@ -372,21 +458,21 @@
     c.appendChild(s);
   }
 })();
- 
+
 const API='';
 const COLORS=['#6ee7f7','#c084fc','#f472b6','#fbbf24','#4ade80','#f87171','#60a5fa','#fb923c'];
 let token=localStorage.getItem('orbit_token')||null;
 let username=localStorage.getItem('orbit_user')||null;
 let projects=[],tasks=[],pickedColor=COLORS[0],editId=null,activeView='all',activeTab='all',authMode='login';
 let chatFriend=null,chatTimer=null,lastMsgIds=new Set();
- 
+
 function today(){return new Date().toISOString().split('T')[0];}
 function fmtDate(s){if(!s)return'';const[,m,d]=s.split('-');return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][+m-1]+' '+(+d);}
 function overdue(due){return due&&due<today();}
 function fmtTime(iso){if(!iso)return'';const d=new Date(iso);return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');}
 function fmtFull(iso){if(!iso)return'';const d=new Date(iso);return['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();}
 function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
- 
+
 async function api(method,path,body){
   const opts={method,headers:{'Content-Type':'application/json'}};
   if(token)opts.headers['Authorization']='Bearer '+token;
@@ -407,7 +493,7 @@ async function api(method,path,body){
     throw err;
   }
 }
- 
+
 /* AUTH */
 function switchAuthTab(mode){
   authMode=mode;
@@ -444,7 +530,7 @@ function logout(){
   document.getElementById('authScreen').style.display='flex';
   toast('👋 Signed out');
 }
- 
+
 /* BOOT */
 async function bootApp(){
   document.getElementById('authScreen').style.display='none';
@@ -462,7 +548,7 @@ async function bootApp(){
     else document.getElementById('taskList').innerHTML=`<div class="empty"><div class="eicon">⚠️</div><p>Could not connect to server.</p></div>`;
   }
 }
- 
+
 /* PAGE SWITCH */
 function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');}
 function showFriendsPage(){
@@ -482,7 +568,7 @@ function openChat(f){
   clearInterval(chatTimer);
   chatTimer=setInterval(()=>loadChat(false),3000);
 }
- 
+
 /* SIDEBAR */
 function renderSidebar(){
   document.getElementById('projList').innerHTML=projects.map(p=>{
@@ -545,15 +631,21 @@ function closeProjModal(){document.getElementById('projMod').classList.remove('o
 function renderSwatches(){document.getElementById('swatches').innerHTML=COLORS.map(c=>`<div class="swatch${c===pickedColor?' picked':''}" style="background:${c}" onclick="pickColor('${c}')"></div>`).join('');}
 function pickColor(c){pickedColor=c;renderSwatches();}
 async function saveProject(){const name=document.getElementById('iProjName').value.trim();if(!name){document.getElementById('iProjName').focus();return;}try{const p=await api('POST','/api/projects',{name,color:pickedColor});projects.push(p);closeProjModal();renderAll();toast('🛸 Project created!');}catch(e){toast('⚠ '+e.message);}}
- 
+
 /* FRIENDS */
 async function loadFriends(){
   try{
     const data=await api('GET','/api/friends');
     renderFriends(data);
     const badge=document.getElementById('friendsBadge');
-    if(data.incoming.length>0){badge.textContent=data.incoming.length;badge.style.display='flex';}
-    else badge.style.display='none';
+    const mnBadge=document.getElementById('mnBadge');
+    if(data.incoming.length>0){
+      badge.textContent=data.incoming.length;badge.style.display='flex';
+      if(mnBadge){mnBadge.textContent=data.incoming.length;mnBadge.style.display='block';}
+    }else{
+      badge.style.display='none';
+      if(mnBadge)mnBadge.style.display='none';
+    }
   }catch(e){}
 }
 function renderFriends(data){
@@ -570,7 +662,7 @@ function renderFriends(data){
         </div>
       </div>`).join('');
   }else inSec.style.display='none';
- 
+
   const outSec=document.getElementById('outgoingSection');
   if(data.outgoing.length>0){
     outSec.style.display='flex';
@@ -584,7 +676,7 @@ function renderFriends(data){
         </div>
       </div>`).join('');
   }else outSec.style.display='none';
- 
+
   const fList=document.getElementById('friendsList');
   if(data.friends.length>0){
     fList.innerHTML=data.friends.map(f=>`
@@ -605,7 +697,7 @@ async function sendFriendRequest(){
 async function acceptReq(requestId){try{await api('POST','/api/friends/accept',{requestId});toast('🎉 Friend added!');loadFriends();}catch(e){toast('⚠ '+e.message);}}
 async function declineReq(requestId){try{await api('POST','/api/friends/decline',{requestId});toast('Request removed');loadFriends();}catch(e){toast('⚠ '+e.message);}}
 async function removeFriend(id,name){if(!confirm(`Remove ${name}?`))return;try{await api('DELETE',`/api/friends/${id}`);toast(`Removed ${name}`);loadFriends();}catch(e){toast('⚠ '+e.message);}}
- 
+
 /* CHAT */
 async function loadChat(scrollToBottom){
   if(!chatFriend)return;
@@ -631,10 +723,18 @@ async function sendMsg(){
   input.value='';
   try{await api('POST',`/api/chat/${chatFriend.id}`,{text});await loadChat(true);}catch(e){toast('⚠ '+e.message);input.value=text;}
 }
- 
+
+/* MOBILE NAV */
+function updateMobileNav(page){
+  ['tasks','friends'].forEach(id=>{
+    const el=document.getElementById('mn-'+id);
+    if(el)el.classList.toggle('active',id===page);
+  });
+}
+
 /* TOAST */
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>el.classList.remove('show'),2400);}
- 
+
 /* KEYBOARD */
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeTaskModal();closeProjModal();}
@@ -642,7 +742,7 @@ document.addEventListener('keydown',e=>{
 });
 document.getElementById('friendSearchInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendFriendRequest();});
 document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
- 
+
 /* INIT */
 if(token)bootApp();
 else{document.getElementById('authScreen').style.display='flex';document.getElementById('appScreen').style.display='none';}
