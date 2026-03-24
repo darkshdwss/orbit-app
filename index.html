@@ -152,29 +152,29 @@
     ═══════════════════════════ */
     .friends-page { padding: 24px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 22px; }
     .friends-search { display: flex; gap: 10px; }
-    .friends-search input { flex: 1; padding: 11px 14px; background: var(--card); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
+    .friends-search input { flex: 1; min-width: 0; padding: 11px 14px; background: var(--card); border: 1px solid var(--border2); border-radius: 10px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 0.9rem; outline: none; transition: border-color 0.2s; }
     .friends-search input:focus { border-color: var(--accent); }
-    .friends-search button { background: linear-gradient(135deg,var(--accent),var(--purple)); border: none; color: #060811; padding: 11px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: transform 0.18s; }
+    .friends-search button { flex-shrink: 0; background: linear-gradient(135deg,var(--accent),var(--purple)); border: none; color: #060811; padding: 11px 20px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; white-space: nowrap; transition: transform 0.18s; }
     .friends-search button:hover { transform: translateY(-1px); }
  
     .friends-section { display: flex; flex-direction: column; gap: 10px; }
-    .friends-section-title { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Space Mono', monospace; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+    .friends-section-title { font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Space Mono', monospace; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
  
-    .friend-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; display: flex; align-items: center; gap: 14px; animation: fadeUp 0.22s ease; transition: border-color 0.2s; }
+    .friend-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 14px 16px; display: flex; align-items: center; gap: 12px; animation: fadeUp 0.22s ease; transition: border-color 0.2s; flex-wrap: wrap; }
     .friend-card:hover { border-color: var(--border2); }
-    .friend-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 700; color: #060811; flex-shrink: 0; }
-    .friend-info { flex: 1; }
+    .friend-avatar { width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg,var(--accent),var(--purple)); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: #060811; flex-shrink: 0; }
+    .friend-info { flex: 1; min-width: 100px; }
     .friend-name { font-size: 0.95rem; font-weight: 700; margin-bottom: 2px; }
-    .friend-since { font-size: 0.74rem; color: var(--muted); font-family: 'Space Mono', monospace; }
-    .friend-actions { display: flex; gap: 7px; }
-    .fbtn { padding: 6px 14px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.15s; border: 1px solid; }
-    .fbtn-accept { background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.3); color: var(--green); }
-    .fbtn-accept:hover { background: rgba(74,222,128,0.25); }
-    .fbtn-decline { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.25); color: var(--red); }
-    .fbtn-decline:hover { background: rgba(248,113,113,0.22); }
-    .fbtn-remove { background: rgba(255,255,255,0.05); border-color: var(--border2); color: var(--muted); }
-    .fbtn-remove:hover { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.25); color: var(--red); }
-    .fbtn-pending { background: rgba(251,191,36,0.1); border-color: rgba(251,191,36,0.25); color: var(--gold); cursor: default; }
+    .friend-since { font-size: 0.72rem; color: var(--muted); font-family: 'Space Mono', monospace; }
+    .friend-actions { display: flex; gap: 7px; flex-wrap: wrap; flex-shrink: 0; }
+    .fbtn { padding: 7px 14px; border-radius: 8px; font-size: 0.8rem; font-weight: 600; font-family: 'Outfit', sans-serif; cursor: pointer; transition: all 0.15s; border: 1px solid; white-space: nowrap; }
+    .fbtn-accept { background: rgba(74,222,128,0.15); border-color: rgba(74,222,128,0.4); color: var(--green); }
+    .fbtn-accept:hover { background: rgba(74,222,128,0.28); }
+    .fbtn-decline { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.4); color: var(--red); }
+    .fbtn-decline:hover { background: rgba(248,113,113,0.28); }
+    .fbtn-remove { background: rgba(248,113,113,0.1); border-color: rgba(248,113,113,0.3); color: var(--red); }
+    .fbtn-remove:hover { background: rgba(248,113,113,0.22); }
+    .fbtn-pending { background: rgba(251,191,36,0.12); border-color: rgba(251,191,36,0.3); color: var(--gold); cursor: default; }
  
     /* MODALS */
     .overlay { position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.72); backdrop-filter: blur(9px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.22s; }
@@ -464,6 +464,8 @@ async function bootApp(){
     [projects,tasks]=await Promise.all([api('GET','/api/projects'),api('GET','/api/tasks')]);
     setView('all');
     loadFriends();
+    // Poll for new friend requests every 10 seconds
+    setInterval(loadFriends, 10000);
   }catch(e){
     if(e.message.includes('Invalid')||e.message.includes('expired')){logout();}
     else{document.getElementById('taskList').innerHTML=`<div class="empty"><div class="eicon">⚠️</div><p>Could not connect to server.</p></div>`;}
@@ -767,4 +769,3 @@ else{document.getElementById('authScreen').style.display='flex';document.getElem
 </script>
 </body>
 </html>
- 
