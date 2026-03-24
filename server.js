@@ -215,6 +215,72 @@ app.delete('/api/tasks/:id', auth, (req, res) => {
   res.json({ success: true });
 });
  
+// ══════════════════════════════════════════════
+//  ADMIN ROUTES (protect with secret key)
+// ══════════════════════════════════════════════
+const ADMIN_KEY = process.env.ADMIN_KEY || 'orbit-admin-secret-2026';
+ 
+function adminAuth(req, res, next) {
+  const key = req.headers['x-admin-key'] || req.query.key;
+  if (key !== ADMIN_KEY) return res.status(401).json({ error: 'Unauthorized' });
+  next();
+}
+ 
+// GET /api/admin/stats
+app.get('/api/admin/stats', adminAuth, (req, res) => {
+  const db = readDB();
+  res.json({
+    totalUsers:    db.users.length,
+    totalProjects: db.projects.length,
+    totalTasks:    db.tasks.length,
+    doneTasks:     db.tasks.filter(t => t.done).length,
+  });
+});
+ 
+// GET /api/admin/users
+app.get('/api/admin/users', adminAuth, (req, res) => {
+  const db = readDB();
+  const users = db.users.map(u => {
+    const projects = db.projects.filter(p => p.user_id === u.id);
+    const tasks    = db.tasks.filter(t => t.user_id === u.id);
+    return {
+      id:         u.id,
+      username:   u.username,
+      email:      u.email,
+      created_at: u.created_at,
+      projects:   projects.length,
+      tasks:      tasks.length,
+      doneTasks:  tasks.filter(t => t.done).length,
+    };
+  });
+  res.json(users);
+});
+ 
+// GET /api/admin/users/:id/tasks
+app.get('/api/admin/users/:id/tasks', adminAuth, (req, res) => {
+  const db = readDB();
+  const tasks = db.tasks.filter(t => t.user_id === req.params.id);
+  res.json(tasks);
+});
+ 
+// DELETE /api/admin/users/:id
+app.delete('/api/admin/users/:id', adminAuth, (req, res) => {
+  const db = readDB();
+  const idx = db.users.findIndex(u => u.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'User not found' });
+  const userId = db.users[idx].id;
+  db.users.splice(idx, 1);
+  db.projects = db.projects.filter(p => p.user_id !== userId);
+  db.tasks    = db.tasks.filter(t => t.user_id !== userId);
+  writeDB(db);
+  res.json({ success: true });
+});
+ 
+// GET /admin → serve admin panel
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin.html'));
+});
+ 
 // ── CATCH-ALL → serve index.html ────────────
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
