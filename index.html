@@ -391,10 +391,21 @@ async function api(method,path,body){
   const opts={method,headers:{'Content-Type':'application/json'}};
   if(token)opts.headers['Authorization']='Bearer '+token;
   if(body)opts.body=JSON.stringify(body);
-  const res=await fetch(API+path,opts);
-  const data=await res.json();
-  if(!res.ok)throw new Error(data.error||'Request failed');
-  return data;
+  try{
+    const res=await fetch(API+path,opts);
+    const data=await res.json();
+    // Auto logout on 401 - session expired
+    if(res.status===401){
+      toast('⏰ Session expired, please sign in again');
+      setTimeout(()=>{token=null;username=null;localStorage.removeItem('orbit_token');localStorage.removeItem('orbit_user');document.getElementById('appScreen').style.display='none';document.getElementById('authScreen').style.display='flex';},1500);
+      throw new Error(data.error||'Session expired');
+    }
+    if(!res.ok)throw new Error(data.error||'Request failed');
+    return data;
+  }catch(err){
+    if(err.message==='Failed to fetch'){throw new Error('Server is waking up, please try again in a moment');}
+    throw err;
+  }
 }
  
 /* AUTH */
