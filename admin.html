@@ -182,6 +182,7 @@
           <thead>
             <tr>
               <th>User</th>
+              <th>Password</th>
               <th>Projects</th>
               <th>Tasks</th>
               <th>Done</th>
@@ -277,6 +278,25 @@ async function loadDashboard() {
   }
 }
 
+/* TOGGLE PASSWORD */
+function togglePw(id, hash) {
+  const el = document.getElementById('pw-'+id);
+  const btn = el.nextElementSibling;
+  if(btn.textContent === 'Show') {
+    el.textContent = hash;
+    el.style.color = 'var(--accent)';
+    el.style.wordBreak = 'break-all';
+    el.style.maxWidth = '200px';
+    el.style.display = 'block';
+    btn.textContent = 'Hide';
+  } else {
+    el.textContent = '••••••••';
+    el.style.color = 'var(--muted)';
+    el.style.display = '';
+    btn.textContent = 'Show';
+  }
+}
+
 /* STATS */
 function renderStats(s) {
   document.getElementById('statsGrid').innerHTML = `
@@ -300,6 +320,12 @@ function renderUsers(users) {
       <td>
         <div class="user-name">${u.username}</div>
         <div class="user-email">${u.email}</div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span id="pw-${u.id}" style="font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);letter-spacing:.05em;">••••••••</span>
+          <button onclick="togglePw('${u.id}','${u.password}')" style="background:rgba(255,255,255,.06);border:1px solid var(--border2);color:var(--muted);padding:2px 8px;border-radius:6px;cursor:pointer;font-size:.7rem;font-family:'Outfit',sans-serif;">Show</button>
+        </div>
       </td>
       <td><span class="badge badge-proj">${u.projects}</span></td>
       <td><span class="badge badge-tasks">${u.tasks}</span></td>
