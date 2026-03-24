@@ -13,7 +13,9 @@ const fs      = require('fs');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'orbit-super-secret-change-in-production';
-const DB_FILE = path.join(__dirname, 'orbit-db.json');
+const DB_FILE = process.env.RAILWAY_VOLUME_MOUNT_PATH
+  ? path.join(process.env.RAILWAY_VOLUME_MOUNT_PATH, 'orbit-db.json')
+  : path.join(__dirname, 'orbit-db.json');
 
 app.use(cors());
 app.use(express.json());
