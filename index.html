@@ -859,8 +859,9 @@ function connectLobbySocket(code){
     renderLobby(room);
   });
   gameSocket.on('game_start',()=>{
-    gameSocket.disconnect();
-    gameSocket=null;
+    // Don't disconnect — let game.html take over the same session
+    // Store room code and navigate
+    sessionStorage.setItem('gigapoly_room', code);
     location.href='/game?room='+code;
   });
   gameSocket.on('error',(msg)=>{
@@ -877,12 +878,18 @@ function renderLobby(room){
     <div class="lobby-player">
       <div class="lobby-av" style="background:${colors[i%colors.length]}">${p.username[0].toUpperCase()}</div>
       <span class="lobby-name">${p.username}${p.username===username?' (you)':''}</span>
-      ${room.host===p.username?'<span style="font-size:.7rem;color:var(--gold);margin-left:auto">👑 Host</span>':''}
+      ${room.hostId===p.id?'<span style="font-size:.7rem;color:var(--gold);margin-left:auto">👑 Host</span>':''}
     </div>`).join('');
   const status = room.players.length < 2
-    ? 'Need at least 2 players to start'
-    : `${room.players.length} players ready — host can start!`;
+    ? `Waiting for players... (${room.players.length}/6) — need at least 2`
+    : `${room.players.length} players in room — host can start!`;
   document.getElementById('lobbyStatus').textContent = status;
+  // Show start button only for host
+  const startBtn = document.getElementById('startGameBtn');
+  if(startBtn) {
+    startBtn.style.display = (room.hostId && room.players.find(p=>p.username===username && room.hostId===p.id)) ? '' : 'none';
+    startBtn.disabled = room.players.length < 2;
+  }
 }
 
 function startGame(){
