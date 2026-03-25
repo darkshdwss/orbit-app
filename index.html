@@ -4,6 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ORBIT — Task Manager</title>
+  <script src="/socket.io/socket.io.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <style>
     :root{--bg:#060811;--surface:#0d1117;--card:#111827;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.13);--text:#e8eaf6;--muted:rgba(232,234,246,.4);--dim:rgba(232,234,246,.22);--accent:#6ee7f7;--gold:#fbbf24;--red:#f87171;--green:#4ade80;--purple:#c084fc;--r:14px;}
@@ -194,6 +195,36 @@
     .swatches{display:flex;gap:9px;flex-wrap:wrap;}
     .swatch{width:25px;height:25px;border-radius:50%;cursor:pointer;transition:transform .14s;border:3px solid transparent;}
     .swatch.picked{border-color:#fff;transform:scale(1.2);}
+    /* GAME PAGE */
+    .game-page{padding:24px 28px;overflow-y:auto;gap:22px;}
+    .game-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .game-card{background:var(--card);border:1px solid var(--border2);border-radius:18px;padding:24px;display:flex;flex-direction:column;gap:14px;transition:border-color .2s;}
+    .game-card:hover{border-color:var(--accent);}
+    .game-card-icon{font-size:2.5rem;}
+    .game-card-title{font-size:1.05rem;font-weight:700;}
+    .game-card-sub{font-size:.82rem;color:var(--muted);line-height:1.5;}
+    .game-input{width:100%;padding:10px 14px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Space Mono',monospace;font-size:.9rem;outline:none;transition:border-color .2s;letter-spacing:.1em;text-transform:uppercase;}
+    .game-input:focus{border-color:var(--accent);}
+    .game-btn{padding:11px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:700;cursor:pointer;border:none;transition:all .18s;text-align:center;}
+    .game-btn-primary{background:linear-gradient(135deg,var(--accent),var(--purple));color:#060811;}
+    .game-btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(110,231,247,.3);}
+    .game-btn-secondary{background:rgba(255,255,255,.06);border:1px solid var(--border2);color:var(--text);}
+    .game-btn-secondary:hover{background:rgba(255,255,255,.1);}
+    .room-code-display{background:var(--surface);border:2px dashed var(--accent);border-radius:12px;padding:16px;text-align:center;}
+    .room-code-val{font-family:'Space Mono',monospace;font-size:1.8rem;font-weight:700;color:var(--accent);letter-spacing:.2em;}
+    .room-code-sub{font-size:.76rem;color:var(--muted);margin-top:4px;}
+    .lobby-players{display:flex;flex-direction:column;gap:8px;margin-top:8px;}
+    .lobby-player{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;}
+    .lobby-av{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;color:#060811;flex-shrink:0;}
+    .lobby-name{font-size:.9rem;font-weight:600;}
+    .lobby-ready{font-size:.72rem;color:var(--green);margin-left:auto;}
+    .rooms-list{display:flex;flex-direction:column;gap:8px;}
+    .room-item{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .2s;}
+    .room-item:hover{border-color:var(--accent);}
+    .room-item-code{font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;color:var(--accent);}
+    .room-item-info{flex:1;font-size:.82rem;color:var(--muted);}
+    @media(max-width:768px){.game-cards{grid-template-columns:1fr;}}
+
     .toast{position:fixed;bottom:22px;right:22px;z-index:300;background:var(--card);border:1px solid var(--border2);color:var(--text);padding:11px 18px;border-radius:12px;font-size:.82rem;font-weight:500;transform:translateY(55px);opacity:0;transition:all .28s cubic-bezier(.23,1,.32,1);pointer-events:none;box-shadow:0 8px 28px rgba(0,0,0,.4);}
     .toast.show{transform:translateY(0);opacity:1;}
 
@@ -330,6 +361,9 @@
         <span>👥</span><span class="nav-name">Friends</span>
         <span class="nav-badge red" id="friendsBadge" style="display:none">0</span>
       </div>
+      <div class="nav-item" id="qv-game" onclick="showGamePage()">
+        <span>🎲</span><span class="nav-name">Gigapoly</span>
+      </div>
     </aside>
 
     <!-- TASKS PAGE -->
@@ -379,6 +413,50 @@
       <div class="friends-section">
         <div class="friends-section-title">🌌 My Friends — click to open chat</div>
         <div id="friendsList"><div class="empty"><div class="eicon">👥</div><p>No friends yet.<br>Search for users above!</p></div></div>
+      </div>
+    </div>
+
+    <!-- GAME PAGE -->
+    <div class="game-page page" id="gamePage">
+      <div class="main-header">
+        <div>
+          <div class="main-title"><div class="title-dot" style="background:var(--gold)"></div>Gigapoly</div>
+          <div class="main-sub">Ukraine Edition — Multiplayer Board Game</div>
+        </div>
+      </div>
+
+      <!-- CREATE / JOIN -->
+      <div class="game-cards" id="gameMenu">
+        <div class="game-card">
+          <div class="game-card-icon">🏠</div>
+          <div class="game-card-title">Create Game</div>
+          <div class="game-card-sub">Start a new room and invite friends with a 6-digit code.</div>
+          <button class="game-btn game-btn-primary" onclick="createRoom()">Create Room</button>
+        </div>
+        <div class="game-card">
+          <div class="game-card-icon">🔗</div>
+          <div class="game-card-title">Join Game</div>
+          <div class="game-card-sub">Enter a room code to join a friend's game.</div>
+          <input class="game-input" id="joinCodeInput" placeholder="ABC123" maxlength="6"/>
+          <button class="game-btn game-btn-secondary" onclick="joinRoom()">Join Room</button>
+        </div>
+      </div>
+
+      <!-- LOBBY (shown after create/join) -->
+      <div id="gameLobby" style="display:none">
+        <div class="room-code-display" id="roomCodeDisplay">
+          <div class="room-code-val" id="roomCodeVal">------</div>
+          <div class="room-code-sub">Share this code with friends to join</div>
+        </div>
+        <div style="margin-top:16px">
+          <div style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Players in Room</div>
+          <div class="lobby-players" id="lobbyPlayers"></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;">
+          <button class="game-btn game-btn-primary" id="startGameBtn" onclick="startGame()" style="flex:1">🎮 Start Game</button>
+          <button class="game-btn game-btn-secondary" onclick="leaveLobby()" style="flex:1">Leave</button>
+        </div>
+        <div style="font-size:.76rem;color:var(--muted);margin-top:10px;text-align:center" id="lobbyStatus">Need at least 2 players to start</div>
       </div>
     </div>
 
@@ -439,6 +517,10 @@
     <span class="mnav-icon">👥</span>
     <span class="mnav-label">Friends</span>
     <span class="mnav-badge" id="mnBadge" style="display:none">0</span>
+  </div>
+  <div class="mobile-nav-item" id="mn-game" onclick="showGamePage();updateMobileNav('game')">
+    <span class="mnav-icon">🎲</span>
+    <span class="mnav-label">Game</span>
   </div>
   <div class="mobile-nav-item" id="mn-add" onclick="openTaskModal()">
     <span class="mnav-icon">＋</span>
@@ -730,6 +812,90 @@ function updateMobileNav(page){
     const el=document.getElementById('mn-'+id);
     if(el)el.classList.toggle('active',id===page);
   });
+}
+
+/* GIGAPOLY */
+let gameSocket = null;
+let currentRoomCode = null;
+let isHost = false;
+
+function showGamePage(){
+  showPage('gamePage');
+  clearInterval(chatTimer);chatFriend=null;
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('qv-game').classList.add('active');
+  updateMobileNav('game');
+}
+
+async function createRoom(){
+  try{
+    const data = await api('POST','/api/game/create');
+    currentRoomCode = data.code;
+    isHost = true;
+    connectLobbySocket(data.code);
+  }catch(e){toast('⚠ '+e.message);}
+}
+
+function joinRoom(){
+  const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+  if(!code||code.length!==6){toast('⚠ Enter a valid 6-digit room code');return;}
+  currentRoomCode = code;
+  isHost = false;
+  connectLobbySocket(code);
+}
+
+function connectLobbySocket(code){
+  if(gameSocket){gameSocket.disconnect();}
+  gameSocket = io();
+  gameSocket.on('connect',()=>{gameSocket.emit('auth',token);});
+  gameSocket.on('auth_ok',()=>{
+    gameSocket.emit('join_room',code);
+    document.getElementById('gameMenu').style.display='none';
+    document.getElementById('gameLobby').style.display='block';
+    document.getElementById('roomCodeVal').textContent=code;
+    document.getElementById('startGameBtn').style.display=isHost?'':'none';
+  });
+  gameSocket.on('room_update',(room)=>{
+    renderLobby(room);
+  });
+  gameSocket.on('game_start',()=>{
+    gameSocket.disconnect();
+    gameSocket=null;
+    location.href='/game?room='+code;
+  });
+  gameSocket.on('error',(msg)=>{
+    toast('⚠ '+msg);
+    document.getElementById('gameMenu').style.display='grid';
+    document.getElementById('gameLobby').style.display='none';
+    if(gameSocket){gameSocket.disconnect();gameSocket=null;}
+  });
+}
+
+function renderLobby(room){
+  const colors=['#f87171','#60a5fa','#4ade80','#fbbf24','#c084fc','#f472b6'];
+  document.getElementById('lobbyPlayers').innerHTML=room.players.map((p,i)=>`
+    <div class="lobby-player">
+      <div class="lobby-av" style="background:${colors[i%colors.length]}">${p.username[0].toUpperCase()}</div>
+      <span class="lobby-name">${p.username}${p.username===username?' (you)':''}</span>
+      ${room.host===p.username?'<span style="font-size:.7rem;color:var(--gold);margin-left:auto">👑 Host</span>':''}
+    </div>`).join('');
+  const status = room.players.length < 2
+    ? 'Need at least 2 players to start'
+    : `${room.players.length} players ready — host can start!`;
+  document.getElementById('lobbyStatus').textContent = status;
+}
+
+function startGame(){
+  if(!gameSocket)return;
+  gameSocket.emit('start_game');
+}
+
+function leaveLobby(){
+  if(gameSocket){gameSocket.emit('leave_room');gameSocket.disconnect();gameSocket=null;}
+  currentRoomCode=null;isHost=false;
+  document.getElementById('gameMenu').style.display='grid';
+  document.getElementById('gameLobby').style.display='none';
+  document.getElementById('joinCodeInput').value='';
 }
 
 /* TOAST */
