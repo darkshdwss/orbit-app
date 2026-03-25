@@ -342,6 +342,7 @@ io.on('connection', (socket) => {
     // Check if already in room
     const alreadyIn = room.players.find(p => p.id === currentUser.id);
     if (!alreadyIn) {
+      if (room.status === 'playing') { socket.emit('error', 'Game already started'); return; }
       const colors = ['#f87171','#60a5fa','#4ade80','#fbbf24','#c084fc','#f472b6'];
       room.players.push({
         id: currentUser.id,
@@ -356,7 +357,14 @@ io.on('connection', (socket) => {
 
     currentRoom = code.toUpperCase();
     socket.join(currentRoom);
-    io.to(currentRoom).emit('room_update', sanitizeRoom(room));
+
+    // If game is already playing, send full game state immediately
+    if (room.status === 'playing' && room.gameState) {
+      socket.emit('game_start', { gameState: room.gameState });
+      console.log(`${currentUser.username} rejoined active game ${currentRoom}`);
+    } else {
+      io.to(currentRoom).emit('room_update', sanitizeRoom(room));
+    }
     console.log(`${currentUser.username} joined room ${currentRoom}`);
   });
 
@@ -428,6 +436,13 @@ io.on('connection', (socket) => {
 function leaveRoom(socket, code, user) {
   const room = gameRooms[code];
   if (!room) return;
+  // During active game, just disconnect socket — don't remove player
+  if (room.status === 'playing') {
+    const p = room.players.find(p => p.id === user.id);
+    if (p) p.socketId = null;
+    socket.leave(code);
+    return;
+  }
   room.players = room.players.filter(p => p.id !== user.id);
   socket.leave(code);
   if (room.players.length === 0) {
