@@ -482,9 +482,7 @@ socket.on('connect', () => {
 
 socket.on('auth_ok', (user) => {
   myId = user.id;
-  document.getElementById('loader').style.display = 'none';
-  document.getElementById('gameApp').style.display = 'grid';
-  document.getElementById('roomLabel').textContent = 'Room: ' + roomCode;
+  document.getElementById('loader').querySelector('.loader-text').textContent = 'Joining game room...';
   resizeBoard();
   socket.emit('join_room', roomCode);
 });
@@ -502,6 +500,11 @@ socket.on('game_update', ({ gameState: gs, event }) => {
 
 socket.on('game_start', ({ gameState: gs }) => {
   gameState = gs;
+  // Show game app now that we have state
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('gameApp').style.display = 'grid';
+  document.getElementById('roomLabel').textContent = 'Room: ' + roomCode;
+  resizeBoard();
   updateUI();
   drawBoard();
   addLog('🎮 Game started! Good luck everyone!', true);
@@ -522,11 +525,20 @@ socket.on('game_chat', ({ username: uname, text }) => {
 });
 
 socket.on('error', (msg) => {
-  addLog('⚠ ' + msg);
+  if (document.getElementById('gameApp').style.display === 'none') {
+    // Still on loader — redirect back
+    document.getElementById('loader').querySelector('.loader-text').textContent = '⚠ ' + msg + ' — redirecting...';
+    setTimeout(() => { location.href = '/'; }, 2000);
+  } else {
+    addLog('⚠ ' + msg);
+  }
 });
 
 socket.on('room_update', (room) => {
-  // Still in lobby — shouldn't happen mid-game
+  // We got a room update but game hasn't started yet
+  // Show waiting message
+  document.getElementById('loader').querySelector('.loader-text').textContent = 
+    `Waiting for host to start... (${room.players.length}/${room.maxPlayers} players)`;
 });
 
 // ── EVENT HANDLER ─────────────────────────────
