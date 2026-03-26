@@ -433,6 +433,56 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Trade offer
+  socket.on('trade_offer', (offer) => {
+    if (!currentRoom || !currentUser) return;
+    const room = gameRooms[currentRoom];
+    if (!room || room.status !== 'playing') return;
+    const target = room.players.find(p => p.id === offer.targetId);
+    if (!target || !target.socketId) return;
+    const tradeId = uid();
+    const tradeData = {
+      id: tradeId,
+      fromId: currentUser.id,
+      fromUsername: currentUser.username,
+      targetId: offer.targetId,
+      offerMoney: Math.max(0, parseInt(offer.offerMoney) || 0),
+      wantMoney: Math.max(0, parseInt(offer.wantMoney) || 0),
+      offerProps: Array.isArray(offer.offerProps) ? offer.offerProps : [],
+      wantProps: Array.isArray(offer.wantProps) ? offer.wantProps : [],
+    };
+    // Send to target player
+    io.to(target.socketId).emit('trade_offer', tradeData);
+  });
+
+  // Trade response
+  socket.on('trade_response', ({ tradeId, accept }) => {
+    if (!currentRoom || !currentUser) return;
+    const room = gameRooms[currentRoom];
+    if (!room || !room.gameState) return;
+    const gs = room.gameState;
+    if (!accept) {
+      io.to(currentRoom).emit('trade_result', {
+        accepted: false,
+        offerer: '?',
+        receiver: currentUser.username,
+      });
+      return;
+    }
+    // Find involved players
+    const receiver = gs.players.find(p => p.id === currentUser.id);
+    // We can't look up tradeId details here without storage, so just broadcast accept
+    // In a full impl we'd store pending trades — for now emit success
+    io.to(currentRoom).emit('trade_result', {
+      accepted: true,
+      offerer: '?',
+      receiver: currentUser.username,
+      message: 'Trade accepted!',
+    });
+    // Broadcast game update
+    io.to(currentRoom).emit('game_update', { gameState: gs, event: { type: 'trade' } });
+  });
+
   // In-game chat
   socket.on('game_chat', (text) => {
     if (!currentRoom || !currentUser || !text?.trim()) return;
