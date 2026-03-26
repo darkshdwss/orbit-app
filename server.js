@@ -23,7 +23,8 @@ const ADMIN_KEY   = process.env.ADMIN_KEY   || 'orbit-admin-secret-2026';
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname)));
+// Serve static files but NOT index.html automatically (we handle that explicitly)
+app.use(express.static(path.join(__dirname), { index: false }));
 
 // ── DATABASE ──────────────────────────────────
 let db;
@@ -810,9 +811,10 @@ function nextTurn(gs) {
 }
 
 // ── STATIC FILES ──────────────────────────────
-app.get('/game', (req, res) => res.sendFile(path.join(__dirname, 'game.html')));
+app.get('/',      (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/game',  (req, res) => res.sendFile(path.join(__dirname, 'game.html')));
 app.get('/admin', (req, res) => res.sendFile(path.join(__dirname, 'admin.html')));
-app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('*',      (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
 
 // ── START ─────────────────────────────────────
 connectDB().then(() => {
