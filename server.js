@@ -416,12 +416,32 @@ io.on('connection', (socket) => {
     }
   });
 
+  // Set player color (in lobby)
+  socket.on('set_color', (color) => {
+    if (!currentUser) return;
+    const validColors = ['#f87171','#60a5fa','#4ade80','#fbbf24','#c084fc','#f472b6','#fb923c','#34d399'];
+    if (!validColors.includes(color)) return;
+    // Update color in any room they're in
+    if (currentRoom && gameRooms[currentRoom]) {
+      const player = gameRooms[currentRoom].players.find(p => p.id === currentUser.id);
+      if (player) {
+        player.color = color;
+        if (gameRooms[currentRoom].status === 'waiting') {
+          io.to(currentRoom).emit('room_update', sanitizeRoom(gameRooms[currentRoom]));
+        }
+      }
+    }
+  });
+
   // In-game chat
   socket.on('game_chat', (text) => {
     if (!currentRoom || !currentUser || !text?.trim()) return;
+    const room = gameRooms[currentRoom];
+    const player = room?.players.find(p => p.id === currentUser.id);
     io.to(currentRoom).emit('game_chat', {
       username: currentUser.username,
       text: text.trim().slice(0, 200),
+      color: player?.color || '#6ee7f7',
       time: new Date().toISOString(),
     });
   });
@@ -548,10 +568,19 @@ const COMMUNITY_CARDS = [
 ];
 
 function initGameState(room) {
-  const players = room.players.map((p, i) => ({
+  const colors = ['#f87171','#60a5fa','#4ade80','#fbbf24','#c084fc','#f472b6','#fb923c','#34d399'];
+  // Ensure unique colors
+  const usedColors = new Set();
+  const players = room.players.map((p, i) => {
+    let color = p.color;
+    if (!color || usedColors.has(color)) {
+      color = colors.find(c => !usedColors.has(c)) || colors[i % colors.length];
+    }
+    usedColors.add(color);
+    return {
     id: p.id,
     username: p.username,
-    color: p.color,
+    color,
     money: 1500,
     position: 0,
     properties: [],
@@ -559,7 +588,7 @@ function initGameState(room) {
     jailTurns: 0,
     bankrupt: false,
     doublesCount: 0,
-  }));
+  };});
 
   return {
     players,
