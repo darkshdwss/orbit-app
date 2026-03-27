@@ -4,59 +4,88 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>GIGAPOLY 🎲</title>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <script src="/socket.io/socket.io.js"></script>
   <style>
-    :root{
-      --bg:#060811;--surface:#0d1117;--card:#111827;
-      --border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.15);
-      --text:#e8eaf6;--muted:rgba(232,234,246,.4);
-      --accent:#6ee7f7;--gold:#fbbf24;--red:#f87171;--green:#4ade80;--purple:#c084fc;
-    }
+    :root{--bg:#060811;--surface:#0d1117;--card:#111827;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.15);--text:#e8eaf6;--muted:rgba(232,234,246,.4);--accent:#6ee7f7;--gold:#fbbf24;--red:#f87171;--green:#4ade80;--purple:#c084fc;}
     *{box-sizing:border-box;margin:0;padding:0;}
     body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow:hidden;}
 
-    /* ── KEYFRAMES ── */
     @keyframes spin{to{transform:rotate(360deg)}}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
     @keyframes pop{0%{transform:translate(-50%,-50%) scale(.6);opacity:0}65%{transform:translate(-50%,-50%) scale(1.06)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
     @keyframes popIn{0%{transform:scale(.7);opacity:0}65%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
-    @keyframes slideDown{from{transform:translateY(-20px);opacity:0}to{transform:translateY(0);opacity:1}}
     @keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(8deg)}}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.96)}}
-    @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(110,231,247,.4)}50%{box-shadow:0 0 22px rgba(110,231,247,.9)}}
-    @keyframes tokenJump{0%{transform:translateY(0)}40%{transform:translateY(-18px)}70%{transform:translateY(-8px)}100%{transform:translateY(0)}}
-    @keyframes cityCapture{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
-    @keyframes rentFloat{0%{opacity:1;transform:translate(-50%,-10px)}100%{opacity:0;transform:translate(-50%,-50px)}}
-    @keyframes fadeOut{from{opacity:1}to{opacity:0}}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.65;transform:scale(.97)}}
+    @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(110,231,247,.3)}50%{box-shadow:0 0 22px rgba(110,231,247,.8)}}
+    @keyframes goldGlow{0%,100%{box-shadow:0 0 8px rgba(251,191,36,.3)}50%{box-shadow:0 0 20px rgba(251,191,36,.7)}}
+    @keyframes rentFloat{0%{opacity:1;transform:translate(-50%,-10px)}100%{opacity:0;transform:translate(-50%,-55px)}}
+    @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes tradeNotif{0%{transform:translateY(-20px);opacity:0}20%{transform:translateY(0);opacity:1}80%{transform:translateY(0);opacity:1}100%{transform:translateY(-20px);opacity:0}}
 
     /* ── LOADER ── */
     #loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px;}
-    .loader-ring{width:48px;height:48px;border-radius:50%;border:3px solid var(--border2);border-top-color:var(--accent);animation:spin .8s linear infinite;}
-    .loader-text{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--muted);text-align:center;}
+    .ring{width:46px;height:46px;border-radius:50%;border:3px solid var(--border2);border-top-color:var(--accent);animation:spin .8s linear infinite;}
+    .ring-text{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--muted);text-align:center;}
 
     /* ── LOBBY ── */
-    #lobbyScreen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:24px;overflow-y:auto;}
+    #lobbyScreen{display:none;min-height:100vh;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
     #lobbyScreen.show{display:flex;}
-    .lobby-box{background:var(--card);border:1px solid var(--border2);border-radius:22px;padding:36px;width:100%;max-width:500px;animation:fadeUp .35s ease;display:flex;flex-direction:column;gap:18px;}
-    .lobby-brand{font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;letter-spacing:.1em;text-align:center;background:linear-gradient(90deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .lobby-wrap{display:grid;grid-template-columns:1fr 340px;gap:20px;width:100%;max-width:880px;margin:auto;padding:20px 0;}
+    .lobby-main{background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;}
+    .lobby-brand{font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;letter-spacing:.1em;background:linear-gradient(90deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
     .lobby-code-box{background:var(--surface);border:2px dashed var(--accent);border-radius:14px;padding:14px;text-align:center;}
-    .lobby-code-val{font-family:'Space Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--accent);letter-spacing:.3em;}
-    .lobby-code-sub{font-size:.74rem;color:var(--muted);margin-top:4px;}
+    .lcode{font-family:'Space Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--accent);letter-spacing:.3em;}
+    .lcode-sub{font-size:.74rem;color:var(--muted);margin-top:3px;}
     .lbl{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
-    .color-swatches{display:flex;gap:9px;flex-wrap:wrap;}
-    .cswatch{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;}
-    .cswatch:hover{transform:scale(1.12);}
-    .cswatch.sel{border-color:#fff;transform:scale(1.22);}
-    .lobby-player-row{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:6px;transition:border-color .2s;}
-    .lp-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;color:#060811;flex-shrink:0;transition:background .3s;}
-    .lp-name{flex:1;font-size:.9rem;font-weight:600;}
-    .lobby-status{text-align:center;font-size:.8rem;color:var(--muted);animation:pulse 2s infinite;}
-    .lobby-start{width:100%;padding:14px;background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:#060811;border-radius:12px;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:transform .18s,box-shadow .18s;animation:glow 2s infinite;}
-    .lobby-start:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(110,231,247,.4);}
-    .lobby-start:disabled{opacity:.4;cursor:not-allowed;animation:none;}
-    .lobby-leave{width:100%;padding:10px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);color:var(--red);border-radius:12px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:600;cursor:pointer;transition:all .15s;}
-    .lobby-leave:hover{background:rgba(248,113,113,.2);}
+    .color-row{display:flex;gap:9px;flex-wrap:wrap;}
+    .cswatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;}
+    .cswatch:hover{transform:scale(1.1);}
+    .cswatch.sel{border-color:#fff;transform:scale(1.2);}
+    .player-card{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:6px;}
+    .pc-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;color:#060811;flex-shrink:0;transition:background .3s;}
+    .pc-name{flex:1;font-size:.9rem;font-weight:600;}
+    .lobby-status{text-align:center;font-size:.82rem;color:var(--muted);animation:pulse 2s infinite;}
+    .lbtn{width:100%;padding:13px;border:none;color:#060811;border-radius:12px;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:transform .18s,box-shadow .18s;}
+    .lbtn-start{background:linear-gradient(135deg,var(--accent),var(--purple));animation:glow 2s infinite;}
+    .lbtn-start:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(110,231,247,.4);}
+    .lbtn-start:disabled{opacity:.4;cursor:not-allowed;animation:none;}
+    .lbtn-leave{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3) !important;color:var(--red) !important;margin-top:2px;}
+    .lbtn-leave:hover{background:rgba(248,113,113,.2);}
+
+    /* ── ROOM SETTINGS ── */
+    .settings-panel{background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;max-height:calc(100vh - 80px);}
+    .settings-title{font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;letter-spacing:.08em;color:var(--text);display:flex;align-items:center;gap:8px;}
+    .settings-title::before{content:'⚙️';font-size:.9rem;}
+    .settings-group{display:flex;flex-direction:column;gap:10px;}
+    .settings-group-title{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;padding-bottom:6px;border-bottom:1px solid var(--border);}
+    /* Slider setting */
+    .setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;}
+    .setting-label{font-size:.84rem;font-weight:600;flex:1;}
+    .setting-desc{font-size:.72rem;color:var(--muted);margin-top:2px;line-height:1.4;}
+    .setting-control{flex-shrink:0;}
+    /* Toggle */
+    .toggle{position:relative;width:42px;height:24px;flex-shrink:0;}
+    .toggle input{opacity:0;width:0;height:0;}
+    .toggle-slider{position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:99px;cursor:pointer;transition:background .2s;}
+    .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
+    .toggle input:checked+.toggle-slider{background:var(--accent);}
+    .toggle input:checked+.toggle-slider::before{transform:translateX(18px);}
+    /* Number stepper */
+    .stepper{display:flex;align-items:center;gap:6px;}
+    .step-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .step-btn:hover{border-color:var(--accent);color:var(--accent);}
+    .step-val{font-family:'Space Mono',monospace;font-size:.88rem;font-weight:700;min-width:28px;text-align:center;}
+    /* Select */
+    .setting-sel{background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.84rem;padding:6px 10px;outline:none;cursor:pointer;transition:border-color .2s;}
+    .setting-sel:focus{border-color:var(--accent);}
+    /* Starting cash pills */
+    .cash-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
+    .cash-pill{padding:5px 12px;border-radius:99px;border:1px solid var(--border2);background:none;color:var(--muted);font-family:'Space Mono',monospace;font-size:.72rem;cursor:pointer;transition:all .15s;}
+    .cash-pill:hover{border-color:var(--accent);color:var(--accent);}
+    .cash-pill.active{background:rgba(110,231,247,.15);border-color:var(--accent);color:var(--accent);}
+    .settings-note{font-size:.74rem;color:var(--muted);text-align:center;font-style:italic;}
+    .host-only-note{font-size:.72rem;color:var(--gold);text-align:center;display:none;}
 
     /* ── GAME LAYOUT ── */
     #gameScreen{display:none;width:100vw;height:100vh;grid-template-columns:1fr 300px;grid-template-rows:52px 1fr;}
@@ -64,243 +93,325 @@
 
     /* ── TOPBAR ── */
     .gtop{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,8,17,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);z-index:30;}
-    .gtop-brand{font-family:'Space Mono',monospace;font-size:.95rem;font-weight:700;letter-spacing:.1em;background:linear-gradient(90deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .gtop-center{display:flex;align-items:center;gap:14px;}
-    .gtop-room{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--muted);}
-    .gtop-turn{font-family:'Space Mono',monospace;font-size:.75rem;font-weight:700;padding:4px 12px;border-radius:99px;border:1px solid;transition:all .3s;}
+    .gtop-brand{font-family:'Space Mono',monospace;font-size:.92rem;font-weight:700;letter-spacing:.1em;background:linear-gradient(90deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .gtop-turn{font-family:'Space Mono',monospace;font-size:.74rem;font-weight:700;padding:4px 13px;border-radius:99px;border:1px solid;transition:all .3s;}
     .gtop-right{display:flex;gap:10px;align-items:center;}
-    .gtop-money{font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;}
-    .leave-btn{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:var(--red);padding:6px 14px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;transition:all .15s;}
-    .leave-btn:hover{background:rgba(248,113,113,.25);transform:translateY(-1px);}
+    .gtop-money{font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;transition:color .3s;}
+    .lv-btn{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.28);color:var(--red);padding:6px 14px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;transition:all .15s;}
+    .lv-btn:hover{background:rgba(248,113,113,.22);transform:translateY(-1px);}
 
     /* ── BOARD ── */
     .board-area{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);padding:8px;}
-    #boardCanvas{border-radius:6px;transition:filter .3s;}
+    #boardCanvas{border-radius:5px;}
 
-    /* ── CENTER NOTIFICATION ── */
-    #centerNotif{
-      position:absolute;left:50%;top:50%;
-      transform:translate(-50%,-50%);
-      background:rgba(6,8,20,.94);backdrop-filter:blur(18px);
-      border:2px solid var(--accent);border-radius:20px;
-      padding:20px 30px;text-align:center;
-      min-width:260px;max-width:360px;
-      pointer-events:none;z-index:50;
-      display:none;
-    }
-    #centerNotif.show{display:block;animation:pop .32s cubic-bezier(.23,1,.32,1);}
-    .cn-dice-row{display:flex;gap:16px;justify-content:center;align-items:center;margin-bottom:12px;}
-    .cn-die{width:54px;height:54px;background:var(--card);border:2px solid var(--border2);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:2.1rem;transition:transform .1s;}
+    /* ── CENTER NOTIF ── */
+    #cnBox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(6,8,20,.94);backdrop-filter:blur(18px);border:2px solid var(--accent);border-radius:20px;padding:20px 28px;text-align:center;min-width:260px;max-width:340px;pointer-events:none;z-index:50;display:none;}
+    #cnBox.show{display:block;animation:pop .3s cubic-bezier(.23,1,.32,1);}
+    .cn-dice{display:flex;gap:16px;justify-content:center;align-items:center;margin-bottom:12px;}
+    .cn-die{width:52px;height:52px;background:var(--card);border:2px solid var(--border2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2rem;}
     .cn-die.rolling{animation:shake .1s infinite;}
-    .cn-sum{font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--accent);}
-    .cn-player{font-size:1rem;font-weight:800;margin-bottom:4px;}
-    .cn-text{font-size:.86rem;color:var(--text);line-height:1.5;}
+    .cn-total{font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--accent);}
+    .cn-who{font-size:1rem;font-weight:800;margin-bottom:4px;}
+    .cn-msg{font-size:.86rem;color:var(--text);line-height:1.5;}
     .cn-sub{font-size:.76rem;color:var(--muted);margin-top:5px;}
 
-    /* ── FLOATING RENT TEXT ── */
-    .rent-float{
-      position:absolute;font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;
-      color:var(--red);pointer-events:none;z-index:60;
-      animation:rentFloat 1.4s ease forwards;
-      transform:translateX(-50%);
-    }
+    /* ── RENT FLOAT ── */
+    .rent-float{position:absolute;font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;color:var(--red);pointer-events:none;z-index:60;animation:rentFloat 1.4s ease forwards;transform:translateX(-50%);}
+
+    /* ── TRADE TOAST ── */
+    #tradeToast{position:fixed;top:70px;right:20px;background:var(--card);border:1px solid var(--accent);border-radius:14px;padding:14px 18px;z-index:400;display:none;max-width:300px;animation:tradeNotif 4s ease forwards;}
+    #tradeToast.show{display:block;}
+    .trade-toast-title{font-size:.84rem;font-weight:700;color:var(--accent);margin-bottom:4px;}
+    .trade-toast-text{font-size:.78rem;color:var(--muted);}
+    .trade-toast-btns{display:flex;gap:8px;margin-top:10px;}
+    .ttbtn{flex:1;padding:7px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;border:1px solid;transition:all .15s;}
+    .ttbtn-yes{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.35);color:var(--green);}
+    .ttbtn-yes:hover{background:rgba(74,222,128,.28);}
+    .ttbtn-no{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.3);color:var(--red);}
+    .ttbtn-no:hover{background:rgba(248,113,113,.22);}
 
     /* ── SIDEBAR ── */
     .sidebar{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-
-    /* ── ACTION PANEL ── */
-    .action-panel{padding:12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .act-panel{padding:12px;border-bottom:1px solid var(--border);flex-shrink:0;}
     .turn-lbl{font-size:.74rem;color:var(--muted);margin-bottom:6px;}
     .turn-nm{font-weight:700;}
     .dice-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
-    .sdie{width:40px;height:40px;background:var(--card);border:1px solid var(--border2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:transform .15s;}
-    .dice-sum{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--muted);}
-    .prop-popup{background:rgba(13,17,28,.95);border:1px solid var(--border2);border-radius:9px;padding:8px 11px;font-size:.74rem;color:var(--muted);margin-bottom:8px;display:none;animation:slideDown .2s ease;}
-    .prop-popup.show{display:block;}
-    .prop-popup-name{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:2px;}
-    .prop-popup-price{color:var(--gold);font-family:'Space Mono',monospace;}
-
-    .action-btns{display:flex;flex-direction:column;gap:7px;}
-    .abtn{padding:9px 14px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;border:1px solid;transition:all .18s;position:relative;overflow:hidden;}
-    .abtn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.12);opacity:0;transition:opacity .15s;}
-    .abtn:hover:not(:disabled)::after{opacity:1;}
+    .sdie{width:40px;height:40px;background:var(--card);border:1px solid var(--border2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
+    .ds{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--muted);}
+    .prop-pop{background:rgba(13,17,28,.95);border:1px solid var(--border2);border-radius:9px;padding:8px 11px;font-size:.74rem;color:var(--muted);margin-bottom:8px;display:none;animation:slideIn .2s ease;}
+    .prop-pop.show{display:block;}
+    .pp-name{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:2px;}
+    .pp-price{color:var(--gold);font-family:'Space Mono',monospace;}
+    .act-btns{display:flex;flex-direction:column;gap:7px;}
+    .abtn{padding:9px 14px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .18s;position:relative;overflow:hidden;}
+    .abtn:disabled{opacity:.32;cursor:not-allowed;}
     .abtn:active:not(:disabled){transform:scale(.97);}
-    .abtn:disabled{opacity:.35;cursor:not-allowed;}
-    .abtn-roll{background:linear-gradient(135deg,var(--accent),var(--purple));border-color:transparent;color:#060811;animation:glow 2.5s infinite;}
+    .abtn-roll{background:linear-gradient(135deg,var(--accent),var(--purple));color:#060811;animation:glow 2.5s infinite;}
     .abtn-roll:disabled{animation:none;}
+    .abtn-roll:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 18px rgba(110,231,247,.4);}
     .abtn-buy{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.4);color:var(--green);}
     .abtn-buy:hover:not(:disabled){background:rgba(74,222,128,.28);}
-
-    /* ── SKIP BUTTON — highly visible ── */
-    .abtn-pass{
-      background:rgba(251,191,36,.18);
-      border:2px solid rgba(251,191,36,.6);
-      color:var(--gold);
-      font-size:.88rem;
-      padding:10px 14px;
-      border-radius:10px;
-      letter-spacing:.02em;
-    }
-    .abtn-pass:hover:not(:disabled){
-      background:rgba(251,191,36,.32);
-      border-color:var(--gold);
-      transform:translateY(-2px);
-      box-shadow:0 4px 16px rgba(251,191,36,.3);
-    }
-    .abtn-pass.my-turn{
-      animation:pulse 1.4s infinite;
-      border-color:var(--gold);
-      box-shadow:0 0 12px rgba(251,191,36,.4);
-    }
-
+    /* SKIP — always prominent and visible */
+    .abtn-pass{background:rgba(251,191,36,.18);border:2px solid rgba(251,191,36,.5);color:var(--gold);font-size:.88rem;padding:10px 14px;}
+    .abtn-pass.my-turn{animation:goldGlow 1.6s infinite;border-color:var(--gold);}
+    .abtn-pass:hover:not(:disabled){background:rgba(251,191,36,.32);border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 16px rgba(251,191,36,.3);}
     .abtn-jail{background:rgba(192,132,252,.15);border-color:rgba(192,132,252,.35);color:var(--purple);}
     .abtn-jail:hover:not(:disabled){background:rgba(192,132,252,.28);}
-    .abtn-trade{background:rgba(96,165,250,.15);border-color:rgba(96,165,250,.35);color:#60a5fa;}
-    .abtn-trade:hover:not(:disabled){background:rgba(96,165,250,.28);}
+    .abtn-trade{background:rgba(96,165,250,.14);border-color:rgba(96,165,250,.35);color:#60a5fa;}
+    .abtn-trade:hover:not(:disabled){background:rgba(96,165,250,.26);}
 
-    /* ── SIDEBAR TABS ── */
+    /* ── TABS ── */
     .stabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
-    .stab{flex:1;padding:8px 4px;font-family:'Space Mono',monospace;font-size:.56rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);cursor:pointer;border:none;background:none;transition:all .15s;border-bottom:2px solid transparent;}
+    .stab{flex:1;padding:8px 4px;font-family:'Space Mono',monospace;font-size:.54rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);cursor:pointer;border:none;background:none;transition:all .15s;border-bottom:2px solid transparent;}
     .stab.active{color:var(--accent);border-bottom-color:var(--accent);}
     .stab:hover{color:var(--text);}
     .spanel{display:none;flex-direction:column;overflow:hidden;flex:1;min-height:0;}
     .spanel.active{display:flex;}
 
-    /* ── PLAYERS LIST ── */
-    .players-scroll{overflow-y:auto;padding:10px;flex:1;}
-    .player-row{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:9px;border:1px solid transparent;margin-bottom:5px;transition:all .25s;}
-    .player-row.active{background:rgba(110,231,247,.08);border-color:rgba(110,231,247,.25);}
-    .player-row.bankrupt{opacity:.3;}
-    .p-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;color:#060811;flex-shrink:0;transition:transform .2s;}
-    .player-row.active .p-av{transform:scale(1.1);}
-    .p-info{flex:1;min-width:0;}
-    .p-name{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .p-money{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--green);}
-    .p-badge{font-size:.65rem;flex-shrink:0;}
+    /* ── PLAYERS ── */
+    .pscroll{overflow-y:auto;padding:10px;flex:1;}
+    .prow{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:9px;border:1px solid transparent;margin-bottom:5px;transition:all .25s;}
+    .prow.active{background:rgba(110,231,247,.08);border-color:rgba(110,231,247,.25);}
+    .prow.bankrupt{opacity:.3;}
+    .pav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;color:#060811;flex-shrink:0;transition:transform .2s;}
+    .prow.active .pav{transform:scale(1.1);}
+    .pinfo{flex:1;min-width:0;}
+    .pname{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pmoney{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--green);}
+    .pbadge{font-size:.65rem;flex-shrink:0;}
 
-    /* ── MY CITIES ── */
-    .cities-list{overflow-y:auto;padding:8px;flex:1;display:flex;flex-direction:column;gap:5px;}
-    .city-item{background:var(--card);border-radius:9px;padding:8px 10px;border-left:4px solid;animation:popIn .25s ease;display:flex;align-items:center;gap:8px;}
-    .city-name{font-size:.78rem;font-weight:700;flex:1;}
-    .city-meta{font-size:.67rem;color:var(--muted);font-family:'Space Mono',monospace;}
-    .city-blds{display:flex;gap:2px;flex-shrink:0;}
-    .city-house{width:7px;height:8px;border-radius:2px;background:var(--green);}
-    .city-hotel{width:9px;height:9px;border-radius:2px;background:var(--red);}
-    .cities-empty{text-align:center;padding:28px 16px;color:var(--muted);font-size:.8rem;line-height:1.6;}
+    /* ── CITIES ── */
+    .cscroll{overflow-y:auto;padding:8px;flex:1;display:flex;flex-direction:column;gap:5px;}
+    .citem{background:var(--card);border-radius:9px;padding:8px 10px;border-left:4px solid;animation:popIn .25s ease;display:flex;align-items:center;gap:8px;}
+    .cname{font-size:.78rem;font-weight:700;flex:1;}
+    .cmeta{font-size:.67rem;color:var(--muted);font-family:'Space Mono',monospace;}
+    .cblds{display:flex;gap:2px;flex-shrink:0;}
+    .ch{width:7px;height:8px;border-radius:2px;background:var(--green);}
+    .cht{width:9px;height:9px;border-radius:2px;background:var(--red);}
+    .cempty{text-align:center;padding:28px 16px;color:var(--muted);font-size:.8rem;line-height:1.6;}
+
+    /* ── TRADES PANEL ── */
+    .trades-scroll{overflow-y:auto;padding:8px;flex:1;display:flex;flex-direction:column;gap:6px;}
+    .trade-entry{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;animation:slideIn .2s ease;}
+    .te-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+    .te-from{font-size:.8rem;font-weight:700;}
+    .te-status{font-size:.68rem;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:99px;font-weight:700;}
+    .te-status.pending{background:rgba(251,191,36,.15);color:var(--gold);}
+    .te-status.accepted{background:rgba(74,222,128,.15);color:var(--green);}
+    .te-status.declined{background:rgba(248,113,113,.15);color:var(--red);}
+    .te-body{font-size:.74rem;color:var(--muted);line-height:1.5;margin-bottom:7px;}
+    .te-btns{display:flex;gap:6px;}
+    .te-btn{flex:1;padding:6px;border-radius:7px;font-family:'Outfit',sans-serif;font-size:.76rem;font-weight:700;cursor:pointer;border:1px solid;transition:all .15s;}
+    .te-btn-accept{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);color:var(--green);}
+    .te-btn-accept:hover{background:rgba(74,222,128,.25);}
+    .te-btn-decline{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.28);color:var(--red);}
+    .te-btn-decline:hover{background:rgba(248,113,113,.22);}
+    .trades-empty{text-align:center;padding:24px 14px;color:var(--muted);font-size:.78rem;line-height:1.6;}
 
     /* ── LOG ── */
-    .log-list{overflow-y:auto;padding:6px 10px;flex:1;display:flex;flex-direction:column;gap:2px;}
-    .log-list::-webkit-scrollbar{width:3px;}
-    .log-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
-    .log-item{font-size:.7rem;color:var(--muted);line-height:1.4;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04);}
-    .log-item.hi{color:var(--text);}
-    .log-item.hi-good{color:var(--green);}
-    .log-item.hi-bad{color:var(--red);}
+    .lscroll{overflow-y:auto;padding:6px 10px;flex:1;display:flex;flex-direction:column;gap:2px;}
+    .lscroll::-webkit-scrollbar{width:3px;}
+    .lscroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+    .li{font-size:.7rem;color:var(--muted);line-height:1.4;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+    .li.hi{color:var(--text);}
+    .li.good{color:var(--green);}
+    .li.bad{color:var(--red);}
 
     /* ── CHAT ── */
-    .chat-wrap{border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;max-height:145px;}
+    .chat-w{border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;max-height:140px;}
     .chat-msgs{flex:1;overflow-y:auto;padding:5px 8px;display:flex;flex-direction:column;gap:2px;}
-    .chat-msg{font-size:.72rem;line-height:1.4;}
-    .chat-msg .cn{font-weight:700;margin-right:4px;}
+    .cmsg{font-size:.72rem;line-height:1.4;}
+    .cmsg .cn{font-weight:700;margin-right:4px;}
     .chat-row{display:flex;gap:6px;padding:5px 8px;border-top:1px solid var(--border);}
     .chat-inp{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.78rem;padding:5px 9px;outline:none;transition:border-color .2s;}
     .chat-inp:focus{border-color:var(--accent);}
-    .chat-send{background:var(--accent);border:none;color:#060811;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.88rem;display:flex;align-items:center;justify-content:center;}
+    .chat-snd{background:var(--accent);border:none;color:#060811;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.88rem;}
 
-    /* ── MODAL BASE ── */
-    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;}
-    .modal-box{background:var(--card);border:1px solid var(--border2);border-radius:18px;padding:26px;width:100%;animation:fadeUp .25s ease;}
-    .modal-title{font-size:1.1rem;font-weight:800;margin-bottom:18px;display:flex;justify-content:space-between;align-items:center;}
-    .modal-close{background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-    .modal-close:hover{background:rgba(248,113,113,.15);color:var(--red);}
+    /* ── MODALS ── */
+    .mbg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;}
+    .mbox{background:var(--card);border:1px solid var(--border2);border-radius:18px;padding:26px;width:100%;animation:fadeUp .25s ease;}
+    .mtitle{font-size:1.05rem;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+    .mclose{background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .mclose:hover{background:rgba(248,113,113,.15);color:var(--red);}
+    .mbtns{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+    .mbtn{padding:10px 22px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+    .mbtn-primary{background:linear-gradient(135deg,var(--accent),var(--purple));color:#060811;}
+    .mbtn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(110,231,247,.3);}
+    .mbtn-danger{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.35) !important;color:var(--red);}
+    .mbtn-danger:hover{background:rgba(248,113,113,.28);}
+    .mbtn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--border2) !important;color:var(--muted);}
+    .mbtn-ghost:hover{color:var(--text);}
 
-    /* ── CARD POPUP ── */
+    /* ── CARD MODAL (private) ── */
     #cardModal{display:none;}
     #cardModal.show{display:flex;}
-    .card-popup{max-width:360px;text-align:center;}
-    .card-icon{font-size:2.8rem;margin-bottom:10px;}
-    .card-text{font-size:.88rem;color:var(--muted);margin-bottom:18px;line-height:1.5;}
-    .modal-btn{padding:10px 22px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
-    .btn-primary{background:linear-gradient(135deg,var(--accent),var(--purple));color:#060811;}
-    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(110,231,247,.3);}
-    .btn-danger{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.35) !important;color:var(--red);}
-    .btn-danger:hover{background:rgba(248,113,113,.28);}
-    .btn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--border2) !important;color:var(--muted);}
-    .btn-ghost:hover{color:var(--text);}
-    .modal-btns{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;}
+    .cmod{max-width:360px;text-align:center;}
+    .cmod-icon{font-size:2.8rem;margin-bottom:10px;}
+    .cmod-text{font-size:.88rem;color:var(--muted);margin-bottom:16px;line-height:1.5;}
 
     /* ── TRADE MODAL ── */
     #tradeModal{display:none;}
     #tradeModal.show{display:flex;}
-    .trade-box{max-width:520px;width:100%;}
-    .trade-sides{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
-    .trade-side{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:14px;}
-    .trade-side-title{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;font-family:'Space Mono',monospace;}
-    .trade-money-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
-    .trade-money-inp{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:.9rem;padding:7px 10px;outline:none;width:100%;transition:border-color .2s;}
-    .trade-money-inp:focus{border-color:var(--accent);}
-    .trade-money-lbl{font-size:.75rem;color:var(--muted);flex-shrink:0;}
-    .trade-props-title{font-size:.7rem;color:var(--muted);margin-bottom:6px;font-family:'Space Mono',monospace;text-transform:uppercase;letter-spacing:.06em;}
-    .trade-prop-item{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:7px;cursor:pointer;transition:background .15s;border:1px solid transparent;}
-    .trade-prop-item:hover{background:rgba(255,255,255,.05);}
-    .trade-prop-item.selected{background:rgba(110,231,247,.1);border-color:rgba(110,231,247,.3);}
-    .trade-prop-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-    .trade-prop-name{font-size:.78rem;font-weight:600;flex:1;}
-    .trade-prop-price{font-size:.7rem;color:var(--muted);font-family:'Space Mono',monospace;}
-    .trade-target-sel{width:100%;padding:8px 10px;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;outline:none;margin-bottom:12px;transition:border-color .2s;}
-    .trade-target-sel:focus{border-color:var(--accent);}
-    .trade-empty{font-size:.76rem;color:var(--muted);font-style:italic;padding:8px 0;}
-
-    /* ── INCOMING TRADE ── */
-    #incomingTradeModal{display:none;}
-    #incomingTradeModal.show{display:flex;}
-    .incoming-trade-box{max-width:420px;width:100%;}
-    .trade-summary{background:var(--surface);border-radius:12px;padding:14px;margin-bottom:16px;}
-    .trade-summary-row{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;}
-    .trade-summary-side{flex:1;}
-    .trade-summary-title{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-family:'Space Mono',monospace;margin-bottom:6px;}
-    .trade-summary-item{font-size:.8rem;font-weight:600;padding:2px 0;}
-    .trade-arrow{font-size:1.4rem;align-self:center;color:var(--accent);}
+    .tmod{max-width:520px;width:100%;}
+    .trade-sel{width:100%;padding:8px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;outline:none;margin-bottom:12px;}
+    .trade-sel:focus{border-color:var(--accent);}
+    .trade-sides{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;}
+    .tside{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:14px;}
+    .tside-title{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;font-family:'Space Mono',monospace;}
+    .tmoney-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
+    .tmoney-inp{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:.88rem;padding:7px 10px;outline:none;transition:border-color .2s;}
+    .tmoney-inp:focus{border-color:var(--accent);}
+    .tmoney-lbl{font-size:.75rem;color:var(--muted);}
+    .tprop-title{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:'Space Mono',monospace;margin-bottom:6px;}
+    .tprop-item{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:7px;cursor:pointer;transition:background .15s;border:1px solid transparent;}
+    .tprop-item:hover{background:rgba(255,255,255,.05);}
+    .tprop-item.sel{background:rgba(110,231,247,.1);border-color:rgba(110,231,247,.3);}
+    .tprop-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .tprop-name{font-size:.78rem;font-weight:600;flex:1;}
+    .tprop-price{font-size:.68rem;color:var(--muted);font-family:'Space Mono',monospace;}
+    .tempty{font-size:.76rem;color:var(--muted);font-style:italic;padding:8px 0;}
 
     /* ── WINNER ── */
     #winnerScreen{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;z-index:300;}
     #winnerScreen.show{display:flex;}
-    .winner-box{background:var(--card);border:1px solid var(--border2);border-radius:22px;padding:44px;text-align:center;max-width:380px;animation:fadeUp .4s ease;}
-    .winner-trophy{font-size:4rem;margin-bottom:14px;}
-    .winner-title{font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--gold);margin-bottom:6px;}
-    .winner-name{font-size:1.7rem;font-weight:800;margin-bottom:6px;}
-    .winner-sub{font-size:.86rem;color:var(--muted);margin-bottom:24px;}
-    .winner-btn{padding:13px 30px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:#060811;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:transform .18s;}
-    .winner-btn:hover{transform:translateY(-2px);}
+    .wbox{background:var(--card);border:1px solid var(--border2);border-radius:22px;padding:44px;text-align:center;max-width:380px;animation:fadeUp .4s ease;}
+    .wtrophy{font-size:4rem;margin-bottom:14px;}
+    .wtitle{font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--gold);margin-bottom:6px;}
+    .wname{font-size:1.7rem;font-weight:800;margin-bottom:6px;}
+    .wsub{font-size:.86rem;color:var(--muted);margin-bottom:24px;}
+    .wbtn{padding:13px 30px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:#060811;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:transform .18s;}
+    .wbtn:hover{transform:translateY(-2px);}
+
+    @media(max-width:760px){
+      .lobby-wrap{grid-template-columns:1fr;}
+      .trade-sides{grid-template-columns:1fr;}
+    }
   </style>
 </head>
 <body>
 
 <!-- LOADER -->
 <div id="loader">
-  <div class="loader-ring"></div>
-  <div class="loader-text">Connecting...</div>
+  <div class="ring"></div>
+  <div class="ring-text">Connecting...</div>
 </div>
 
-<!-- LOBBY -->
+<!-- LOBBY + SETTINGS -->
 <div id="lobbyScreen">
-  <div class="lobby-box">
-    <div class="lobby-brand">🎲 GIGAPOLY</div>
-    <div class="lobby-code-box">
-      <div class="lobby-code-val" id="lobbyCode">------</div>
-      <div class="lobby-code-sub">Share this code with friends</div>
+  <div class="lobby-wrap">
+    <!-- Left: players -->
+    <div class="lobby-main">
+      <div class="lobby-brand">🎲 GIGAPOLY</div>
+      <div class="lobby-code-box">
+        <div class="lcode" id="lobbyCode">------</div>
+        <div class="lcode-sub">Share this code with friends to join</div>
+      </div>
+      <div>
+        <div class="lbl">Choose Your Color</div>
+        <div class="color-row" id="colorRow"></div>
+      </div>
+      <div>
+        <div class="lbl">Players in Room</div>
+        <div id="lobbyPlayers"></div>
+      </div>
+      <div class="lobby-status" id="lobbyStatus">Waiting...</div>
+      <button class="lbtn lbtn-start" id="startBtn" onclick="startGame()" disabled>🎮 Start Game</button>
+      <button class="lbtn lbtn-leave" onclick="leaveGame()" style="padding:10px">← Leave Room</button>
     </div>
-    <div>
-      <div class="lbl">Choose Your Color</div>
-      <div class="color-swatches" id="colorSwatches"></div>
+
+    <!-- Right: Room Settings (Richup.io style) -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-title">Room Settings</div>
+      <div class="host-only-note" id="hostOnlyNote">⚠ Only the host can change settings</div>
+
+      <!-- Players -->
+      <div class="settings-group">
+        <div class="settings-group-title">Players</div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Maximum Players</div>
+            <div class="setting-desc">How many players can join</div>
+          </div>
+          <div class="stepper setting-control">
+            <button class="step-btn" onclick="stepSetting('maxPlayers',-1)">−</button>
+            <span class="step-val" id="sv-maxPlayers">6</span>
+            <button class="step-btn" onclick="stepSetting('maxPlayers',1)">+</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Randomize Turn Order</div>
+            <div class="setting-desc">Randomly shuffle who goes first</div>
+          </div>
+          <label class="toggle setting-control">
+            <input type="checkbox" id="tog-randomOrder" onchange="updateSetting('randomOrder',this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Starting Cash -->
+      <div class="settings-group">
+        <div class="settings-group-title">Starting Cash</div>
+        <div class="cash-pills" id="cashPills"></div>
+      </div>
+
+      <!-- Gameplay Rules -->
+      <div class="settings-group">
+        <div class="settings-group-title">Gameplay Rules</div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Double Rent on Full Set</div>
+            <div class="setting-desc">2× base rent when player owns all of a color</div>
+          </div>
+          <label class="toggle setting-control">
+            <input type="checkbox" id="tog-doubleRent" onchange="updateSetting('doubleRent',this.checked)" checked/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Auction Unbuilt Properties</div>
+            <div class="setting-desc">If player skips buying, highest bidder wins</div>
+          </div>
+          <label class="toggle setting-control">
+            <input type="checkbox" id="tog-auction" onchange="updateSetting('auction',this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">No Rent in Jail</div>
+            <div class="setting-desc">Jailed players don't collect rent</div>
+          </div>
+          <label class="toggle setting-control">
+            <input type="checkbox" id="tog-noJailRent" onchange="updateSetting('noJailRent',this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Free Parking Jackpot</div>
+            <div class="setting-desc">Tax money collected on Free Parking</div>
+          </div>
+          <label class="toggle setting-control">
+            <input type="checkbox" id="tog-parkingJackpot" onchange="updateSetting('parkingJackpot',this.checked)"/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <div>
+            <div class="setting-label">Trade System</div>
+            <div class="setting-desc">Allow players to trade properties and money</div>
+          </div>
+          <label class="toggle setting-control">
+            <input type="checkbox" id="tog-trades" onchange="updateSetting('trades',this.checked)" checked/>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+      <div class="settings-note">Settings are saved automatically</div>
     </div>
-    <div>
-      <div class="lbl">Players in Room</div>
-      <div id="lobbyPlayers"></div>
-    </div>
-    <div class="lobby-status" id="lobbyStatus">Waiting...</div>
-    <button class="lobby-start" id="lobbyStartBtn" onclick="startGame()" disabled>🎮 Start Game</button>
-    <button class="lobby-leave" onclick="leaveGame()">← Leave</button>
   </div>
 </div>
 
@@ -308,159 +419,148 @@
 <div id="gameScreen">
   <header class="gtop">
     <span class="gtop-brand">🎲 GIGAPOLY</span>
-    <div class="gtop-center">
-      <span class="gtop-room" id="roomLabel">Room: ------</span>
-      <span class="gtop-turn" id="gtopTurn" style="border-color:var(--accent);color:var(--accent)">-'s turn</span>
-    </div>
+    <span class="gtop-turn" id="gtopTurn" style="border-color:var(--accent);color:var(--accent)">-</span>
     <div class="gtop-right">
       <span class="gtop-money" id="myMoney" style="color:var(--green)">$1500</span>
-      <button class="leave-btn" onclick="leaveGame()">Leave</button>
+      <button class="lv-btn" onclick="leaveGame()">Leave</button>
     </div>
   </header>
 
   <div class="board-area" id="boardArea">
     <canvas id="boardCanvas"></canvas>
-    <div id="centerNotif">
-      <div class="cn-dice-row">
-        <div class="cn-die" id="cnD1">🎲</div>
-        <div class="cn-sum" id="cnSum">-</div>
-        <div class="cn-die" id="cnD2">🎲</div>
+    <div id="cnBox">
+      <div class="cn-dice">
+        <div class="cn-die" id="cd1">🎲</div>
+        <div class="cn-total" id="cdSum">-</div>
+        <div class="cn-die" id="cd2">🎲</div>
       </div>
-      <div class="cn-player" id="cnPlayer"></div>
-      <div class="cn-text" id="cnText"></div>
-      <div class="cn-sub" id="cnSub"></div>
+      <div class="cn-who" id="cdWho"></div>
+      <div class="cn-msg" id="cdMsg"></div>
+      <div class="cn-sub" id="cdSub"></div>
     </div>
   </div>
 
   <aside class="sidebar">
-    <div class="action-panel">
+    <div class="act-panel">
       <div class="turn-lbl">Turn: <span class="turn-nm" id="turnName">-</span></div>
       <div class="dice-row">
         <div class="sdie" id="sd1">🎲</div>
         <div class="sdie" id="sd2">🎲</div>
-        <span class="dice-sum" id="sdSum"></span>
+        <span class="ds" id="sdSum"></span>
       </div>
-      <div class="prop-popup" id="propPopup">
-        <div class="prop-popup-name" id="ppName"></div>
-        <div class="prop-popup-price" id="ppPrice"></div>
+      <div class="prop-pop" id="propPop">
+        <div class="pp-name" id="ppN"></div>
+        <div class="pp-price" id="ppP"></div>
       </div>
-      <div class="action-btns">
+      <div class="act-btns">
         <button class="abtn abtn-roll" id="btnRoll" onclick="act('roll')" disabled>🎲 Roll Dice</button>
         <button class="abtn abtn-buy"  id="btnBuy"  onclick="act('buy')"  disabled style="display:none">💰 Buy Property</button>
-        <!-- SKIP BUTTON — prominent -->
-        <button class="abtn abtn-pass" id="btnPass" onclick="act('pass')" disabled style="display:none">
-          ⏭ Skip Turn
-        </button>
+        <button class="abtn abtn-pass" id="btnPass" onclick="act('pass')" disabled style="display:none">⏭ Skip Turn</button>
         <button class="abtn abtn-jail" id="btnJail" onclick="act('pay_jail')" disabled style="display:none">🔓 Pay $50 — Leave Jail</button>
         <button class="abtn abtn-trade" id="btnTrade" onclick="openTradeModal()" disabled style="display:none">🤝 Propose Trade</button>
       </div>
     </div>
 
     <div class="stabs">
-      <button class="stab active" onclick="stab('players',this)">Players</button>
-      <button class="stab" onclick="stab('cities',this)">My Cities</button>
-      <button class="stab" onclick="stab('log',this)">Log</button>
+      <button class="stab active" onclick="showTab('players',this)">Players</button>
+      <button class="stab" onclick="showTab('cities',this)">Cities</button>
+      <button class="stab" onclick="showTab('trades',this)" id="tradeTab">Trades</button>
+      <button class="stab" onclick="showTab('log',this)">Log</button>
     </div>
+    <div class="spanel active" id="sp-players"><div class="pscroll"><div id="playersList"></div></div></div>
+    <div class="spanel" id="sp-cities"><div class="cscroll" id="citiesList"></div></div>
+    <div class="spanel" id="sp-trades"><div class="trades-scroll" id="tradesList"></div></div>
+    <div class="spanel" id="sp-log"><div class="lscroll" id="logList"></div></div>
 
-    <div class="spanel active" id="sp-players"><div class="players-scroll"><div id="playersList"></div></div></div>
-    <div class="spanel" id="sp-cities"><div class="cities-list" id="citiesList"></div></div>
-    <div class="spanel" id="sp-log"><div class="log-list" id="logList"></div></div>
-
-    <div class="chat-wrap">
+    <div class="chat-w">
       <div class="chat-msgs" id="chatMsgs"></div>
       <div class="chat-row">
         <input class="chat-inp" id="chatInp" placeholder="Chat..." maxlength="120"/>
-        <button class="chat-send" onclick="sendChat()">➤</button>
+        <button class="chat-snd" onclick="sendChat()">➤</button>
       </div>
     </div>
   </aside>
 </div>
 
-<!-- CARD MODAL -->
-<div class="modal-bg" id="cardModal">
-  <div class="modal-box card-popup">
-    <div class="card-icon" id="cardIcon">🃏</div>
-    <div class="modal-title" style="justify-content:center" id="cardTitle">Card</div>
-    <div class="card-text" id="cardText"></div>
-    <div class="modal-btns"><button class="modal-btn btn-primary" onclick="closeCard()">OK, got it</button></div>
+<!-- TRADE TOAST (incoming trade notification) -->
+<div id="tradeToast">
+  <div class="trade-toast-title" id="ttTitle">🤝 Trade Offer</div>
+  <div class="trade-toast-text" id="ttText"></div>
+  <div class="trade-toast-btns">
+    <button class="ttbtn ttbtn-yes" onclick="respondTrade(true)">✓ Accept</button>
+    <button class="ttbtn ttbtn-no" onclick="respondTrade(false)">✕ Decline</button>
+  </div>
+</div>
+
+<!-- CARD MODAL (private — only shown to card receiver) -->
+<div class="mbg" id="cardModal">
+  <div class="mbox cmod">
+    <div class="cmod-icon" id="cardIcon">🃏</div>
+    <div class="mtitle" style="justify-content:center" id="cardTitle">Card</div>
+    <div class="cmod-text" id="cardText"></div>
+    <div class="mbtns"><button class="mbtn mbtn-primary" onclick="closeCard()">Got it</button></div>
   </div>
 </div>
 
 <!-- TRADE MODAL -->
-<div class="modal-bg" id="tradeModal">
-  <div class="modal-box trade-box">
-    <div class="modal-title">
-      🤝 Propose Trade
-      <button class="modal-close" onclick="closeTrade()">✕</button>
-    </div>
-    <div style="margin-bottom:12px;">
-      <div class="lbl" style="margin-bottom:6px;">Trade with</div>
-      <select class="trade-target-sel" id="tradeTarget"></select>
-    </div>
+<div class="mbg" id="tradeModal">
+  <div class="mbox tmod">
+    <div class="mtitle">🤝 Propose Trade <button class="mclose" onclick="closeTrade()">✕</button></div>
+    <div class="lbl" style="margin-bottom:6px;">Trade with</div>
+    <select class="trade-sel" id="tradeSel"></select>
     <div class="trade-sides">
-      <div class="trade-side">
-        <div class="trade-side-title">You offer</div>
-        <div class="trade-money-row">
-          <span class="trade-money-lbl">$</span>
-          <input class="trade-money-inp" id="offerMoney" type="number" min="0" placeholder="0"/>
+      <div class="tside">
+        <div class="tside-title">You Offer</div>
+        <div class="tmoney-row">
+          <span class="tmoney-lbl">$</span>
+          <input class="tmoney-inp" id="offerM" type="number" min="0" placeholder="0"/>
         </div>
-        <div class="trade-props-title">Properties</div>
+        <div class="tprop-title">Properties</div>
         <div id="offerProps"></div>
       </div>
-      <div class="trade-side">
-        <div class="trade-side-title">You want</div>
-        <div class="trade-money-row">
-          <span class="trade-money-lbl">$</span>
-          <input class="trade-money-inp" id="wantMoney" type="number" min="0" placeholder="0"/>
+      <div class="tside">
+        <div class="tside-title">You Want</div>
+        <div class="tmoney-row">
+          <span class="tmoney-lbl">$</span>
+          <input class="tmoney-inp" id="wantM" type="number" min="0" placeholder="0"/>
         </div>
-        <div class="trade-props-title">Properties</div>
+        <div class="tprop-title">Properties</div>
         <div id="wantProps"></div>
       </div>
     </div>
-    <div class="modal-btns">
-      <button class="modal-btn btn-ghost" onclick="closeTrade()">Cancel</button>
-      <button class="modal-btn btn-primary" onclick="sendTrade()">📨 Send Offer</button>
-    </div>
-  </div>
-</div>
-
-<!-- INCOMING TRADE MODAL -->
-<div class="modal-bg" id="incomingTradeModal">
-  <div class="modal-box incoming-trade-box">
-    <div class="modal-title">🤝 Trade Offer</div>
-    <div id="incomingTradeFrom" style="font-size:.82rem;color:var(--muted);margin-bottom:12px;"></div>
-    <div class="trade-summary" id="tradeSummary"></div>
-    <div class="modal-btns">
-      <button class="modal-btn btn-danger" onclick="respondTrade(false)">✕ Decline</button>
-      <button class="modal-btn btn-primary" onclick="respondTrade(true)">✓ Accept Trade</button>
+    <div class="mbtns">
+      <button class="mbtn mbtn-ghost" onclick="closeTrade()">Cancel</button>
+      <button class="mbtn mbtn-primary" onclick="sendTrade()">📨 Send Offer</button>
     </div>
   </div>
 </div>
 
 <!-- WINNER -->
 <div id="winnerScreen">
-  <div class="winner-box">
-    <div class="winner-trophy">🏆</div>
-    <div class="winner-title">WINNER!</div>
-    <div class="winner-name" id="winnerName"></div>
-    <div class="winner-sub">Conquered the Ukrainian economy!</div>
-    <button class="winner-btn" onclick="leaveGame()">Back to ORBIT</button>
+  <div class="wbox">
+    <div class="wtrophy">🏆</div>
+    <div class="wtitle">WINNER!</div>
+    <div class="wname" id="winnerName"></div>
+    <div class="wsub">Conquered the Ukrainian economy!</div>
+    <button class="wbtn" onclick="leaveGame()">Back to ORBIT</button>
   </div>
 </div>
 
 <script>
-// ── INIT ──────────────────────────────────────
 const token      = localStorage.getItem('orbit_token');
 const myUsername = localStorage.getItem('orbit_user');
 const roomCode   = (new URLSearchParams(location.search).get('room')||'').toUpperCase();
 if(!token||!myUsername||!roomCode) location.href='/';
 
 const COLORS=['#f87171','#60a5fa','#4ade80','#fbbf24','#c084fc','#f472b6','#fb923c','#34d399'];
-let myColor = localStorage.getItem('gpColor') || COLORS[0];
-const socket = io();
-let myId=null, GS=null, pendingTrade=null, notifTimer=null;
+const CASH_OPTIONS=[500,1000,1500,2000,2500,3000];
+let myColor=localStorage.getItem('gpColor')||COLORS[0];
+let myId=null, GS=null, roomSettings={maxPlayers:6,randomOrder:false,doubleRent:true,auction:false,noJailRent:false,parkingJackpot:false,trades:true,startingCash:1500};
+let isHost=false, pendingTrade=null, tradeHistory=[], toastTimer=null, notifTimer=null, tokenAnims={};
 
-// ── BOARD ─────────────────────────────────────
+const socket=io();
+
+// ── BOARD DATA ────────────────────────────────
 const BOARD=[
   {id:0,name:'GO',type:'go'},
   {id:1,name:'Kyiv',type:'property',color:'#8dd3c7',price:60},
@@ -508,16 +608,13 @@ const BOARD=[
 const canvas=document.getElementById('boardCanvas');
 const ctx=canvas.getContext('2d');
 let CO=80,CE=52,SZ=0;
-// Token animation state
-let tokenAnims={}; // playerId -> {fromPos, toPos, progress, x, y}
 
 function resize(){
   const a=document.getElementById('boardArea');
   if(!a)return;
   const av=Math.min(a.clientWidth-16,a.clientHeight-16);
   CO=Math.floor(av/11.5); CE=Math.floor((av-CO*2)/9); SZ=CO*2+CE*9;
-  canvas.width=SZ; canvas.height=SZ;
-  draw();
+  canvas.width=SZ; canvas.height=SZ; draw();
 }
 
 function cellPos(id){
@@ -531,25 +628,20 @@ function cellPos(id){
   if(id===30) return{x:s-co,y:0,w:co,h:co};
   if(id<=39)  return{x:s-co,y:(id-30)*c,w:co,h:c};
 }
-
-function cellCenter(id){
-  const p=cellPos(id); if(!p)return{x:0,y:0};
-  return{x:p.x+p.w/2,y:p.y+p.h/2};
-}
+function cellCenter(id){const p=cellPos(id);return p?{x:p.x+p.w/2,y:p.y+p.h/2}:{x:0,y:0};}
 
 function draw(){
   if(!SZ)return;
   ctx.clearRect(0,0,SZ,SZ);
   ctx.fillStyle='#0a1a0d'; ctx.fillRect(0,0,SZ,SZ);
   ctx.fillStyle='#060e08'; ctx.fillRect(CO,CO,SZ-CO*2,SZ-CO*2);
-  // Center
   ctx.save();
-  ctx.font=`bold ${CO*.38}px Space Mono,monospace`;
+  ctx.font=`bold ${CO*.37}px Space Mono,monospace`;
   ctx.fillStyle='#4ade80'; ctx.textAlign='center';
   ctx.fillText('GIGAPOLY',SZ/2,SZ/2-CO*.12);
-  ctx.font=`${CO*.15}px Outfit,sans-serif`;
+  ctx.font=`${CO*.145}px Outfit,sans-serif`;
   ctx.fillStyle='rgba(232,234,246,.22)';
-  ctx.fillText('🎲 Ukraine Edition',SZ/2,SZ/2+CO*.14);
+  ctx.fillText('🎲 Ukraine Edition',SZ/2,SZ/2+CO*.13);
   ctx.restore();
   BOARD.forEach((sp,id)=>{
     const p=cellPos(id); if(!p)return;
@@ -567,20 +659,15 @@ function getOwner(id){
 
 function drawCell(sp,{x,y,w,h},id){
   const owner=getOwner(id);
-  // Background
   if(owner){
-    ctx.fillStyle=owner.color; ctx.globalAlpha=.5;
-    ctx.fillRect(x,y,w,h); ctx.globalAlpha=1;
-    ctx.fillStyle='rgba(0,0,0,.25)'; ctx.fillRect(x,y,w,h);
+    ctx.fillStyle=owner.color; ctx.globalAlpha=.48; ctx.fillRect(x,y,w,h); ctx.globalAlpha=1;
+    ctx.fillStyle='rgba(0,0,0,.28)'; ctx.fillRect(x,y,w,h);
   } else {
     ctx.fillStyle='#111827'; ctx.fillRect(x,y,w,h);
   }
-  // Border
   ctx.strokeStyle=owner?owner.color:'rgba(110,231,247,.16)';
-  ctx.lineWidth=owner?2:1;
-  ctx.strokeRect(x,y,w,h);
+  ctx.lineWidth=owner?2:1; ctx.strokeRect(x,y,w,h);
 
-  // Color strip
   if(sp.color){
     ctx.fillStyle=sp.color;
     const sh=h*.19,sw=w*.19;
@@ -590,56 +677,40 @@ function drawCell(sp,{x,y,w,h},id){
     if(id>=31&&id<=39) ctx.fillRect(x,y,sw,h);
   }
 
-  // Buildings
   if(owner&&GS){
     const prop=GS.properties?.find(p=>p.id===id);
     if(prop?.hotel){
       ctx.fillStyle='#f87171';
-      const bw=w*.42,bh=h*.2;
-      ctx.fillRect(x+w*.29,y+h*.3,bw,bh);
-      ctx.fillStyle='rgba(255,255,255,.3)';
-      ctx.fillRect(x+w*.29,y+h*.3,bw,2);
+      ctx.fillRect(x+w*.27,y+h*.28,w*.46,h*.2);
     } else if(prop?.houses>0){
       ctx.fillStyle='#4ade80';
-      for(let i=0;i<prop.houses;i++)
-        ctx.fillRect(x+3+i*7,y+h*.3,5,h*.16);
+      for(let i=0;i<prop.houses;i++) ctx.fillRect(x+3+i*7,y+h*.3,5,h*.16);
     }
-    // Owner dot
     ctx.beginPath(); ctx.arc(x+w-6,y+6,5,0,Math.PI*2);
     ctx.fillStyle=owner.color; ctx.fill();
     ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=1.2; ctx.stroke();
   }
 
-  // Icon
   const icons={go:'🏁',jail:'🔒',parking:'🅿️',gotojail:'👮',tax:'💸',community:'📦',chance:'❓',station:'✈️',utility:'⚡'};
   if(icons[sp.type]){
     ctx.font=`${Math.min(w,h)*.25}px sans-serif`;
     ctx.textAlign='center'; ctx.textBaseline='middle';
     ctx.fillText(icons[sp.type],x+w/2,y+h*.4);
   }
-
-  // Name — bold with shadow
   const lines=sp.name.split('\n');
-  const fs=Math.min(w,h)*.118;
+  const fs=Math.min(w,h)*.116;
   const lh=fs*1.22;
   ctx.font=`bold ${fs}px Outfit,sans-serif`;
   ctx.textAlign='center'; ctx.textBaseline='bottom';
   lines.forEach((ln,i)=>{
     const ty=y+h-2-(lines.length-1-i)*lh;
-    ctx.fillStyle='rgba(0,0,0,.7)';
-    ctx.fillText(ln,x+w/2+.8,ty+.8,w-4);
-    ctx.fillStyle=owner?'#fff':'rgba(232,234,246,.95)';
-    ctx.fillText(ln,x+w/2,ty,w-4);
+    ctx.fillStyle='rgba(0,0,0,.7)'; ctx.fillText(ln,x+w/2+.8,ty+.8,w-4);
+    ctx.fillStyle=owner?'#fff':'rgba(232,234,246,.95)'; ctx.fillText(ln,x+w/2,ty,w-4);
   });
-
-  // Price
   if(sp.price&&!owner){
-    const pfs=Math.min(w,h)*.088;
-    ctx.font=`${pfs}px Space Mono,monospace`;
-    ctx.fillStyle='rgba(0,0,0,.5)';
-    ctx.fillText('$'+sp.price,x+w/2+.6,y+h-.5+.6,w-3);
-    ctx.fillStyle='#fbbf24';
-    ctx.fillText('$'+sp.price,x+w/2,y+h-.5,w-3);
+    ctx.font=`${Math.min(w,h)*.086}px Space Mono,monospace`;
+    ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillText('$'+sp.price,x+w/2+.6,y+h-.5+.6,w-3);
+    ctx.fillStyle='#fbbf24'; ctx.fillText('$'+sp.price,x+w/2,y+h-.5,w-3);
   }
 }
 
@@ -648,56 +719,41 @@ function drawTokens(){
   GS.players.forEach(p=>{
     if(!p.bankrupt){
       const anim=tokenAnims[p.id];
-      const drawPos=anim&&anim.progress<1?null:p.position;
-      const key=drawPos??p.position;
-      if(!byPos[key]) byPos[key]=[];
-      byPos[key].push({p,anim});
+      if(anim&&anim.progress<1)return;
+      if(!byPos[p.position]) byPos[p.position]=[];
+      byPos[p.position].push(p);
     }
   });
-
-  // Draw animated tokens
+  // Animated
   GS.players.forEach(p=>{
     if(p.bankrupt)return;
     const anim=tokenAnims[p.id];
     if(anim&&anim.progress<1){
-      // Interpolate
-      const from=cellCenter(anim.from);
-      const to=cellCenter(anim.to);
+      const from=cellCenter(anim.from), to=cellCenter(anim.to);
       const t=easeOut(anim.progress);
       const cx=from.x+(to.x-from.x)*t;
-      // Arc jump
-      const cy=(from.y+(to.y-from.y)*t)-Math.sin(anim.progress*Math.PI)*22;
-      drawToken(p,cx,cy,anim.progress<.5?1.15:1);
+      const cy=(from.y+(to.y-from.y)*t)-Math.sin(anim.progress*Math.PI)*24;
+      drawToken(p,cx,cy,1.1+Math.sin(anim.progress*Math.PI)*.12);
     }
   });
-
-  // Draw static tokens (grouped)
-  Object.entries(byPos).forEach(([pos,items])=>{
+  // Static
+  Object.entries(byPos).forEach(([pos,players])=>{
     const cell=cellPos(+pos); if(!cell)return;
-    const r=Math.min(cell.w,cell.h)*.145;
-    items.forEach(({p,anim},i)=>{
-      if(anim&&anim.progress<1)return;
-      const cx=cell.x+cell.w/2+(i-(items.length-1)/2)*(r*2.5);
-      const cy=cell.y+cell.h/2;
-      drawToken(p,cx,cy,1);
+    const r=Math.min(cell.w,cell.h)*.14;
+    players.forEach((p,i)=>{
+      const cx=cell.x+cell.w/2+(i-(players.length-1)/2)*(r*2.5);
+      drawToken(p,cx,cell.y+cell.h/2,1);
     });
   });
 }
 
 function drawToken(p,cx,cy,scale=1){
-  const r=Math.min(CO,CE)*.145*scale;
-  ctx.save();
-  ctx.translate(cx,cy);
-  // Shadow
-  ctx.beginPath(); ctx.arc(1,2,r,0,Math.PI*2);
-  ctx.fillStyle='rgba(0,0,0,.45)'; ctx.fill();
-  // Body
-  ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2);
-  ctx.fillStyle=p.color; ctx.fill();
+  const r=Math.min(CO,CE)*.14*scale;
+  ctx.save(); ctx.translate(cx,cy);
+  ctx.beginPath(); ctx.arc(1,2,r,0,Math.PI*2); ctx.fillStyle='rgba(0,0,0,.45)'; ctx.fill();
+  ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fillStyle=p.color; ctx.fill();
   ctx.strokeStyle='rgba(255,255,255,.8)'; ctx.lineWidth=2; ctx.stroke();
-  // Letter
-  ctx.fillStyle='#060811';
-  ctx.font=`bold ${r*.88}px Outfit,sans-serif`;
+  ctx.fillStyle='#060811'; ctx.font=`bold ${r*.88}px Outfit,sans-serif`;
   ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.fillText(p.username[0].toUpperCase(),0,0);
   ctx.restore();
@@ -705,86 +761,67 @@ function drawToken(p,cx,cy,scale=1){
 
 function easeOut(t){return 1-(1-t)*(1-t)*(1-t);}
 
-// Animate token movement
-function animateToken(playerId,fromPos,toPos,onDone){
-  const startTime=performance.now();
-  const dur=600;
-  tokenAnims[playerId]={from:fromPos,to:toPos,progress:0};
-  function frame(now){
-    const p=Math.min((now-startTime)/dur,1);
-    tokenAnims[playerId].progress=p;
-    draw();
+function animToken(pid,from,to,cb){
+  const start=performance.now(), dur=640;
+  tokenAnims[pid]={from,to,progress:0};
+  (function frame(now){
+    const p=Math.min((now-start)/dur,1);
+    tokenAnims[pid].progress=p; draw();
     if(p<1) requestAnimationFrame(frame);
-    else{ delete tokenAnims[playerId]; if(onDone)onDone(); }
-  }
-  requestAnimationFrame(frame);
+    else{ delete tokenAnims[pid]; if(cb)cb(); }
+  })(start);
 }
 
-// ── CENTER NOTIFICATION ───────────────────────
-let notifHideT=null;
-function showNotif(d1,d2,player,text,sub,autoHide=true){
-  const el=document.getElementById('centerNotif');
+// ── CENTER NOTIF ──────────────────────────────
+let nHide=null;
+function showNotif(d1,d2,who,msg,sub,autoHide=true){
+  const el=document.getElementById('cnBox');
   const FACES=['','⚀','⚁','⚂','⚃','⚄','⚅'];
-  const n1=document.getElementById('cnD1'),n2=document.getElementById('cnD2');
+  const n1=document.getElementById('cd1'),n2=document.getElementById('cd2');
   n1.classList.add('rolling'); n2.classList.add('rolling');
   let c=0;
   const t=setInterval(()=>{
     n1.textContent=FACES[Math.floor(Math.random()*6)+1];
     n2.textContent=FACES[Math.floor(Math.random()*6)+1];
-    if(++c>10){
-      clearInterval(t);
-      n1.textContent=d1?FACES[d1]:'🎲'; n2.textContent=d2?FACES[d2]:'🎲';
-      n1.classList.remove('rolling'); n2.classList.remove('rolling');
-    }
-  },75);
-  document.getElementById('cnSum').textContent=d1&&d2?d1+d2:'';
-  // Player name with color
-  const playerObj=GS?.players.find(p=>p.username===player||p.id===player);
-  const pEl=document.getElementById('cnPlayer');
-  pEl.textContent=player||'';
-  pEl.style.color=playerObj?.color||'var(--text)';
-  document.getElementById('cnText').textContent=text||'';
-  document.getElementById('cnSub').textContent=sub||'';
-  el.classList.remove('hide');
-  el.classList.add('show');
-  clearTimeout(notifHideT);
-  if(autoHide) notifHideT=setTimeout(hideNotif,3800);
-}
-function hideNotif(){
-  const el=document.getElementById('centerNotif');
-  el.classList.remove('show');
+    if(++c>10){clearInterval(t);n1.textContent=d1?FACES[d1]:'🎲';n2.textContent=d2?FACES[d2]:'🎲';n1.classList.remove('rolling');n2.classList.remove('rolling');}
+  },72);
+  document.getElementById('cdSum').textContent=(d1&&d2)?d1+d2:'';
+  const po=GS?.players.find(p=>p.username===who||p.id===who);
+  const wEl=document.getElementById('cdWho');
+  wEl.textContent=who||''; wEl.style.color=po?.color||'var(--text)';
+  document.getElementById('cdMsg').textContent=msg||'';
+  document.getElementById('cdSub').textContent=sub||'';
+  el.classList.add('show'); clearTimeout(nHide);
+  if(autoHide) nHide=setTimeout(()=>el.classList.remove('show'),3800);
 }
 
-// Floating rent text
 function showRentFloat(x,y,amount){
   const area=document.getElementById('boardArea');
   const div=document.createElement('div');
-  div.className='rent-float';
-  div.textContent='-$'+amount;
+  div.className='rent-float'; div.textContent='-$'+amount;
   div.style.left=x+'px'; div.style.top=y+'px';
-  area.appendChild(div);
-  setTimeout(()=>div.remove(),1400);
+  area.appendChild(div); setTimeout(()=>div.remove(),1450);
 }
 
 // ── SOCKET ────────────────────────────────────
 socket.on('connect',()=>socket.emit('auth',token));
 socket.on('auth_ok',(u)=>{
-  myId=u.id;
-  setLoader('Joining room '+roomCode+'...');
+  myId=u.id; setLoader('Joining '+roomCode+'...');
   socket.emit('join_room',roomCode);
   setTimeout(()=>socket.emit('set_color',myColor),300);
 });
 socket.on('auth_error',()=>location.href='/');
 socket.on('room_update',room=>showLobby(room));
+socket.on('settings_update',settings=>{
+  roomSettings={...roomSettings,...settings};
+  renderSettingsUI();
+});
 socket.on('game_start',({gameState:gs})=>{
   GS=gs; showGame(); updateUI(); draw();
-  showNotif(1,1,'Game','Game started! Good luck! 🎲',null,true);
+  showNotif(null,null,null,'Game Started! 🎲','Good luck everyone!',true);
 });
 socket.on('game_update',({gameState:gs,event})=>{
-  const prev=GS;
-  GS=gs;
-  handleEvent(event,prev);
-  updateUI(); draw();
+  const prev=GS; GS=gs; handleEvent(event,prev); updateUI(); draw();
 });
 socket.on('game_over',({winner})=>{
   document.getElementById('winnerName').textContent=winner;
@@ -792,81 +829,88 @@ socket.on('game_over',({winner})=>{
 });
 socket.on('game_chat',({username:u,text,color})=>{
   const el=document.getElementById('chatMsgs');
-  const d=document.createElement('div');
-  d.className='chat-msg';
+  const d=document.createElement('div'); d.className='cmsg';
   d.innerHTML=`<span class="cn" style="color:${color||'var(--accent)'}">${esc(u)}</span>${esc(text)}`;
   el.appendChild(d); el.scrollTop=el.scrollHeight;
 });
+// ── TRADE EVENTS ── (privacy-correct: only receiver gets toast)
 socket.on('trade_offer',(offer)=>{
   pendingTrade=offer;
-  showIncomingTrade(offer);
+  const offerer=GS?.players.find(p=>p.id===offer.fromId);
+  addToTradeHistory({...offer,status:'pending',fromUsername:offerer?.username||'?'});
+  showTradeToast(offer,offerer);
+  // Switch to trades tab to show it
+  document.querySelector('[onclick="showTab(\'trades\',this)"]')?.click();
 });
-socket.on('trade_result',({accepted,offerer,receiver,message})=>{
+socket.on('trade_result',({accepted,tradeId,offerer,receiver,offerMoney,wantMoney,offerProps,wantProps})=>{
+  updateTradeInHistory(tradeId,accepted?'accepted':'declined');
   if(accepted){
-    addLog(`🤝 Trade accepted! ${offerer} ↔ ${receiver}`,true,'hi-good');
-    showNotif(null,null,'Trade!',`✅ Trade accepted!`,`${offerer} ↔ ${receiver}`,true);
+    addLog(`🤝 Trade done! ${offerer} ↔ ${receiver}`,true,'good');
+    showNotif(null,null,null,'Trade Completed! 🤝',`${offerer} ↔ ${receiver}`,true);
   } else {
-    addLog(`❌ Trade declined by ${receiver}`);
+    addLog(`❌ ${receiver} declined trade from ${offerer}`);
   }
-  closeIncomingTrade();
+  hideTradeToast();
   closeTrade();
+  renderTradeHistory();
 });
 socket.on('error',(msg)=>{
   if(document.getElementById('loader').style.display!=='none'){
-    setLoader('⚠ '+msg+' — redirecting...');
-    setTimeout(()=>location.href='/',2000);
+    setLoader('⚠ '+msg); setTimeout(()=>location.href='/',2000);
   } else addLog('⚠ '+msg);
 });
+// ── CARD: only shown to the player who received it ──
+socket.on('my_card',(card)=>{
+  // Only this player receives this event
+  document.getElementById('cardText').textContent=card.text;
+  document.getElementById('cardIcon').textContent=card.type==='community'?'📦':'❓';
+  document.getElementById('cardTitle').textContent=card.type==='community'?'Community Chest':'Chance';
+  document.getElementById('cardModal').classList.add('show');
+});
 
-// ── HANDLE EVENTS ─────────────────────────────
+// ── EVENT HANDLER ─────────────────────────────
 function handleEvent(ev,prev){
   if(!ev)return;
   const FACES=['','⚀','⚁','⚂','⚃','⚄','⚅'];
   if(ev.type==='moved'){
     const d1=GS.dice[0],d2=GS.dice[1];
-    // Animate sidebar dice
     animSideDice(d1,d2);
-    // Find who moved
     const mover=GS.players.find(p=>p.username===ev.player);
     if(mover){
-      const prevState=prev?.players.find(p=>p.id===mover.id);
-      const fromPos=prevState?.position??mover.position;
-      if(fromPos!==mover.position){
-        animateToken(mover.id,fromPos,mover.position,()=>{
+      const pPrev=prev?.players.find(p=>p.id===mover.id);
+      const from=pPrev?.position??mover.position;
+      if(from!==mover.position){
+        animToken(mover.id,from,mover.position,()=>{
           draw();
           if(ev.landEvent?.type==='can_buy'){
             const sp=BOARD[mover.position];
-            document.getElementById('ppName').textContent=sp.name.replace('\n',' ');
-            document.getElementById('ppPrice').textContent='$'+sp.price;
-            document.getElementById('propPopup').classList.add('show');
+            document.getElementById('ppN').textContent=sp.name.replace('\n',' ');
+            document.getElementById('ppP').textContent='$'+sp.price;
+            document.getElementById('propPop').classList.add('show');
           }
         });
       }
     }
-    const landSpace=BOARD[GS.players.find(p=>p.username===ev.player)?.position||0];
-    showNotif(d1,d2,ev.player,`Rolled ${d1}+${d2}=${d1+d2}`,landSpace?`→ ${landSpace.name.replace('\n',' ')}`:null,true);
-  }
-  if(ev.landEvent?.type==='card'){
-    document.getElementById('cardText').textContent=ev.landEvent.text;
-    document.getElementById('cardIcon').textContent=ev.landEvent.text.includes('Jail')?'🚔':'🃏';
-    document.getElementById('cardTitle').textContent=ev.landEvent.community?'Community Chest':'Chance';
-    document.getElementById('cardModal').classList.add('show');
-    hideNotif();
+    const ls=BOARD[mover?.position||0];
+    showNotif(d1,d2,ev.player,`Rolled ${d1}+${d2}=${d1+d2}`,ls?`→ ${ls.name.replace('\n',' ')}`:'',true);
   }
   if(ev.landEvent?.type==='rent'){
     const payer=GS.players.find(p=>p.username===ev.player);
     if(payer){
       const c=cellCenter(payer.position);
-      const rect=canvas.getBoundingClientRect();
-      const area=document.getElementById('boardArea').getBoundingClientRect();
-      showRentFloat(rect.left-area.left+c.x,rect.top-area.top+c.y-30,ev.landEvent.amount);
+      const r=canvas.getBoundingClientRect(), a=document.getElementById('boardArea').getBoundingClientRect();
+      showRentFloat(r.left-a.left+c.x,r.top-a.top+c.y-30,ev.landEvent.amount);
     }
-    addLog(`💸 ${ev.player} paid $${ev.landEvent.amount} rent to ${ev.landEvent.to}`,true,'hi-bad');
+    addLog(`💸 ${ev.player} paid $${ev.landEvent.amount} rent to ${ev.landEvent.to}`,true,'bad');
   }
   if(ev.type==='bought'){
-    addLog(`🏙️ ${ev.player} bought ${ev.property}!`,true,'hi-good');
+    addLog(`🏙️ ${ev.player} bought ${ev.property}!`,true,'good');
     showNotif(null,null,ev.player,`Bought ${ev.property}!`,null,true);
   }
+  if(ev.type==='jail'){
+    showNotif(null,null,ev.player,'Sent to Jail! 🚔',null,true);
+  }
+  // CARD: handled via private socket.on('my_card') — not from game_update
 }
 
 function animSideDice(d1,d2){
@@ -877,7 +921,7 @@ function animSideDice(d1,d2){
     e1.textContent=FACES[Math.floor(Math.random()*6)+1];
     e2.textContent=FACES[Math.floor(Math.random()*6)+1];
     if(++n>10){clearInterval(t);e1.textContent=FACES[d1];e2.textContent=FACES[d2];document.getElementById('sdSum').textContent=d1+d2;}
-  },75);
+  },72);
 }
 
 // ── SCREENS ───────────────────────────────────
@@ -885,7 +929,7 @@ function setLoader(msg){
   document.getElementById('loader').style.display='flex';
   document.getElementById('lobbyScreen').classList.remove('show');
   document.getElementById('gameScreen').classList.remove('show');
-  document.getElementById('loader').querySelector('.loader-text').textContent=msg;
+  document.getElementById('loader').querySelector('.ring-text').textContent=msg;
 }
 
 function showLobby(room){
@@ -895,25 +939,70 @@ function showLobby(room){
   document.getElementById('lobbyCode').textContent=room.code;
   renderColorPicker();
   document.getElementById('lobbyPlayers').innerHTML=room.players.map((p,i)=>`
-    <div class="lobby-player-row">
-      <div class="lp-av" style="background:${p.color||COLORS[i%COLORS.length]}">${p.username[0].toUpperCase()}</div>
-      <span class="lp-name">${esc(p.username)}${p.username===myUsername?' (you)':''}</span>
+    <div class="player-card">
+      <div class="pc-av" style="background:${p.color||COLORS[i%COLORS.length]}">${p.username[0].toUpperCase()}</div>
+      <span class="pc-name">${esc(p.username)}${p.username===myUsername?' (you)':''}</span>
       ${room.hostId===p.id?'<span style="font-size:.72rem;color:var(--gold)">👑 Host</span>':''}
     </div>`).join('');
   const n=room.players.length;
   const me=room.players.find(p=>p.username===myUsername);
-  const amHost=me&&room.hostId===me.id;
-  const sb=document.getElementById('lobbyStartBtn');
-  if(amHost){sb.style.display='';sb.disabled=n<2;document.getElementById('lobbyStatus').textContent=n<2?`Need ${2-n} more player${2-n>1?'s':''}`:`${n} players — ready to start!`;}
-  else{sb.style.display='none';document.getElementById('lobbyStatus').textContent=`Waiting for host... (${n}/6 players)`;}
+  isHost=!!(me&&room.hostId===me.id);
+  const sb=document.getElementById('startBtn');
+  if(isHost){
+    sb.style.display='';sb.disabled=n<2;
+    document.getElementById('lobbyStatus').textContent=n<2?`Need ${2-n} more player${n<1?'s':''}`:`${n} players — ready to start!`;
+    document.getElementById('hostOnlyNote').style.display='none';
+    // Enable settings
+    document.querySelectorAll('#settingsPanel input,#settingsPanel select,#settingsPanel .step-btn,.cash-pill').forEach(el=>el.disabled=false);
+  } else {
+    sb.style.display='none';
+    document.getElementById('lobbyStatus').textContent=`Waiting for host... (${n}/6)`;
+    document.getElementById('hostOnlyNote').style.display='block';
+    // Disable settings for non-host
+    document.querySelectorAll('#settingsPanel input,#settingsPanel select,#settingsPanel .step-btn,.cash-pill').forEach(el=>el.disabled=true);
+  }
+  if(room.settings) { roomSettings={...roomSettings,...room.settings}; renderSettingsUI(); }
 }
 
 function showGame(){
   document.getElementById('loader').style.display='none';
   document.getElementById('lobbyScreen').classList.remove('show');
   document.getElementById('gameScreen').classList.add('show');
-  document.getElementById('roomLabel').textContent='Room: '+roomCode;
   setTimeout(resize,60);
+}
+
+// ── SETTINGS ──────────────────────────────────
+function renderSettingsUI(){
+  document.getElementById('sv-maxPlayers').textContent=roomSettings.maxPlayers;
+  document.getElementById('tog-randomOrder').checked=!!roomSettings.randomOrder;
+  document.getElementById('tog-doubleRent').checked=!!roomSettings.doubleRent;
+  document.getElementById('tog-auction').checked=!!roomSettings.auction;
+  document.getElementById('tog-noJailRent').checked=!!roomSettings.noJailRent;
+  document.getElementById('tog-parkingJackpot').checked=!!roomSettings.parkingJackpot;
+  document.getElementById('tog-trades').checked=!!roomSettings.trades;
+  // Cash pills
+  document.getElementById('cashPills').innerHTML=CASH_OPTIONS.map(v=>`
+    <button class="cash-pill${roomSettings.startingCash===v?' active':''}" onclick="setCash(${v})">$${v.toLocaleString()}</button>`).join('');
+}
+
+function stepSetting(key,delta){
+  if(!isHost)return;
+  const limits={maxPlayers:{min:2,max:8}};
+  const lim=limits[key]||{min:1,max:100};
+  roomSettings[key]=Math.max(lim.min,Math.min(lim.max,(roomSettings[key]||2)+delta));
+  renderSettingsUI();
+  socket.emit('update_settings',roomSettings);
+}
+function updateSetting(key,val){
+  if(!isHost)return;
+  roomSettings[key]=val;
+  socket.emit('update_settings',roomSettings);
+}
+function setCash(val){
+  if(!isHost)return;
+  roomSettings.startingCash=val;
+  renderSettingsUI();
+  socket.emit('update_settings',roomSettings);
 }
 
 // ── UI UPDATE ─────────────────────────────────
@@ -923,19 +1012,19 @@ function updateUI(){
   const me=GS.players.find(p=>p.id===myId);
   const isMyTurn=cp?.id===myId;
 
-  // Topbar
   const tn=document.getElementById('gtopTurn');
   tn.textContent=(cp?.username||'-')+"'s turn";
   tn.style.color=cp?.color||'var(--accent)';
   tn.style.borderColor=cp?.color||'var(--accent)';
-  tn.style.background=(cp?.id===myId)?`${cp.color}22`:'transparent';
+  tn.style.background=isMyTurn?`${cp.color}22`:'transparent';
 
   document.getElementById('turnName').textContent=cp?.username||'-';
   document.getElementById('turnName').style.color=cp?.color||'var(--text)';
-  if(me) document.getElementById('myMoney').textContent='$'+me.money;
-  if(me) document.getElementById('myMoney').style.color=me.money<200?'var(--red)':me.money>1500?'var(--green)':'var(--text)';
+  if(me){
+    document.getElementById('myMoney').textContent='$'+me.money;
+    document.getElementById('myMoney').style.color=me.money<300?'var(--red)':me.money>2000?'var(--green)':'var(--text)';
+  }
 
-  // Buttons
   const roll=document.getElementById('btnRoll');
   const buy =document.getElementById('btnBuy');
   const pass=document.getElementById('btnPass');
@@ -946,75 +1035,61 @@ function updateUI(){
   buy.style.display =(isMyTurn&&GS.phase==='buy')?'':'none';
   pass.style.display=(isMyTurn&&(GS.phase==='buy'||GS.phase==='action'))?'':'none';
   jail.style.display=(isMyTurn&&cp?.inJail&&GS.phase==='roll')?'':'none';
-  trade.style.display=GS.players.filter(p=>!p.bankrupt).length>1?'':'none';
-  buy.disabled=false; pass.disabled=false; jail.disabled=me?.money<50;
-  trade.disabled=false;
-  // Pulse skip button when it's your turn
+  trade.style.display=(GS.settings?.trades!==false&&GS.players.filter(p=>!p.bankrupt).length>1)?'':'none';
+  buy.disabled=false; pass.disabled=false; jail.disabled=me?.money<50; trade.disabled=false;
   if(isMyTurn&&(GS.phase==='buy'||GS.phase==='action')) pass.classList.add('my-turn');
   else pass.classList.remove('my-turn');
-  if(isMyTurn&&GS.phase!=='roll') document.getElementById('propPopup').classList.remove('show');
 
-  // Players
   document.getElementById('playersList').innerHTML=GS.players.map((p,i)=>`
-    <div class="player-row${i===GS.currentPlayerIndex?' active':''}${p.bankrupt?' bankrupt':''}">
-      <div class="p-av" style="background:${p.color}">${p.username[0].toUpperCase()}</div>
-      <div class="p-info">
-        <div class="p-name">${esc(p.username)}${p.id===myId?' ✦':''}</div>
-        <div class="p-money">$${p.money}</div>
+    <div class="prow${i===GS.currentPlayerIndex?' active':''}${p.bankrupt?' bankrupt':''}">
+      <div class="pav" style="background:${p.color}">${p.username[0].toUpperCase()}</div>
+      <div class="pinfo">
+        <div class="pname">${esc(p.username)}${p.id===myId?' ✦':''}</div>
+        <div class="pmoney">$${p.money}</div>
       </div>
-      <span class="p-badge">${i===GS.currentPlayerIndex?'▶':''}${p.bankrupt?'💀':''}${p.inJail?'🔒':''}</span>
+      <span class="pbadge">${i===GS.currentPlayerIndex?'▶':''}${p.bankrupt?'💀':''}${p.inJail?'🔒':''}</span>
     </div>`).join('');
 
   // My cities
-  if(me){
-    const pids=me.properties||[];
-    document.getElementById('citiesList').innerHTML=pids.length===0
-      ?'<div class="cities-empty">🏙️ No properties yet.<br>Buy your first city!</div>'
-      :pids.map(pid=>{
-          const sp=BOARD[pid];
-          const prop=GS.properties?.find(p=>p.id===pid);
-          const houses=prop?.houses||0;
-          const hotel=prop?.hotel;
-          return`<div class="city-item" style="border-left-color:${sp.color||me.color}">
-            <div style="flex:1">
-              <div class="city-name">${sp.name.replace('\n',' ')}</div>
-              <div class="city-meta">$${sp.price}</div>
-            </div>
-            <div class="city-blds">
-              ${hotel?'<div class="city-hotel"></div>':Array.from({length:houses},()=>'<div class="city-house"></div>').join('')}
-            </div>
-          </div>`;
-        }).join('');
-  }
+  const me2=GS.players.find(p=>p.id===myId);
+  const pids=me2?.properties||[];
+  document.getElementById('citiesList').innerHTML=pids.length===0
+    ?'<div class="cempty">🏙️ No properties yet.<br>Buy your first city!</div>'
+    :pids.map(pid=>{
+        const sp=BOARD[pid];
+        const prop=GS.properties?.find(p=>p.id===pid);
+        return`<div class="citem" style="border-left-color:${sp.color||me2.color}">
+          <div style="flex:1"><div class="cname">${sp.name.replace('\n',' ')}</div><div class="cmeta">$${sp.price}</div></div>
+          <div class="cblds">${prop?.hotel?'<div class="cht"></div>':Array.from({length:prop?.houses||0},()=>'<div class="ch"></div>').join('')}</div>
+        </div>`;
+      }).join('');
 
-  // Log
   document.getElementById('logList').innerHTML=(GS.log||[]).slice(-50).reverse().map((l,i)=>`
-    <div class="log-item${i===0?' hi':''}">${esc(l)}</div>`).join('');
+    <div class="li${i===0?' hi':''}">${esc(l)}</div>`).join('');
 }
 
 function addLog(text,hi=false,cls=''){
   const el=document.getElementById('logList');
   const d=document.createElement('div');
-  d.className='log-item'+(hi?` hi ${cls}`:'');
+  d.className='li'+(hi?` hi ${cls}`:'');
   d.textContent=text; el.prepend(d);
 }
 
 // ── ACTIONS ───────────────────────────────────
 function act(type){
   socket.emit('game_action',{type});
-  document.getElementById('propPopup').classList.remove('show');
-  hideNotif();
+  document.getElementById('propPop').classList.remove('show');
+  document.getElementById('cnBox').classList.remove('show');
 }
 function sendChat(){
-  const inp=document.getElementById('chatInp');
-  const t=inp.value.trim(); if(!t)return;
-  socket.emit('game_chat',t); inp.value='';
+  const i=document.getElementById('chatInp');
+  const t=i.value.trim(); if(!t)return;
+  socket.emit('game_chat',t); i.value='';
 }
 function startGame(){socket.emit('start_game');}
 function leaveGame(){socket.emit('leave_room');location.href='/';}
 
-// ── SIDEBAR TABS ──────────────────────────────
-function stab(name,btn){
+function showTab(name,btn){
   document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.spanel').forEach(p=>p.classList.remove('active'));
   btn.classList.add('active');
@@ -1023,13 +1098,12 @@ function stab(name,btn){
 
 // ── COLOR PICKER ──────────────────────────────
 function renderColorPicker(){
-  document.getElementById('colorSwatches').innerHTML=COLORS.map(c=>`
+  document.getElementById('colorRow').innerHTML=COLORS.map(c=>`
     <div class="cswatch${c===myColor?' sel':''}" style="background:${c}" onclick="pickColor('${c}')"></div>`).join('');
 }
 function pickColor(c){
   myColor=c; localStorage.setItem('gpColor',c);
-  renderColorPicker();
-  socket.emit('set_color',c);
+  renderColorPicker(); socket.emit('set_color',c);
 }
 
 // ── TRADE SYSTEM ──────────────────────────────
@@ -1038,112 +1112,117 @@ function openTradeModal(){
   const others=GS.players.filter(p=>p.id!==myId&&!p.bankrupt);
   if(!others.length){alert('No other players to trade with!');return;}
   const me=GS.players.find(p=>p.id===myId);
-
-  // Populate target
-  const sel=document.getElementById('tradeTarget');
+  const sel=document.getElementById('tradeSel');
   sel.innerHTML=others.map(p=>`<option value="${p.id}">${esc(p.username)}</option>`).join('');
-
-  // My properties to offer
+  sel.onchange=()=>refreshWantProps();
   const myProps=me?.properties||[];
   document.getElementById('offerProps').innerHTML=myProps.length===0
-    ?'<div class="trade-empty">No properties</div>'
-    :myProps.map(pid=>{
-        const sp=BOARD[pid];
-        return`<div class="trade-prop-item" data-pid="${pid}" onclick="toggleTradeProp(this,'offer')">
-          <div class="trade-prop-dot" style="background:${sp.color||'#888'}"></div>
-          <span class="trade-prop-name">${sp.name.replace('\n',' ')}</span>
-          <span class="trade-prop-price">$${sp.price}</span>
-        </div>`;
-      }).join('');
-
-  // Refresh want props when target changes
-  sel.onchange=()=>refreshWantProps();
+    ?'<div class="tempty">No properties to offer</div>'
+    :myProps.map(pid=>{const sp=BOARD[pid];return`<div class="tprop-item" data-pid="${pid}" onclick="this.classList.toggle('sel')"><div class="tprop-dot" style="background:${sp.color||'#888'}"></div><span class="tprop-name">${sp.name.replace('\n',' ')}</span><span class="tprop-price">$${sp.price}</span></div>`;}).join('');
   refreshWantProps();
-  document.getElementById('offerMoney').value='';
-  document.getElementById('wantMoney').value='';
+  document.getElementById('offerM').value='';
+  document.getElementById('wantM').value='';
   document.getElementById('tradeModal').classList.add('show');
 }
 function refreshWantProps(){
-  const targetId=document.getElementById('tradeTarget').value;
-  const target=GS?.players.find(p=>p.id===targetId);
-  const theirProps=target?.properties||[];
-  document.getElementById('wantProps').innerHTML=theirProps.length===0
-    ?'<div class="trade-empty">No properties</div>'
-    :theirProps.map(pid=>{
-        const sp=BOARD[pid];
-        return`<div class="trade-prop-item" data-pid="${pid}" onclick="toggleTradeProp(this,'want')">
-          <div class="trade-prop-dot" style="background:${sp.color||'#888'}"></div>
-          <span class="trade-prop-name">${sp.name.replace('\n',' ')}</span>
-          <span class="trade-prop-price">$${sp.price}</span>
-        </div>`;
-      }).join('');
+  const tid=document.getElementById('tradeSel').value;
+  const t=GS?.players.find(p=>p.id===tid);
+  const tp=t?.properties||[];
+  document.getElementById('wantProps').innerHTML=tp.length===0
+    ?'<div class="tempty">They have no properties</div>'
+    :tp.map(pid=>{const sp=BOARD[pid];return`<div class="tprop-item" data-pid="${pid}" onclick="this.classList.toggle('sel')"><div class="tprop-dot" style="background:${sp.color||'#888'}"></div><span class="tprop-name">${sp.name.replace('\n',' ')}</span><span class="tprop-price">$${sp.price}</span></div>`;}).join('');
 }
-function toggleTradeProp(el,side){
-  el.classList.toggle('selected');
-}
-function closeTrade(){
-  document.getElementById('tradeModal').classList.remove('show');
-}
+function closeTrade(){document.getElementById('tradeModal').classList.remove('show');}
 function sendTrade(){
-  const targetId=document.getElementById('tradeTarget').value;
-  const offerMoney=parseInt(document.getElementById('offerMoney').value)||0;
-  const wantMoney=parseInt(document.getElementById('wantMoney').value)||0;
-  const offerProps=[...document.querySelectorAll('#offerProps .selected')].map(el=>+el.dataset.pid);
-  const wantProps=[...document.querySelectorAll('#wantProps .selected')].map(el=>+el.dataset.pid);
-  if(!offerMoney&&!offerProps.length&&!wantMoney&&!wantProps.length){
-    alert('Add something to the trade!'); return;
-  }
-  socket.emit('trade_offer',{targetId,offerMoney,offerProps,wantMoney,wantProps});
-  closeTrade();
-  addLog('📨 Trade offer sent...');
+  const targetId=document.getElementById('tradeSel').value;
+  const offerMoney=parseInt(document.getElementById('offerM').value)||0;
+  const wantMoney=parseInt(document.getElementById('wantM').value)||0;
+  const offerProps=[...document.querySelectorAll('#offerProps .sel')].map(el=>+el.dataset.pid);
+  const wantProps=[...document.querySelectorAll('#wantProps .sel')].map(el=>+el.dataset.pid);
+  if(!offerMoney&&!offerProps.length&&!wantMoney&&!wantProps.length){alert('Add something to the trade!');return;}
+  socket.emit('trade_offer',{targetId,offerMoney,wantMoney,offerProps,wantProps});
+  closeTrade(); addLog('📨 Trade offer sent...');
 }
 
-// Incoming trade
-function showIncomingTrade(offer){
-  const offerer=GS?.players.find(p=>p.id===offer.fromId);
-  document.getElementById('incomingTradeFrom').textContent=`From: ${offerer?.username||'Unknown'}`;
-  const offerLines=[];
-  if(offer.offerMoney>0) offerLines.push('$'+offer.offerMoney);
-  (offer.offerProps||[]).forEach(pid=>offerLines.push(BOARD[pid]?.name.replace('\n',' ')));
-  const wantLines=[];
-  if(offer.wantMoney>0) wantLines.push('$'+offer.wantMoney);
-  (offer.wantProps||[]).forEach(pid=>wantLines.push(BOARD[pid]?.name.replace('\n',' ')));
-  document.getElementById('tradeSummary').innerHTML=`
-    <div class="trade-summary-row">
-      <div class="trade-summary-side">
-        <div class="trade-summary-title">They offer</div>
-        ${offerLines.length?offerLines.map(l=>`<div class="trade-summary-item" style="color:var(--green)">+ ${esc(l)}</div>`).join(''):'<div class="trade-summary-item" style="color:var(--muted)">Nothing</div>'}
-      </div>
-      <div class="trade-arrow">⇄</div>
-      <div class="trade-summary-side">
-        <div class="trade-summary-title">They want</div>
-        ${wantLines.length?wantLines.map(l=>`<div class="trade-summary-item" style="color:var(--red)">- ${esc(l)}</div>`).join(''):'<div class="trade-summary-item" style="color:var(--muted)">Nothing</div>'}
-      </div>
-    </div>`;
-  document.getElementById('incomingTradeModal').classList.add('show');
+// Trade toast (incoming offer — shown only to target)
+function showTradeToast(offer,offerer){
+  const lines=[];
+  if(offer.offerMoney>0) lines.push(`They offer $${offer.offerMoney}`);
+  (offer.offerProps||[]).forEach(pid=>lines.push(`+ ${BOARD[pid]?.name.replace('\n',' ')}`));
+  if(offer.wantMoney>0) lines.push(`They want $${offer.wantMoney}`);
+  (offer.wantProps||[]).forEach(pid=>lines.push(`- ${BOARD[pid]?.name.replace('\n',' ')}`));
+  document.getElementById('ttTitle').textContent=`🤝 Trade from ${offerer?.username||'?'}`;
+  document.getElementById('ttText').textContent=lines.join(' · ')||'Empty offer';
+  document.getElementById('tradeToast').classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(hideTradeToast,30000); // auto-hide after 30s
 }
-function closeIncomingTrade(){
-  document.getElementById('incomingTradeModal').classList.remove('show');
-  pendingTrade=null;
+function hideTradeToast(){
+  document.getElementById('tradeToast').classList.remove('show');
+  clearTimeout(toastTimer);
 }
 function respondTrade(accept){
   if(!pendingTrade)return;
   socket.emit('trade_response',{tradeId:pendingTrade.id,accept});
-  closeIncomingTrade();
+  hideTradeToast();
 }
 
-function closeCard(){
-  document.getElementById('cardModal').classList.remove('show');
+// Trade History
+function addToTradeHistory(trade){
+  tradeHistory.unshift(trade);
+  if(tradeHistory.length>20) tradeHistory.pop();
+  renderTradeHistory();
+  // Badge the trades tab
+  const tab=document.getElementById('tradeTab');
+  if(tab) tab.textContent='Trades 🔴';
+}
+function updateTradeInHistory(tradeId,status){
+  const t=tradeHistory.find(t=>t.id===tradeId);
+  if(t) t.status=status;
+  renderTradeHistory();
+}
+function renderTradeHistory(){
+  const el=document.getElementById('tradesList');
+  if(!tradeHistory.length){
+    el.innerHTML='<div class="trades-empty">🤝 No trades yet.<br>Propose a trade during your turn!</div>';
+    return;
+  }
+  el.innerHTML=tradeHistory.map(tr=>{
+    const offerLines=[];
+    if(tr.offerMoney>0) offerLines.push(`$${tr.offerMoney}`);
+    (tr.offerProps||[]).forEach(pid=>offerLines.push(BOARD[pid]?.name.replace('\n',' ')));
+    const wantLines=[];
+    if(tr.wantMoney>0) wantLines.push(`$${tr.wantMoney}`);
+    (tr.wantProps||[]).forEach(pid=>wantLines.push(BOARD[pid]?.name.replace('\n',' ')));
+    const isPending=tr.status==='pending'&&tr.targetId===myId;
+    return`<div class="trade-entry">
+      <div class="te-header">
+        <span class="te-from">From ${esc(tr.fromUsername||'?')}</span>
+        <span class="te-status ${tr.status}">${tr.status}</span>
+      </div>
+      <div class="te-body">
+        <span style="color:var(--green)">Offers: ${offerLines.join(', ')||'nothing'}</span><br>
+        <span style="color:var(--red)">Wants: ${wantLines.join(', ')||'nothing'}</span>
+      </div>
+      ${isPending?`<div class="te-btns">
+        <button class="te-btn te-btn-accept" onclick="respondTrade(true)">✓ Accept</button>
+        <button class="te-btn te-btn-decline" onclick="respondTrade(false)">✕ Decline</button>
+      </div>`:''}
+    </div>`;
+  }).join('');
 }
 
+function closeCard(){document.getElementById('cardModal').classList.remove('show');}
 function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-// ── KEYBOARD + EVENTS ─────────────────────────
 document.getElementById('chatInp').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();});
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeTrade();closeIncomingTrade();document.getElementById('cardModal').classList.remove('show');}
+  if(e.key==='Escape'){closeTrade();document.getElementById('cardModal').classList.remove('show');}
 });
 window.addEventListener('resize',resize);
+
+// Init settings UI
+renderSettingsUI();
 </script>
 </body>
 </html>
