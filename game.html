@@ -7,1222 +7,646 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <script src="/socket.io/socket.io.js"></script>
   <style>
-    :root{--bg:#060811;--surface:#0d1117;--card:#111827;--border:rgba(255,255,255,.07);--border2:rgba(255,255,255,.15);--text:#e8eaf6;--muted:rgba(232,234,246,.4);--accent:#6ee7f7;--gold:#fbbf24;--red:#f87171;--green:#4ade80;--purple:#c084fc;}
+    :root{--bg:#1a1b2e;--surf:#16213e;--card:#0f3460;--border:rgba(255,255,255,.08);--b2:rgba(255,255,255,.14);--text:#e2e8f0;--muted:rgba(226,232,240,.45);--acc:#7c3aed;--accL:#9f67fa;--gold:#f59e0b;--red:#ef4444;--green:#22c55e;--blue:#3b82f6;--cyan:#06b6d4;}
     *{box-sizing:border-box;margin:0;padding:0;}
     body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow:hidden;}
-
     @keyframes spin{to{transform:rotate(360deg)}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes pop{0%{transform:translate(-50%,-50%) scale(.6);opacity:0}65%{transform:translate(-50%,-50%) scale(1.06)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
-    @keyframes popIn{0%{transform:scale(.7);opacity:0}65%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
-    @keyframes shake{0%,100%{transform:rotate(0)}20%{transform:rotate(-12deg)}40%{transform:rotate(12deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(8deg)}}
-    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.65;transform:scale(.97)}}
-    @keyframes glow{0%,100%{box-shadow:0 0 8px rgba(110,231,247,.3)}50%{box-shadow:0 0 22px rgba(110,231,247,.8)}}
-    @keyframes goldGlow{0%,100%{box-shadow:0 0 8px rgba(251,191,36,.3)}50%{box-shadow:0 0 20px rgba(251,191,36,.7)}}
-    @keyframes rentFloat{0%{opacity:1;transform:translate(-50%,-10px)}100%{opacity:0;transform:translate(-50%,-55px)}}
-    @keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-    @keyframes tradeNotif{0%{transform:translateY(-20px);opacity:0}20%{transform:translateY(0);opacity:1}80%{transform:translateY(0);opacity:1}100%{transform:translateY(-20px);opacity:0}}
+    @keyframes popIn{0%{transform:translate(-50%,-50%) scale(.5);opacity:0}65%{transform:translate(-50%,-50%) scale(1.05)}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    @keyframes gP{0%,100%{box-shadow:0 0 10px rgba(124,58,237,.4)}50%{box-shadow:0 0 24px rgba(124,58,237,.9)}}
+    @keyframes gG{0%,100%{box-shadow:0 0 8px rgba(245,158,11,.3)}50%{box-shadow:0 0 20px rgba(245,158,11,.8)}}
+    @keyframes rentF{0%{opacity:1;transform:translate(-50%,-10px)}100%{opacity:0;transform:translate(-50%,-55px)}}
+    @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-11deg)}75%{transform:rotate(11deg)}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 
-    /* ── LOADER ── */
     #loader{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:16px;}
-    .ring{width:46px;height:46px;border-radius:50%;border:3px solid var(--border2);border-top-color:var(--accent);animation:spin .8s linear infinite;}
-    .ring-text{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--muted);text-align:center;}
+    .sp{width:46px;height:46px;border-radius:50%;border:3px solid var(--b2);border-top-color:var(--accL);animation:spin .8s linear infinite;}
+    .sp-t{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--muted);text-align:center;}
 
-    /* ── LOBBY ── */
+    /* LOBBY */
     #lobbyScreen{display:none;min-height:100vh;align-items:flex-start;justify-content:center;padding:24px;overflow-y:auto;}
     #lobbyScreen.show{display:flex;}
-    .lobby-wrap{display:grid;grid-template-columns:1fr 340px;gap:20px;width:100%;max-width:880px;margin:auto;padding:20px 0;}
-    .lobby-main{background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;}
-    .lobby-brand{font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;letter-spacing:.1em;background:linear-gradient(90deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .lobby-code-box{background:var(--surface);border:2px dashed var(--accent);border-radius:14px;padding:14px;text-align:center;}
-    .lcode{font-family:'Space Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--accent);letter-spacing:.3em;}
-    .lcode-sub{font-size:.74rem;color:var(--muted);margin-top:3px;}
+    .lw{display:grid;grid-template-columns:1fr 360px;gap:22px;width:100%;max-width:900px;margin:auto;padding:20px 0;}
+    .lp{background:var(--surf);border:1px solid var(--b2);border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:18px;}
+    .lbrand{font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;letter-spacing:.1em;background:linear-gradient(135deg,var(--accL),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+    .lcb{background:rgba(124,58,237,.12);border:2px dashed rgba(124,58,237,.5);border-radius:14px;padding:16px;text-align:center;}
+    .lcode{font-family:'Space Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--accL);letter-spacing:.3em;}
+    .lcsub{font-size:.74rem;color:var(--muted);margin-top:4px;}
     .lbl{font-family:'Space Mono',monospace;font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
-    .color-row{display:flex;gap:9px;flex-wrap:wrap;}
-    .cswatch{width:34px;height:34px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;}
-    .cswatch:hover{transform:scale(1.1);}
-    .cswatch.sel{border-color:#fff;transform:scale(1.2);}
-    .player-card{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:6px;}
-    .pc-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;color:#060811;flex-shrink:0;transition:background .3s;}
-    .pc-name{flex:1;font-size:.9rem;font-weight:600;}
-    .lobby-status{text-align:center;font-size:.82rem;color:var(--muted);animation:pulse 2s infinite;}
-    .lbtn{width:100%;padding:13px;border:none;color:#060811;border-radius:12px;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:transform .18s,box-shadow .18s;}
-    .lbtn-start{background:linear-gradient(135deg,var(--accent),var(--purple));animation:glow 2s infinite;}
-    .lbtn-start:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 8px 24px rgba(110,231,247,.4);}
-    .lbtn-start:disabled{opacity:.4;cursor:not-allowed;animation:none;}
-    .lbtn-leave{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3) !important;color:var(--red) !important;margin-top:2px;}
-    .lbtn-leave:hover{background:rgba(248,113,113,.2);}
+    .crow{display:flex;gap:9px;flex-wrap:wrap;}
+    .csw{width:36px;height:36px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:transform .15s,border-color .15s;}
+    .csw:hover{transform:scale(1.1);}
+    .csw.sel{border-color:#fff;transform:scale(1.22);}
+    .lplayer{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:6px;}
+    .lav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:800;color:#fff;flex-shrink:0;}
+    .lpn{flex:1;font-size:.9rem;font-weight:600;}
+    .lstatus{text-align:center;font-size:.82rem;color:var(--muted);animation:pulse 2s infinite;}
+    .lbtn{width:100%;padding:13px;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;transition:all .18s;}
+    .lbtn-s{background:linear-gradient(135deg,var(--acc),var(--blue));color:#fff;animation:gP 2.2s infinite;}
+    .lbtn-s:hover:not(:disabled){transform:translateY(-2px);}
+    .lbtn-s:disabled{opacity:.4;cursor:not-allowed;animation:none;}
+    .lbtn-l{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3)!important;color:var(--red);}
+    .lbtn-l:hover{background:rgba(239,68,68,.22);}
 
-    /* ── ROOM SETTINGS ── */
-    .settings-panel{background:var(--card);border:1px solid var(--border2);border-radius:20px;padding:24px;display:flex;flex-direction:column;gap:16px;overflow-y:auto;max-height:calc(100vh - 80px);}
-    .settings-title{font-family:'Space Mono',monospace;font-size:.8rem;font-weight:700;letter-spacing:.08em;color:var(--text);display:flex;align-items:center;gap:8px;}
-    .settings-title::before{content:'⚙️';font-size:.9rem;}
-    .settings-group{display:flex;flex-direction:column;gap:10px;}
-    .settings-group-title{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;padding-bottom:6px;border-bottom:1px solid var(--border);}
-    /* Slider setting */
-    .setting-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0;}
-    .setting-label{font-size:.84rem;font-weight:600;flex:1;}
-    .setting-desc{font-size:.72rem;color:var(--muted);margin-top:2px;line-height:1.4;}
-    .setting-control{flex-shrink:0;}
-    /* Toggle */
-    .toggle{position:relative;width:42px;height:24px;flex-shrink:0;}
-    .toggle input{opacity:0;width:0;height:0;}
-    .toggle-slider{position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:99px;cursor:pointer;transition:background .2s;}
-    .toggle-slider::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
-    .toggle input:checked+.toggle-slider{background:var(--accent);}
-    .toggle input:checked+.toggle-slider::before{transform:translateX(18px);}
-    /* Number stepper */
-    .stepper{display:flex;align-items:center;gap:6px;}
-    .step-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-    .step-btn:hover{border-color:var(--accent);color:var(--accent);}
-    .step-val{font-family:'Space Mono',monospace;font-size:.88rem;font-weight:700;min-width:28px;text-align:center;}
-    /* Select */
-    .setting-sel{background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.84rem;padding:6px 10px;outline:none;cursor:pointer;transition:border-color .2s;}
-    .setting-sel:focus{border-color:var(--accent);}
-    /* Starting cash pills */
-    .cash-pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;}
-    .cash-pill{padding:5px 12px;border-radius:99px;border:1px solid var(--border2);background:none;color:var(--muted);font-family:'Space Mono',monospace;font-size:.72rem;cursor:pointer;transition:all .15s;}
-    .cash-pill:hover{border-color:var(--accent);color:var(--accent);}
-    .cash-pill.active{background:rgba(110,231,247,.15);border-color:var(--accent);color:var(--accent);}
-    .settings-note{font-size:.74rem;color:var(--muted);text-align:center;font-style:italic;}
-    .host-only-note{font-size:.72rem;color:var(--gold);text-align:center;display:none;}
+    /* SETTINGS */
+    .sp-panel{background:var(--surf);border:1px solid var(--b2);border-radius:20px;padding:24px;overflow-y:auto;max-height:calc(100vh - 60px);}
+    .spt{font-size:.88rem;font-weight:700;letter-spacing:.04em;margin-bottom:16px;}
+    .sg{margin-bottom:18px;}
+    .sgt{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+    .sr{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0;}
+    .sl{font-size:.84rem;font-weight:600;flex:1;}
+    .sd{font-size:.71rem;color:var(--muted);margin-top:2px;line-height:1.4;}
+    .tog{position:relative;width:44px;height:24px;flex-shrink:0;}
+    .tog input{opacity:0;width:0;height:0;position:absolute;}
+    .tsl{position:absolute;inset:0;background:rgba(255,255,255,.12);border-radius:99px;cursor:pointer;transition:background .2s;}
+    .tsl::before{content:'';position:absolute;width:18px;height:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .2s;}
+    .tog input:checked+.tsl{background:var(--acc);}
+    .tog input:checked+.tsl::before{transform:translateX(20px);}
+    .stpr{display:flex;align-items:center;gap:6px;}
+    .stb{width:28px;height:28px;border-radius:7px;border:1px solid var(--b2);background:rgba(255,255,255,.06);color:var(--text);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .stb:hover{border-color:var(--accL);color:var(--accL);}
+    .stv{font-family:'Space Mono',monospace;font-size:.88rem;font-weight:700;min-width:28px;text-align:center;}
+    .cpills{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
+    .cpill{padding:5px 12px;border-radius:99px;border:1px solid var(--b2);background:none;color:var(--muted);font-family:'Space Mono',monospace;font-size:.72rem;cursor:pointer;transition:all .15s;}
+    .cpill:hover{border-color:var(--accL);color:var(--accL);}
+    .cpill.on{background:rgba(124,58,237,.2);border-color:var(--accL);color:var(--accL);}
+    .hn{font-size:.72rem;color:var(--gold);text-align:center;display:none;}
 
-    /* ── GAME LAYOUT ── */
-    #gameScreen{display:none;width:100vw;height:100vh;grid-template-columns:1fr 300px;grid-template-rows:52px 1fr;}
+    /* GAME — 3 column */
+    #gameScreen{display:none;width:100vw;height:100vh;grid-template-columns:220px 1fr 280px;grid-template-rows:1fr;}
     #gameScreen.show{display:grid;}
 
-    /* ── TOPBAR ── */
-    .gtop{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,8,17,.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);z-index:30;}
-    .gtop-brand{font-family:'Space Mono',monospace;font-size:.92rem;font-weight:700;letter-spacing:.1em;background:linear-gradient(90deg,var(--accent),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
-    .gtop-turn{font-family:'Space Mono',monospace;font-size:.74rem;font-weight:700;padding:4px 13px;border-radius:99px;border:1px solid;transition:all .3s;}
-    .gtop-right{display:flex;gap:10px;align-items:center;}
-    .gtop-money{font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;transition:color .3s;}
-    .lv-btn{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.28);color:var(--red);padding:6px 14px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:600;transition:all .15s;}
-    .lv-btn:hover{background:rgba(248,113,113,.22);transform:translateY(-1px);}
-
-    /* ── BOARD ── */
-    .board-area{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:var(--bg);padding:8px;}
-    #boardCanvas{border-radius:5px;}
-
-    /* ── CENTER NOTIF ── */
-    #cnBox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(6,8,20,.94);backdrop-filter:blur(18px);border:2px solid var(--accent);border-radius:20px;padding:20px 28px;text-align:center;min-width:260px;max-width:340px;pointer-events:none;z-index:50;display:none;}
-    #cnBox.show{display:block;animation:pop .3s cubic-bezier(.23,1,.32,1);}
-    .cn-dice{display:flex;gap:16px;justify-content:center;align-items:center;margin-bottom:12px;}
-    .cn-die{width:52px;height:52px;background:var(--card);border:2px solid var(--border2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:2rem;}
-    .cn-die.rolling{animation:shake .1s infinite;}
-    .cn-total{font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--accent);}
-    .cn-who{font-size:1rem;font-weight:800;margin-bottom:4px;}
-    .cn-msg{font-size:.86rem;color:var(--text);line-height:1.5;}
-    .cn-sub{font-size:.76rem;color:var(--muted);margin-top:5px;}
-
-    /* ── RENT FLOAT ── */
-    .rent-float{position:absolute;font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;color:var(--red);pointer-events:none;z-index:60;animation:rentFloat 1.4s ease forwards;transform:translateX(-50%);}
-
-    /* ── TRADE TOAST ── */
-    #tradeToast{position:fixed;top:70px;right:20px;background:var(--card);border:1px solid var(--accent);border-radius:14px;padding:14px 18px;z-index:400;display:none;max-width:300px;animation:tradeNotif 4s ease forwards;}
-    #tradeToast.show{display:block;}
-    .trade-toast-title{font-size:.84rem;font-weight:700;color:var(--accent);margin-bottom:4px;}
-    .trade-toast-text{font-size:.78rem;color:var(--muted);}
-    .trade-toast-btns{display:flex;gap:8px;margin-top:10px;}
-    .ttbtn{flex:1;padding:7px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;border:1px solid;transition:all .15s;}
-    .ttbtn-yes{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.35);color:var(--green);}
-    .ttbtn-yes:hover{background:rgba(74,222,128,.28);}
-    .ttbtn-no{background:rgba(248,113,113,.12);border-color:rgba(248,113,113,.3);color:var(--red);}
-    .ttbtn-no:hover{background:rgba(248,113,113,.22);}
-
-    /* ── SIDEBAR ── */
-    .sidebar{background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
-    .act-panel{padding:12px;border-bottom:1px solid var(--border);flex-shrink:0;}
-    .turn-lbl{font-size:.74rem;color:var(--muted);margin-bottom:6px;}
-    .turn-nm{font-weight:700;}
-    .dice-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
-    .sdie{width:40px;height:40px;background:var(--card);border:1px solid var(--border2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;}
-    .ds{font-family:'Space Mono',monospace;font-size:.8rem;color:var(--muted);}
-    .prop-pop{background:rgba(13,17,28,.95);border:1px solid var(--border2);border-radius:9px;padding:8px 11px;font-size:.74rem;color:var(--muted);margin-bottom:8px;display:none;animation:slideIn .2s ease;}
-    .prop-pop.show{display:block;}
-    .pp-name{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:2px;}
-    .pp-price{color:var(--gold);font-family:'Space Mono',monospace;}
-    .act-btns{display:flex;flex-direction:column;gap:7px;}
-    .abtn{padding:9px 14px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.84rem;font-weight:700;cursor:pointer;border:1px solid transparent;transition:all .18s;position:relative;overflow:hidden;}
-    .abtn:disabled{opacity:.32;cursor:not-allowed;}
-    .abtn:active:not(:disabled){transform:scale(.97);}
-    .abtn-roll{background:linear-gradient(135deg,var(--accent),var(--purple));color:#060811;animation:glow 2.5s infinite;}
-    .abtn-roll:disabled{animation:none;}
-    .abtn-roll:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 18px rgba(110,231,247,.4);}
-    .abtn-buy{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.4);color:var(--green);}
-    .abtn-buy:hover:not(:disabled){background:rgba(74,222,128,.28);}
-    /* SKIP — always prominent and visible */
-    .abtn-pass{background:rgba(251,191,36,.18);border:2px solid rgba(251,191,36,.5);color:var(--gold);font-size:.88rem;padding:10px 14px;}
-    .abtn-pass.my-turn{animation:goldGlow 1.6s infinite;border-color:var(--gold);}
-    .abtn-pass:hover:not(:disabled){background:rgba(251,191,36,.32);border-color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 16px rgba(251,191,36,.3);}
-    .abtn-jail{background:rgba(192,132,252,.15);border-color:rgba(192,132,252,.35);color:var(--purple);}
-    .abtn-jail:hover:not(:disabled){background:rgba(192,132,252,.28);}
-    .abtn-trade{background:rgba(96,165,250,.14);border-color:rgba(96,165,250,.35);color:#60a5fa;}
-    .abtn-trade:hover:not(:disabled){background:rgba(96,165,250,.26);}
-
-    /* ── TABS ── */
-    .stabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;}
-    .stab{flex:1;padding:8px 4px;font-family:'Space Mono',monospace;font-size:.54rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);cursor:pointer;border:none;background:none;transition:all .15s;border-bottom:2px solid transparent;}
-    .stab.active{color:var(--accent);border-bottom-color:var(--accent);}
-    .stab:hover{color:var(--text);}
-    .spanel{display:none;flex-direction:column;overflow:hidden;flex:1;min-height:0;}
-    .spanel.active{display:flex;}
-
-    /* ── PLAYERS ── */
-    .pscroll{overflow-y:auto;padding:10px;flex:1;}
-    .prow{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:9px;border:1px solid transparent;margin-bottom:5px;transition:all .25s;}
-    .prow.active{background:rgba(110,231,247,.08);border-color:rgba(110,231,247,.25);}
-    .prow.bankrupt{opacity:.3;}
-    .pav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:800;color:#060811;flex-shrink:0;transition:transform .2s;}
-    .prow.active .pav{transform:scale(1.1);}
+    /* Left */
+    .gl{background:var(--surf);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+    .gl-top{padding:14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .gbrand{font-family:'Space Mono',monospace;font-size:.88rem;font-weight:700;letter-spacing:.08em;background:linear-gradient(135deg,var(--accL),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px;}
+    .rcode{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--muted);background:rgba(255,255,255,.05);border:1px solid var(--b2);border-radius:8px;padding:4px 10px;display:inline-block;margin-bottom:8px;}
+    .psec{padding:12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .stitle{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+    .prow{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;border:1px solid transparent;margin-bottom:5px;transition:all .22s;}
+    .prow.active{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.3);}
+    .prow.bankrupt{opacity:.28;}
+    .pav{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.82rem;font-weight:800;color:#fff;flex-shrink:0;transition:transform .2s;}
+    .prow.active .pav{transform:scale(1.08);}
     .pinfo{flex:1;min-width:0;}
-    .pname{font-size:.8rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-    .pmoney{font-family:'Space Mono',monospace;font-size:.7rem;color:var(--green);}
+    .pname{font-size:.82rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .pmoney{font-family:'Space Mono',monospace;font-size:.72rem;color:var(--green);font-weight:700;}
     .pbadge{font-size:.65rem;flex-shrink:0;}
+    .chatsec{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+    .clbl{font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;padding:10px 12px 6px;flex-shrink:0;border-bottom:1px solid var(--border);}
+    .cmsgs{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:3px;}
+    .cmsg{font-size:.74rem;line-height:1.4;}
+    .cmsg .cn{font-weight:700;margin-right:4px;}
+    .nomsg{font-size:.76rem;color:var(--muted);text-align:center;padding:16px 0;font-style:italic;}
+    .crow2{display:flex;gap:6px;padding:8px 10px;border-top:1px solid var(--border);flex-shrink:0;}
+    .cinp{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--b2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.8rem;padding:7px 10px;outline:none;}
+    .cinp:focus{border-color:var(--accL);}
+    .csnd{background:var(--acc);border:none;color:#fff;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;}
 
-    /* ── CITIES ── */
-    .cscroll{overflow-y:auto;padding:8px;flex:1;display:flex;flex-direction:column;gap:5px;}
-    .citem{background:var(--card);border-radius:9px;padding:8px 10px;border-left:4px solid;animation:popIn .25s ease;display:flex;align-items:center;gap:8px;}
-    .cname{font-size:.78rem;font-weight:700;flex:1;}
-    .cmeta{font-size:.67rem;color:var(--muted);font-family:'Space Mono',monospace;}
-    .cblds{display:flex;gap:2px;flex-shrink:0;}
-    .ch{width:7px;height:8px;border-radius:2px;background:var(--green);}
-    .cht{width:9px;height:9px;border-radius:2px;background:var(--red);}
-    .cempty{text-align:center;padding:28px 16px;color:var(--muted);font-size:.8rem;line-height:1.6;}
+    /* Center board */
+    .bwrap{position:relative;display:flex;flex-direction:column;overflow:hidden;background:var(--bg);}
+    .btop{height:48px;background:var(--surf);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;z-index:10;}
+    .btturn{font-family:'Space Mono',monospace;font-size:.76rem;font-weight:700;padding:5px 14px;border-radius:99px;border:1px solid;transition:all .3s;}
+    .btmoney{font-family:'Space Mono',monospace;font-size:.82rem;font-weight:700;}
+    .btleave{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);color:var(--red);padding:6px 14px;border-radius:8px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;}
+    .bcw{flex:1;display:flex;align-items:center;justify-content:center;padding:8px;position:relative;}
+    #boardCanvas{border-radius:6px;cursor:pointer;}
 
-    /* ── TRADES PANEL ── */
-    .trades-scroll{overflow-y:auto;padding:8px;flex:1;display:flex;flex-direction:column;gap:6px;}
-    .trade-entry{background:var(--card);border:1px solid var(--border2);border-radius:10px;padding:10px 12px;animation:slideIn .2s ease;}
-    .te-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
-    .te-from{font-size:.8rem;font-weight:700;}
-    .te-status{font-size:.68rem;font-family:'Space Mono',monospace;padding:2px 8px;border-radius:99px;font-weight:700;}
-    .te-status.pending{background:rgba(251,191,36,.15);color:var(--gold);}
-    .te-status.accepted{background:rgba(74,222,128,.15);color:var(--green);}
-    .te-status.declined{background:rgba(248,113,113,.15);color:var(--red);}
-    .te-body{font-size:.74rem;color:var(--muted);line-height:1.5;margin-bottom:7px;}
-    .te-btns{display:flex;gap:6px;}
-    .te-btn{flex:1;padding:6px;border-radius:7px;font-family:'Outfit',sans-serif;font-size:.76rem;font-weight:700;cursor:pointer;border:1px solid;transition:all .15s;}
-    .te-btn-accept{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.3);color:var(--green);}
-    .te-btn-accept:hover{background:rgba(74,222,128,.25);}
-    .te-btn-decline{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.28);color:var(--red);}
-    .te-btn-decline:hover{background:rgba(248,113,113,.22);}
-    .trades-empty{text-align:center;padding:24px 14px;color:var(--muted);font-size:.78rem;line-height:1.6;}
+    /* Center dice — Richup style: always visible center */
+    #cnBox{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:50;display:none;text-align:center;}
+    #cnBox.show{display:block;animation:popIn .3s cubic-bezier(.23,1,.32,1);}
+    .cdice{display:flex;gap:18px;justify-content:center;margin-bottom:12px;}
+    .cdie{width:64px;height:64px;background:#fff;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;box-shadow:0 8px 32px rgba(0,0,0,.6);}
+    .cdie.rolling{animation:shake .1s infinite;}
+    .cbtn{background:linear-gradient(135deg,var(--acc),var(--blue));border:none;color:#fff;padding:12px 32px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:1rem;font-weight:800;cursor:pointer;pointer-events:all;box-shadow:0 4px 20px rgba(124,58,237,.5);transition:all .18s;display:flex;align-items:center;gap:8px;margin:0 auto;}
+    .cbtn:hover:not(:disabled){transform:translateY(-2px);}
+    .cbtn:disabled{opacity:.4;cursor:not-allowed;}
+    .cmsg{font-size:.86rem;color:rgba(255,255,255,.75);margin-top:8px;text-align:center;font-weight:500;}
 
-    /* ── LOG ── */
-    .lscroll{overflow-y:auto;padding:6px 10px;flex:1;display:flex;flex-direction:column;gap:2px;}
-    .lscroll::-webkit-scrollbar{width:3px;}
-    .lscroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+    .rent-float{position:absolute;font-family:'Space Mono',monospace;font-size:.9rem;font-weight:700;color:var(--red);pointer-events:none;z-index:60;animation:rentF 1.4s ease forwards;transform:translateX(-50%);}
+
+    /* Bottom actions */
+    .bact{height:56px;background:var(--surf);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;padding:0 16px;flex-shrink:0;}
+    .abtn{padding:10px 20px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;border:none;transition:all .18s;}
+    .abtn:disabled{opacity:.34;cursor:not-allowed;}
+    .abtn-buy{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.35);color:var(--green);}
+    .abtn-buy:hover:not(:disabled){background:rgba(34,197,94,.28);}
+    .abtn-pass{background:rgba(245,158,11,.15);border:2px solid rgba(245,158,11,.5);color:var(--gold);animation:gG 1.8s infinite;}
+    .abtn-pass:disabled{animation:none;}
+    .abtn-pass:hover:not(:disabled){background:rgba(245,158,11,.28);transform:translateY(-1px);}
+    .abtn-jail{background:rgba(139,92,246,.15);border:1px solid rgba(139,92,246,.35);color:var(--accL);}
+    .abtn-jail:hover:not(:disabled){background:rgba(139,92,246,.28);}
+    .abtn-trade{background:rgba(59,130,246,.14);border:1px solid rgba(59,130,246,.3);color:var(--blue);}
+    .abtn-trade:hover:not(:disabled){background:rgba(59,130,246,.24);}
+
+    /* Right panel */
+    .gr{background:var(--surf);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;}
+    .trsec{padding:12px;border-bottom:1px solid var(--border);flex-shrink:0;}
+    .trh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+    .trt{font-family:'Space Mono',monospace;font-size:.72rem;font-weight:700;letter-spacing:.06em;}
+    .trcbtn{background:linear-gradient(135deg,var(--acc),var(--blue));border:none;color:#fff;padding:5px 12px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.78rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s;}
+    .trcbtn:disabled{opacity:.4;cursor:not-allowed;}
+    .atrades{display:flex;flex-direction:column;gap:5px;max-height:80px;overflow-y:auto;}
+    .tchip{display:flex;align-items:center;gap:7px;font-size:.76rem;padding:5px 8px;background:rgba(255,255,255,.04);border-radius:7px;border:1px solid var(--border);}
+    .prsec{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+    .prh{padding:12px 12px 6px;font-size:.82rem;font-weight:700;flex-shrink:0;border-bottom:1px solid var(--border);}
+    .hintb{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.25);border-radius:8px;padding:8px 10px;font-size:.74rem;color:var(--muted);margin:6px 8px;cursor:pointer;display:none;}
+    .hintb.show{display:block;}
+    .prl{overflow-y:auto;padding:8px;flex:1;}
+    .prow2{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;transition:background .15s;border:1px solid transparent;}
+    .prow2:hover{background:rgba(255,255,255,.05);border-color:var(--b2);}
+    .pdot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+    .pn{font-size:.8rem;font-weight:600;flex:1;}
+    .pblds{display:flex;gap:2px;flex-shrink:0;align-items:center;}
+    .ph{width:8px;height:9px;border-radius:2px;background:var(--green);}
+    .pht{width:10px;height:10px;border-radius:2px;background:var(--red);}
+    .pmtg{font-size:.62rem;color:var(--gold);font-family:'Space Mono',monospace;}
+    .pempty{text-align:center;padding:24px 12px;color:var(--muted);font-size:.8rem;line-height:1.6;}
+    .logsec{border-top:1px solid var(--border);flex-shrink:0;max-height:170px;display:flex;flex-direction:column;}
+    .logh{padding:8px 12px 5px;font-family:'Space Mono',monospace;font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;border-bottom:1px solid var(--border);}
+    .logl{overflow-y:auto;padding:5px 10px;flex:1;}
     .li{font-size:.7rem;color:var(--muted);line-height:1.4;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.04);}
     .li.hi{color:var(--text);}
     .li.good{color:var(--green);}
     .li.bad{color:var(--red);}
 
-    /* ── CHAT ── */
-    .chat-w{border-top:1px solid var(--border);flex-shrink:0;display:flex;flex-direction:column;max-height:140px;}
-    .chat-msgs{flex:1;overflow-y:auto;padding:5px 8px;display:flex;flex-direction:column;gap:2px;}
-    .cmsg{font-size:.72rem;line-height:1.4;}
-    .cmsg .cn{font-weight:700;margin-right:4px;}
-    .chat-row{display:flex;gap:6px;padding:5px 8px;border-top:1px solid var(--border);}
-    .chat-inp{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:7px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.78rem;padding:5px 9px;outline:none;transition:border-color .2s;}
-    .chat-inp:focus{border-color:var(--accent);}
-    .chat-snd{background:var(--accent);border:none;color:#060811;width:28px;height:28px;border-radius:6px;cursor:pointer;font-size:.88rem;}
+    /* Property Card — Richup style */
+    #pcBg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:299;display:none;}
+    #pcBg.show{display:block;}
+    #propCard{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border:1px solid rgba(255,255,255,.12);border-radius:18px;width:300px;z-index:300;animation:fadeUp .22s ease;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.7);display:none;}
+    #propCard.show{display:block;}
+    .pch{padding:16px 18px 12px;position:relative;}
+    .pctitle{font-size:1.1rem;font-weight:800;margin-bottom:2px;}
+    .pccls{position:absolute;top:12px;right:12px;background:rgba(255,255,255,.08);border:none;color:var(--muted);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .pccls:hover{background:rgba(239,68,68,.2);color:var(--red);}
+    .pcmbtn{width:calc(100% - 36px);margin:0 18px 10px;padding:9px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;border:none;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .18s;}
+    .pcm-m{background:var(--gold);color:#1a1b2e;}
+    .pcm-m:hover{filter:brightness(1.1);}
+    .pcm-u{background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.4)!important;color:var(--gold);}
+    .pcm-u:hover{background:rgba(245,158,11,.28);}
+    .pcmbadge{text-align:center;font-family:'Space Mono',monospace;font-size:.72rem;color:var(--gold);padding:4px 0;margin-bottom:6px;display:none;}
+    .pcrt{width:100%;border-collapse:collapse;}
+    .pcrt tr{display:flex;justify-content:space-between;padding:5px 18px;font-size:.82rem;}
+    .pcrt tr:nth-child(even){background:rgba(255,255,255,.03);}
+    .pcrt .rla{color:var(--muted);}
+    .pcrt .rva{font-family:'Space Mono',monospace;font-weight:700;}
+    .pcfoot{padding:14px 18px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+    .pcow{display:flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;}
+    .pcow-av{width:20px;height:20px;border-radius:50%;font-size:.6rem;font-weight:800;display:flex;align-items:center;justify-content:center;}
+    .pcpg{display:flex;gap:14px;}
+    .pcpi{text-align:center;}
+    .pcpl{font-size:.64rem;color:var(--muted);font-family:'Space Mono',monospace;}
+    .pcpv{font-size:.84rem;font-weight:700;font-family:'Space Mono',monospace;}
+    .pcbbs{display:flex;gap:7px;padding:0 18px 14px;}
+    .pcbb{flex:1;padding:8px;border-radius:9px;font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
+    .pcbb:disabled{opacity:.35;cursor:not-allowed;}
+    .pcbu{background:linear-gradient(135deg,var(--acc),var(--blue));color:#fff;}
+    .pcbu:hover:not(:disabled){transform:translateY(-1px);}
+    .pcbd{background:rgba(255,255,255,.07);border:1px solid var(--b2)!important;color:var(--muted);}
+    .pcbd:hover:not(:disabled){color:var(--text);}
+    .pcsell{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25)!important;color:var(--red);padding:7px;border-radius:9px;cursor:pointer;}
 
-    /* ── MODALS ── */
-    .mbg{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;}
-    .mbox{background:var(--card);border:1px solid var(--border2);border-radius:18px;padding:26px;width:100%;animation:fadeUp .25s ease;}
-    .mtitle{font-size:1.05rem;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
-    .mclose{background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .15s;}
-    .mclose:hover{background:rgba(248,113,113,.15);color:var(--red);}
-    .mbtns{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
+    /* Modals */
+    .mbg{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:400;padding:20px;}
+    .mbox{background:var(--card);border:1px solid var(--b2);border-radius:18px;padding:26px;width:100%;animation:fadeUp .25s ease;}
+    .mt{font-size:1.05rem;font-weight:800;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+    .mcls{background:rgba(255,255,255,.07);border:none;color:var(--muted);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+    .mcls:hover{background:rgba(239,68,68,.18);color:var(--red);}
+    .mbts{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:16px;}
     .mbtn{padding:10px 22px;border-radius:10px;font-family:'Outfit',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer;border:none;transition:all .15s;}
-    .mbtn-primary{background:linear-gradient(135deg,var(--accent),var(--purple));color:#060811;}
-    .mbtn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(110,231,247,.3);}
-    .mbtn-danger{background:rgba(248,113,113,.15);border:1px solid rgba(248,113,113,.35) !important;color:var(--red);}
-    .mbtn-danger:hover{background:rgba(248,113,113,.28);}
-    .mbtn-ghost{background:rgba(255,255,255,.06);border:1px solid var(--border2) !important;color:var(--muted);}
-    .mbtn-ghost:hover{color:var(--text);}
+    .mbp{background:linear-gradient(135deg,var(--acc),var(--blue));color:#fff;}
+    .mbp:hover{transform:translateY(-1px);}
+    .mbd{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.35)!important;color:var(--red);}
+    .mbd:hover{background:rgba(239,68,68,.28);}
+    .mbg2{background:rgba(255,255,255,.06);border:1px solid var(--b2)!important;color:var(--muted);}
+    .mbg2:hover{color:var(--text);}
 
-    /* ── CARD MODAL (private) ── */
-    #cardModal{display:none;}
-    #cardModal.show{display:flex;}
-    .cmod{max-width:360px;text-align:center;}
-    .cmod-icon{font-size:2.8rem;margin-bottom:10px;}
-    .cmod-text{font-size:.88rem;color:var(--muted);margin-bottom:16px;line-height:1.5;}
-
-    /* ── TRADE MODAL ── */
+    /* Trade modal */
     #tradeModal{display:none;}
     #tradeModal.show{display:flex;}
-    .tmod{max-width:520px;width:100%;}
-    .trade-sel{width:100%;padding:8px 10px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.85rem;outline:none;margin-bottom:12px;}
-    .trade-sel:focus{border-color:var(--accent);}
-    .trade-sides{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;}
-    .tside{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:14px;}
-    .tside-title{font-size:.7rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;font-family:'Space Mono',monospace;}
-    .tmoney-row{display:flex;gap:8px;align-items:center;margin-bottom:10px;}
-    .tmoney-inp{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:.88rem;padding:7px 10px;outline:none;transition:border-color .2s;}
-    .tmoney-inp:focus{border-color:var(--accent);}
-    .tmoney-lbl{font-size:.75rem;color:var(--muted);}
-    .tprop-title{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:'Space Mono',monospace;margin-bottom:6px;}
-    .tprop-item{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:7px;cursor:pointer;transition:background .15s;border:1px solid transparent;}
-    .tprop-item:hover{background:rgba(255,255,255,.05);}
-    .tprop-item.sel{background:rgba(110,231,247,.1);border-color:rgba(110,231,247,.3);}
-    .tprop-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-    .tprop-name{font-size:.78rem;font-weight:600;flex:1;}
-    .tprop-price{font-size:.68rem;color:var(--muted);font-family:'Space Mono',monospace;}
+    .tmod{max-width:540px;width:100%;}
+    .tsel{width:100%;padding:9px 12px;background:rgba(255,255,255,.07);border:1px solid var(--b2);border-radius:9px;color:var(--text);font-family:'Outfit',sans-serif;font-size:.88rem;outline:none;margin-bottom:14px;}
+    .tsides{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px;}
+    .tside{background:rgba(255,255,255,.04);border:1px solid var(--b2);border-radius:12px;padding:14px;}
+    .tsit{font-size:.72rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px;font-family:'Space Mono',monospace;}
+    .tmrow{margin-bottom:10px;}
+    .tmlbl{font-size:.72rem;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;}
+    .tmsl{width:100%;-webkit-appearance:none;height:4px;border-radius:99px;background:var(--b2);outline:none;}
+    .tmsl::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--acc);cursor:pointer;box-shadow:0 0 8px rgba(124,58,237,.5);}
+    .tpit{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-family:'Space Mono',monospace;margin-bottom:6px;}
+    .tpi{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:7px;cursor:pointer;transition:background .15s;border:1px solid transparent;}
+    .tpi:hover{background:rgba(255,255,255,.05);}
+    .tpi.sel{background:rgba(124,58,237,.15);border-color:rgba(124,58,237,.35);}
+    .tpd{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .tpn{font-size:.78rem;font-weight:600;flex:1;}
+    .tpp{font-size:.68rem;color:var(--muted);font-family:'Space Mono',monospace;}
     .tempty{font-size:.76rem;color:var(--muted);font-style:italic;padding:8px 0;}
 
-    /* ── WINNER ── */
-    #winnerScreen{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;z-index:300;}
-    #winnerScreen.show{display:flex;}
-    .wbox{background:var(--card);border:1px solid var(--border2);border-radius:22px;padding:44px;text-align:center;max-width:380px;animation:fadeUp .4s ease;}
-    .wtrophy{font-size:4rem;margin-bottom:14px;}
-    .wtitle{font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--gold);margin-bottom:6px;}
-    .wname{font-size:1.7rem;font-weight:800;margin-bottom:6px;}
-    .wsub{font-size:.86rem;color:var(--muted);margin-bottom:24px;}
-    .wbtn{padding:13px 30px;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--purple));border:none;color:#060811;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:transform .18s;}
-    .wbtn:hover{transform:translateY(-2px);}
+    /* Incoming trade */
+    #inTM{display:none;}
+    #inTM.show{display:flex;}
+    .tsumbox{background:rgba(255,255,255,.04);border-radius:12px;padding:14px;margin-bottom:14px;}
+    .tsrow{display:flex;align-items:flex-start;gap:14px;}
+    .tsside{flex:1;}
+    .tssit{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;font-family:'Space Mono',monospace;margin-bottom:6px;}
+    .tsi{font-size:.8rem;font-weight:600;padding:2px 0;}
+    .tsarrow{font-size:1.4rem;color:var(--accL);align-self:center;}
 
-    @media(max-width:760px){
-      .lobby-wrap{grid-template-columns:1fr;}
-      .trade-sides{grid-template-columns:1fr;}
-    }
+    /* Card toast — Richup bottom-right style */
+    #cardToast{position:fixed;bottom:80px;right:24px;background:var(--surf);border:1px solid var(--b2);border-radius:14px;padding:14px 16px;z-index:500;max-width:280px;display:none;animation:slideUp .3s ease;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+    #cardToast.show{display:block;}
+    .cttype{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-family:'Space Mono',monospace;margin-bottom:6px;}
+    .cttext{font-size:.84rem;line-height:1.5;}
+    .ctdis{background:var(--acc);border:none;color:#fff;width:100%;padding:7px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;margin-top:10px;}
+
+    /* Winner */
+    #winnerScreen{position:fixed;inset:0;background:rgba(0,0,0,.9);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;z-index:600;}
+    #winnerScreen.show{display:flex;}
+    .wbox{background:var(--card);border:1px solid var(--b2);border-radius:22px;padding:44px;text-align:center;max-width:360px;animation:fadeUp .4s ease;}
+    .wt{font-size:4rem;margin-bottom:14px;}
+    .wtit{font-family:'Space Mono',monospace;font-size:1.2rem;font-weight:700;color:var(--gold);margin-bottom:6px;}
+    .wn{font-size:1.7rem;font-weight:800;margin-bottom:6px;}
+    .ws{font-size:.86rem;color:var(--muted);margin-bottom:24px;}
+    .wb{padding:13px 30px;border-radius:12px;background:linear-gradient(135deg,var(--acc),var(--blue));border:none;color:#fff;font-family:'Outfit',sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;transition:transform .18s;}
+    .wb:hover{transform:translateY(-2px);}
+    @media(max-width:760px){.lw,.tsides{grid-template-columns:1fr;}}
   </style>
 </head>
 <body>
+<div id="loader"><div class="sp"></div><div class="sp-t">Connecting...</div></div>
 
-<!-- LOADER -->
-<div id="loader">
-  <div class="ring"></div>
-  <div class="ring-text">Connecting...</div>
-</div>
-
-<!-- LOBBY + SETTINGS -->
+<!-- LOBBY -->
 <div id="lobbyScreen">
-  <div class="lobby-wrap">
-    <!-- Left: players -->
-    <div class="lobby-main">
-      <div class="lobby-brand">🎲 GIGAPOLY</div>
-      <div class="lobby-code-box">
-        <div class="lcode" id="lobbyCode">------</div>
-        <div class="lcode-sub">Share this code with friends to join</div>
-      </div>
-      <div>
-        <div class="lbl">Choose Your Color</div>
-        <div class="color-row" id="colorRow"></div>
-      </div>
-      <div>
-        <div class="lbl">Players in Room</div>
-        <div id="lobbyPlayers"></div>
-      </div>
-      <div class="lobby-status" id="lobbyStatus">Waiting...</div>
-      <button class="lbtn lbtn-start" id="startBtn" onclick="startGame()" disabled>🎮 Start Game</button>
-      <button class="lbtn lbtn-leave" onclick="leaveGame()" style="padding:10px">← Leave Room</button>
+  <div class="lw">
+    <div class="lp">
+      <div class="lbrand">🎲 GIGAPOLY</div>
+      <div class="lcb"><div class="lcode" id="lCode">------</div><div class="lcsub">Share this code with friends</div></div>
+      <div><div class="lbl">Your Color</div><div class="crow" id="colorRow"></div></div>
+      <div><div class="lbl">Players in Room</div><div id="lPlayers"></div></div>
+      <div class="lstatus" id="lStatus">Waiting...</div>
+      <button class="lbtn lbtn-s" id="lStart" onclick="startGame()" disabled>🎮 Start Game</button>
+      <button class="lbtn lbtn-l" onclick="leaveGame()">← Leave</button>
     </div>
-
-    <!-- Right: Room Settings (Richup.io style) -->
-    <div class="settings-panel" id="settingsPanel">
-      <div class="settings-title">Room Settings</div>
-      <div class="host-only-note" id="hostOnlyNote">⚠ Only the host can change settings</div>
-
-      <!-- Players -->
-      <div class="settings-group">
-        <div class="settings-group-title">Players</div>
-        <div class="setting-row">
-          <div>
-            <div class="setting-label">Maximum Players</div>
-            <div class="setting-desc">How many players can join</div>
-          </div>
-          <div class="stepper setting-control">
-            <button class="step-btn" onclick="stepSetting('maxPlayers',-1)">−</button>
-            <span class="step-val" id="sv-maxPlayers">6</span>
-            <button class="step-btn" onclick="stepSetting('maxPlayers',1)">+</button>
-          </div>
-        </div>
-        <div class="setting-row">
-          <div>
-            <div class="setting-label">Randomize Turn Order</div>
-            <div class="setting-desc">Randomly shuffle who goes first</div>
-          </div>
-          <label class="toggle setting-control">
-            <input type="checkbox" id="tog-randomOrder" onchange="updateSetting('randomOrder',this.checked)"/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
+    <div class="sp-panel" id="settingsPanel">
+      <div class="spt">⚙️ Room Settings</div>
+      <div class="hn" id="hostNote">Only the host can change settings</div>
+      <div class="sg"><div class="sgt">Players</div>
+        <div class="sr"><div><div class="sl">Maximum Players</div><div class="sd">How many can join</div></div><div class="stpr"><button class="stb" onclick="stepSet('maxPlayers',-1)">−</button><span class="stv" id="sv-maxPlayers">6</span><button class="stb" onclick="stepSet('maxPlayers',1)">+</button></div></div>
+        <div class="sr"><div><div class="sl">Randomize Turn Order</div><div class="sd">Shuffle who goes first</div></div><label class="tog"><input type="checkbox" id="t-randomOrder" onchange="setSetting('randomOrder',this.checked)"/><span class="tsl"></span></label></div>
       </div>
-
-      <!-- Starting Cash -->
-      <div class="settings-group">
-        <div class="settings-group-title">Starting Cash</div>
-        <div class="cash-pills" id="cashPills"></div>
+      <div class="sg"><div class="sgt">Starting Cash</div><div class="cpills" id="cashPills"></div></div>
+      <div class="sg"><div class="sgt">Gameplay Rules</div>
+        <div class="sr"><div><div class="sl">Double Rent on Full Set</div><div class="sd">2× base rent when you own all of a color</div></div><label class="tog"><input type="checkbox" id="t-doubleRent" onchange="setSetting('doubleRent',this.checked)" checked/><span class="tsl"></span></label></div>
+        <div class="sr"><div><div class="sl">Auction Unbuilt Properties</div></div><label class="tog"><input type="checkbox" id="t-auction" onchange="setSetting('auction',this.checked)"/><span class="tsl"></span></label></div>
+        <div class="sr"><div><div class="sl">No Rent in Jail</div></div><label class="tog"><input type="checkbox" id="t-noJailRent" onchange="setSetting('noJailRent',this.checked)"/><span class="tsl"></span></label></div>
+        <div class="sr"><div><div class="sl">Free Parking Jackpot</div></div><label class="tog"><input type="checkbox" id="t-parkingJackpot" onchange="setSetting('parkingJackpot',this.checked)"/><span class="tsl"></span></label></div>
+        <div class="sr"><div><div class="sl">Mortgage System</div><div class="sd">Players can mortgage properties</div></div><label class="tog"><input type="checkbox" id="t-mortgage" onchange="setSetting('mortgage',this.checked)" checked/><span class="tsl"></span></label></div>
+        <div class="sr"><div><div class="sl">Trade System</div></div><label class="tog"><input type="checkbox" id="t-trades" onchange="setSetting('trades',this.checked)" checked/><span class="tsl"></span></label></div>
       </div>
-
-      <!-- Gameplay Rules -->
-      <div class="settings-group">
-        <div class="settings-group-title">Gameplay Rules</div>
-        <div class="setting-row">
-          <div>
-            <div class="setting-label">Double Rent on Full Set</div>
-            <div class="setting-desc">2× base rent when player owns all of a color</div>
-          </div>
-          <label class="toggle setting-control">
-            <input type="checkbox" id="tog-doubleRent" onchange="updateSetting('doubleRent',this.checked)" checked/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="setting-row">
-          <div>
-            <div class="setting-label">Auction Unbuilt Properties</div>
-            <div class="setting-desc">If player skips buying, highest bidder wins</div>
-          </div>
-          <label class="toggle setting-control">
-            <input type="checkbox" id="tog-auction" onchange="updateSetting('auction',this.checked)"/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="setting-row">
-          <div>
-            <div class="setting-label">No Rent in Jail</div>
-            <div class="setting-desc">Jailed players don't collect rent</div>
-          </div>
-          <label class="toggle setting-control">
-            <input type="checkbox" id="tog-noJailRent" onchange="updateSetting('noJailRent',this.checked)"/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="setting-row">
-          <div>
-            <div class="setting-label">Free Parking Jackpot</div>
-            <div class="setting-desc">Tax money collected on Free Parking</div>
-          </div>
-          <label class="toggle setting-control">
-            <input type="checkbox" id="tog-parkingJackpot" onchange="updateSetting('parkingJackpot',this.checked)"/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="setting-row">
-          <div>
-            <div class="setting-label">Trade System</div>
-            <div class="setting-desc">Allow players to trade properties and money</div>
-          </div>
-          <label class="toggle setting-control">
-            <input type="checkbox" id="tog-trades" onchange="updateSetting('trades',this.checked)" checked/>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-      </div>
-      <div class="settings-note">Settings are saved automatically</div>
     </div>
   </div>
 </div>
 
 <!-- GAME -->
 <div id="gameScreen">
-  <header class="gtop">
-    <span class="gtop-brand">🎲 GIGAPOLY</span>
-    <span class="gtop-turn" id="gtopTurn" style="border-color:var(--accent);color:var(--accent)">-</span>
-    <div class="gtop-right">
-      <span class="gtop-money" id="myMoney" style="color:var(--green)">$1500</span>
-      <button class="lv-btn" onclick="leaveGame()">Leave</button>
+  <!-- Left: brand + players + chat -->
+  <div class="gl">
+    <div class="gl-top">
+      <div class="gbrand">🎲 GIGAPOLY</div>
+      <div class="rcode" id="gRoom">Room: ------</div><br/>
+      <a href="#" onclick="leaveGame();return false;" style="font-size:.74rem;color:var(--muted);">← Leave game</a>
     </div>
-  </header>
-
-  <div class="board-area" id="boardArea">
-    <canvas id="boardCanvas"></canvas>
-    <div id="cnBox">
-      <div class="cn-dice">
-        <div class="cn-die" id="cd1">🎲</div>
-        <div class="cn-total" id="cdSum">-</div>
-        <div class="cn-die" id="cd2">🎲</div>
-      </div>
-      <div class="cn-who" id="cdWho"></div>
-      <div class="cn-msg" id="cdMsg"></div>
-      <div class="cn-sub" id="cdSub"></div>
+    <div class="psec"><div class="stitle">Players</div><div id="playersList"></div></div>
+    <div class="chatsec">
+      <div class="clbl">Chat</div>
+      <div class="cmsgs" id="chatMsgs"><div class="nomsg">No messages yet</div></div>
+      <div class="crow2"><input class="cinp" id="chatInp" placeholder="Say something..." maxlength="120"/><button class="csnd" onclick="sendChat()">➤</button></div>
     </div>
   </div>
 
-  <aside class="sidebar">
-    <div class="act-panel">
-      <div class="turn-lbl">Turn: <span class="turn-nm" id="turnName">-</span></div>
-      <div class="dice-row">
-        <div class="sdie" id="sd1">🎲</div>
-        <div class="sdie" id="sd2">🎲</div>
-        <span class="ds" id="sdSum"></span>
-      </div>
-      <div class="prop-pop" id="propPop">
-        <div class="pp-name" id="ppN"></div>
-        <div class="pp-price" id="ppP"></div>
-      </div>
-      <div class="act-btns">
-        <button class="abtn abtn-roll" id="btnRoll" onclick="act('roll')" disabled>🎲 Roll Dice</button>
-        <button class="abtn abtn-buy"  id="btnBuy"  onclick="act('buy')"  disabled style="display:none">💰 Buy Property</button>
-        <button class="abtn abtn-pass" id="btnPass" onclick="act('pass')" disabled style="display:none">⏭ Skip Turn</button>
-        <button class="abtn abtn-jail" id="btnJail" onclick="act('pay_jail')" disabled style="display:none">🔓 Pay $50 — Leave Jail</button>
-        <button class="abtn abtn-trade" id="btnTrade" onclick="openTradeModal()" disabled style="display:none">🤝 Propose Trade</button>
+  <!-- Center: board -->
+  <div class="bwrap">
+    <div class="btop">
+      <div class="btturn" id="btTurn" style="border-color:var(--accL);color:var(--accL)">-</div>
+      <span class="btmoney" id="btMoney" style="color:var(--green)">$1500</span>
+      <button class="btleave" onclick="leaveGame()">Leave Game</button>
+    </div>
+    <div class="bcw" id="boardArea">
+      <canvas id="boardCanvas"></canvas>
+      <!-- Richup-style: dice always in center -->
+      <div id="cnBox">
+        <div class="cdice"><div class="cdie" id="cnD1">🎲</div><div class="cdie" id="cnD2">🎲</div></div>
+        <button class="cbtn" id="cnRoll" onclick="act('roll')">🎲 Roll the dice</button>
+        <div class="cmsg" id="cnMsg"></div>
       </div>
     </div>
-
-    <div class="stabs">
-      <button class="stab active" onclick="showTab('players',this)">Players</button>
-      <button class="stab" onclick="showTab('cities',this)">Cities</button>
-      <button class="stab" onclick="showTab('trades',this)" id="tradeTab">Trades</button>
-      <button class="stab" onclick="showTab('log',this)">Log</button>
+    <div class="bact">
+      <button class="abtn abtn-buy"   id="btnBuy"   onclick="act('buy')"      disabled style="display:none">💰 Buy Property</button>
+      <button class="abtn abtn-pass"  id="btnPass"  onclick="act('pass')"     disabled style="display:none">⏭ Skip Turn</button>
+      <button class="abtn abtn-jail"  id="btnJail"  onclick="act('pay_jail')" disabled style="display:none">🔓 Pay $50 — Leave Jail</button>
+      <button class="abtn abtn-trade" id="btnTrade" onclick="openTrade()"     disabled style="display:none">🤝 Trade</button>
     </div>
-    <div class="spanel active" id="sp-players"><div class="pscroll"><div id="playersList"></div></div></div>
-    <div class="spanel" id="sp-cities"><div class="cscroll" id="citiesList"></div></div>
-    <div class="spanel" id="sp-trades"><div class="trades-scroll" id="tradesList"></div></div>
-    <div class="spanel" id="sp-log"><div class="lscroll" id="logList"></div></div>
+  </div>
 
-    <div class="chat-w">
-      <div class="chat-msgs" id="chatMsgs"></div>
-      <div class="chat-row">
-        <input class="chat-inp" id="chatInp" placeholder="Chat..." maxlength="120"/>
-        <button class="chat-snd" onclick="sendChat()">➤</button>
-      </div>
+  <!-- Right: trades + my props + log -->
+  <div class="gr">
+    <div class="trsec">
+      <div class="trh"><span class="trt">TRADES</span><button class="trcbtn" id="trcbtn" onclick="openTrade()" disabled>➕ Create</button></div>
+      <div class="atrades" id="atrades"><div style="font-size:.76rem;color:var(--muted);padding:4px 0;">No active trades</div></div>
     </div>
-  </aside>
-</div>
-
-<!-- TRADE TOAST (incoming trade notification) -->
-<div id="tradeToast">
-  <div class="trade-toast-title" id="ttTitle">🤝 Trade Offer</div>
-  <div class="trade-toast-text" id="ttText"></div>
-  <div class="trade-toast-btns">
-    <button class="ttbtn ttbtn-yes" onclick="respondTrade(true)">✓ Accept</button>
-    <button class="ttbtn ttbtn-no" onclick="respondTrade(false)">✕ Decline</button>
+    <div class="prsec">
+      <div class="prh" id="prh">My properties (0)</div>
+      <div class="hintb" id="hintb">💡 Click any property on the board or in this list to manage it.</div>
+      <div class="prl" id="propsList"><div class="pempty">No properties yet.<br/>Buy your first city!</div></div>
+    </div>
+    <div class="logsec"><div class="logh">Game Log</div><div class="logl" id="logList"></div></div>
   </div>
 </div>
 
-<!-- CARD MODAL (private — only shown to card receiver) -->
-<div class="mbg" id="cardModal">
-  <div class="mbox cmod">
-    <div class="cmod-icon" id="cardIcon">🃏</div>
-    <div class="mtitle" style="justify-content:center" id="cardTitle">Card</div>
-    <div class="cmod-text" id="cardText"></div>
-    <div class="mbtns"><button class="mbtn mbtn-primary" onclick="closeCard()">Got it</button></div>
+<!-- Property card popup (Richup style) -->
+<div id="pcBg" onclick="closePropCard()"></div>
+<div id="propCard">
+  <div class="pch" id="pch"><div class="pctitle" id="pctitle">Property</div><button class="pccls" onclick="closePropCard()">✕</button></div>
+  <button class="pcmbtn pcm-m" id="pcmbtn" onclick="doMortgage()">💰 Mortgage</button>
+  <div class="pcmbadge" id="pcmbadge">⚠ MORTGAGED</div>
+  <table class="pcrt" id="pcrt"></table>
+  <div class="pcbbs" id="pcbbs" style="display:none">
+    <button class="pcbb pcbu" id="pcbu" onclick="doBuild(1)">▲ Build</button>
+    <button class="pcbb pcbd" id="pcbd" onclick="doBuild(-1)">▼ Sell</button>
+    <button class="pcsell" onclick="doSell()">🗑</button>
   </div>
+  <div class="pcfoot"><div class="pcow" id="pcow"></div><div class="pcpg" id="pcpg"></div></div>
 </div>
 
-<!-- TRADE MODAL -->
+<!-- Card toast (private, Richup style) -->
+<div id="cardToast"><div class="cttype" id="cttype">Community Chest</div><div class="cttext" id="cttext"></div><button class="ctdis" onclick="this.parentElement.classList.remove('show')">Got it</button></div>
+
+<!-- Trade modal (slider style) -->
 <div class="mbg" id="tradeModal">
   <div class="mbox tmod">
-    <div class="mtitle">🤝 Propose Trade <button class="mclose" onclick="closeTrade()">✕</button></div>
+    <div class="mt">🤝 Create Trade <button class="mcls" onclick="closeTrade()">✕</button></div>
     <div class="lbl" style="margin-bottom:6px;">Trade with</div>
-    <select class="trade-sel" id="tradeSel"></select>
-    <div class="trade-sides">
+    <select class="tsel" id="tradeSel"></select>
+    <div class="tsides">
       <div class="tside">
-        <div class="tside-title">You Offer</div>
-        <div class="tmoney-row">
-          <span class="tmoney-lbl">$</span>
-          <input class="tmoney-inp" id="offerM" type="number" min="0" placeholder="0"/>
-        </div>
-        <div class="tprop-title">Properties</div>
-        <div id="offerProps"></div>
+        <div class="tsit">You Offer</div>
+        <div class="tmrow"><div class="tmlbl"><span>Money</span><span id="offerLbl">$0</span></div><input class="tmsl" id="offerSl" type="range" min="0" max="1500" value="0" oninput="upSl('offer')"/></div>
+        <div class="tpit">Properties</div><div id="offerProps"></div>
       </div>
       <div class="tside">
-        <div class="tside-title">You Want</div>
-        <div class="tmoney-row">
-          <span class="tmoney-lbl">$</span>
-          <input class="tmoney-inp" id="wantM" type="number" min="0" placeholder="0"/>
-        </div>
-        <div class="tprop-title">Properties</div>
-        <div id="wantProps"></div>
+        <div class="tsit">You Want</div>
+        <div class="tmrow"><div class="tmlbl"><span>Money</span><span id="wantLbl">$0</span></div><input class="tmsl" id="wantSl" type="range" min="0" max="1500" value="0" oninput="upSl('want')"/></div>
+        <div class="tpit">Properties</div><div id="wantProps"></div>
       </div>
     </div>
-    <div class="mbtns">
-      <button class="mbtn mbtn-ghost" onclick="closeTrade()">Cancel</button>
-      <button class="mbtn mbtn-primary" onclick="sendTrade()">📨 Send Offer</button>
-    </div>
+    <div class="mbts"><button class="mbtn mbg2" onclick="closeTrade()">Cancel</button><button class="mbtn mbp" onclick="sendTrade()">📨 Send Offer</button></div>
   </div>
 </div>
 
-<!-- WINNER -->
-<div id="winnerScreen">
-  <div class="wbox">
-    <div class="wtrophy">🏆</div>
-    <div class="wtitle">WINNER!</div>
-    <div class="wname" id="winnerName"></div>
-    <div class="wsub">Conquered the Ukrainian economy!</div>
-    <button class="wbtn" onclick="leaveGame()">Back to ORBIT</button>
+<!-- Incoming trade -->
+<div class="mbg" id="inTM">
+  <div class="mbox" style="max-width:420px;">
+    <div class="mt">🤝 Trade Offer</div>
+    <div style="font-size:.82rem;color:var(--muted);margin-bottom:12px;" id="inTFrom"></div>
+    <div class="tsumbox" id="inTSum"></div>
+    <div class="mbts"><button class="mbtn mbd" onclick="respondTrade(false)">✕ Decline</button><button class="mbtn mbp" onclick="respondTrade(true)">✓ Accept</button></div>
   </div>
 </div>
+
+<!-- Winner -->
+<div id="winnerScreen"><div class="wbox"><div class="wt">🏆</div><div class="wtit">WINNER!</div><div class="wn" id="wName"></div><div class="ws">Conquered the Ukrainian economy!</div><button class="wb" onclick="leaveGame()">Back to ORBIT</button></div></div>
 
 <script>
-const token      = localStorage.getItem('orbit_token');
-const myUsername = localStorage.getItem('orbit_user');
-const roomCode   = (new URLSearchParams(location.search).get('room')||'').toUpperCase();
-if(!token||!myUsername||!roomCode) location.href='/';
-
+const token=localStorage.getItem('orbit_token'),myUsername=localStorage.getItem('orbit_user');
+const roomCode=(new URLSearchParams(location.search).get('room')||'').toUpperCase();
+if(!token||!myUsername||!roomCode)location.href='/';
 const COLORS=['#f87171','#60a5fa','#4ade80','#fbbf24','#c084fc','#f472b6','#fb923c','#34d399'];
-const CASH_OPTIONS=[500,1000,1500,2000,2500,3000];
+const CASH=[500,1000,1500,2000,2500,3000];
 let myColor=localStorage.getItem('gpColor')||COLORS[0];
-let myId=null, GS=null, roomSettings={maxPlayers:6,randomOrder:false,doubleRent:true,auction:false,noJailRent:false,parkingJackpot:false,trades:true,startingCash:1500};
-let isHost=false, pendingTrade=null, tradeHistory=[], toastTimer=null, notifTimer=null, tokenAnims={};
-
 const socket=io();
+let myId=null,GS=null,isHost=false,pendingTrade=null,tokenAnims={};
+let S={maxPlayers:6,randomOrder:false,doubleRent:true,auction:false,noJailRent:false,parkingJackpot:false,mortgage:true,trades:true,startingCash:1500};
+let openPropId=null;
 
-// ── BOARD DATA ────────────────────────────────
 const BOARD=[
-  {id:0,name:'GO',type:'go'},
-  {id:1,name:'Kyiv',type:'property',color:'#8dd3c7',price:60},
-  {id:2,name:'Community\nChest',type:'community'},
-  {id:3,name:'Odesa',type:'property',color:'#8dd3c7',price:60},
-  {id:4,name:'Income\nTax',type:'tax'},
-  {id:5,name:'Airport',type:'station',price:200},
-  {id:6,name:'Lviv',type:'property',color:'#fb8072',price:100},
-  {id:7,name:'Chance',type:'chance'},
-  {id:8,name:'Dnipro',type:'property',color:'#fb8072',price:100},
-  {id:9,name:'Kharkiv',type:'property',color:'#fb8072',price:120},
-  {id:10,name:'Jail',type:'jail'},
-  {id:11,name:'Zaporizhzhia',type:'property',color:'#80b1d3',price:140},
-  {id:12,name:'Electric\nCo.',type:'utility'},
-  {id:13,name:'Mykolaiv',type:'property',color:'#80b1d3',price:140},
-  {id:14,name:'Vinnytsia',type:'property',color:'#80b1d3',price:160},
-  {id:15,name:'Station\nNorth',type:'station',price:200},
-  {id:16,name:'Poltava',type:'property',color:'#fdb462',price:180},
-  {id:17,name:'Community\nChest',type:'community'},
-  {id:18,name:'Sumy',type:'property',color:'#fdb462',price:180},
-  {id:19,name:'Cherkasy',type:'property',color:'#fdb462',price:200},
-  {id:20,name:'Free\nParking',type:'parking'},
-  {id:21,name:'Zhytomyr',type:'property',color:'#bc80bd',price:220},
-  {id:22,name:'Chance',type:'chance'},
-  {id:23,name:'Rivne',type:'property',color:'#bc80bd',price:220},
-  {id:24,name:'Lutsk',type:'property',color:'#bc80bd',price:240},
-  {id:25,name:'Station\nWest',type:'station',price:200},
-  {id:26,name:'Ternopil',type:'property',color:'#b3de69',price:260},
-  {id:27,name:'Ivano-\nFrankivsk',type:'property',color:'#b3de69',price:260},
-  {id:28,name:'Water\nWorks',type:'utility'},
-  {id:29,name:'Uzhhorod',type:'property',color:'#b3de69',price:280},
-  {id:30,name:'Go To\nJail',type:'gotojail'},
-  {id:31,name:'Chernivtsi',type:'property',color:'#ffed6f',price:300},
-  {id:32,name:'Khmelnytskyi',type:'property',color:'#ffed6f',price:300},
-  {id:33,name:'Community\nChest',type:'community'},
-  {id:34,name:'Zaporizhzhia-2',type:'property',color:'#ffed6f',price:320},
-  {id:35,name:'Station\nEast',type:'station',price:200},
-  {id:36,name:'Chance',type:'chance'},
-  {id:37,name:'Donetsk',type:'property',color:'#fc8d59',price:350},
-  {id:38,name:'Luxury\nTax',type:'tax'},
-  {id:39,name:'Luhansk',type:'property',color:'#e31a1c',price:400},
+  {id:0,name:'GO',type:'go'},{id:1,name:'Kyiv',type:'property',color:'#8dd3c7',price:60,rent:[2,10,30,90,160,250],houseCost:50},
+  {id:2,name:'Community\nChest',type:'community'},{id:3,name:'Odesa',type:'property',color:'#8dd3c7',price:60,rent:[4,20,60,180,320,450],houseCost:50},
+  {id:4,name:'Income\nTax',type:'tax',amount:200},{id:5,name:'Airport',type:'station',price:200},
+  {id:6,name:'Lviv',type:'property',color:'#fb8072',price:100,rent:[6,30,90,270,400,550],houseCost:50},
+  {id:7,name:'Chance',type:'chance'},{id:8,name:'Dnipro',type:'property',color:'#fb8072',price:100,rent:[6,30,90,270,400,550],houseCost:50},
+  {id:9,name:'Kharkiv',type:'property',color:'#fb8072',price:120,rent:[8,40,100,300,450,600],houseCost:50},
+  {id:10,name:'Jail',type:'jail'},{id:11,name:'Zaporizhzhia',type:'property',color:'#80b1d3',price:140,rent:[10,50,150,450,625,750],houseCost:100},
+  {id:12,name:'Electric\nCo.',type:'utility',price:150},{id:13,name:'Mykolaiv',type:'property',color:'#80b1d3',price:140,rent:[10,50,150,450,625,750],houseCost:100},
+  {id:14,name:'Vinnytsia',type:'property',color:'#80b1d3',price:160,rent:[12,60,180,500,700,900],houseCost:100},
+  {id:15,name:'Station\nNorth',type:'station',price:200},{id:16,name:'Poltava',type:'property',color:'#fdb462',price:180,rent:[14,70,200,550,750,950],houseCost:100},
+  {id:17,name:'Community\nChest',type:'community'},{id:18,name:'Sumy',type:'property',color:'#fdb462',price:180,rent:[14,70,200,550,750,950],houseCost:100},
+  {id:19,name:'Cherkasy',type:'property',color:'#fdb462',price:200,rent:[16,80,220,600,800,1000],houseCost:100},
+  {id:20,name:'Free\nParking',type:'parking'},{id:21,name:'Zhytomyr',type:'property',color:'#bc80bd',price:220,rent:[18,90,250,700,875,1050],houseCost:150},
+  {id:22,name:'Chance',type:'chance'},{id:23,name:'Rivne',type:'property',color:'#bc80bd',price:220,rent:[18,90,250,700,875,1050],houseCost:150},
+  {id:24,name:'Lutsk',type:'property',color:'#bc80bd',price:240,rent:[20,100,300,750,925,1100],houseCost:150},
+  {id:25,name:'Station\nWest',type:'station',price:200},{id:26,name:'Ternopil',type:'property',color:'#b3de69',price:260,rent:[22,110,330,800,975,1150],houseCost:150},
+  {id:27,name:'Ivano-\nFrankivsk',type:'property',color:'#b3de69',price:260,rent:[22,110,330,800,975,1150],houseCost:150},
+  {id:28,name:'Water\nWorks',type:'utility',price:150},{id:29,name:'Uzhhorod',type:'property',color:'#b3de69',price:280,rent:[24,120,360,850,1025,1200],houseCost:150},
+  {id:30,name:'Go To\nJail',type:'gotojail'},{id:31,name:'Chernivtsi',type:'property',color:'#ffed6f',price:300,rent:[26,130,390,900,1100,1275],houseCost:200},
+  {id:32,name:'Khmelnytskyi',type:'property',color:'#ffed6f',price:300,rent:[26,130,390,900,1100,1275],houseCost:200},
+  {id:33,name:'Community\nChest',type:'community'},{id:34,name:'Zaporizhzhia-2',type:'property',color:'#ffed6f',price:320,rent:[28,150,450,1000,1200,1400],houseCost:200},
+  {id:35,name:'Station\nEast',type:'station',price:200},{id:36,name:'Chance',type:'chance'},
+  {id:37,name:'Donetsk',type:'property',color:'#fc8d59',price:350,rent:[35,175,500,1100,1300,1500],houseCost:200},
+  {id:38,name:'Luxury\nTax',type:'tax',amount:100},{id:39,name:'Luhansk',type:'property',color:'#e31a1c',price:400,rent:[50,200,600,1400,1700,2000],houseCost:200}
 ];
 
-// ── CANVAS ────────────────────────────────────
-const canvas=document.getElementById('boardCanvas');
-const ctx=canvas.getContext('2d');
+const canvas=document.getElementById('boardCanvas'),ctx=canvas.getContext('2d');
 let CO=80,CE=52,SZ=0;
-
-function resize(){
-  const a=document.getElementById('boardArea');
-  if(!a)return;
-  const av=Math.min(a.clientWidth-16,a.clientHeight-16);
-  CO=Math.floor(av/11.5); CE=Math.floor((av-CO*2)/9); SZ=CO*2+CE*9;
-  canvas.width=SZ; canvas.height=SZ; draw();
-}
-
-function cellPos(id){
-  const c=CE,co=CO,s=SZ;
-  if(id===0)  return{x:s-co,y:s-co,w:co,h:co};
-  if(id<=9)   return{x:s-co-id*c,y:s-co,w:c,h:co};
-  if(id===10) return{x:0,y:s-co,w:co,h:co};
-  if(id<=19)  return{x:0,y:s-co-(id-10)*c,w:co,h:c};
-  if(id===20) return{x:0,y:0,w:co,h:co};
-  if(id<=29)  return{x:(id-20)*c,y:0,w:c,h:co};
-  if(id===30) return{x:s-co,y:0,w:co,h:co};
-  if(id<=39)  return{x:s-co,y:(id-30)*c,w:co,h:c};
-}
+function resize(){const a=document.getElementById('boardArea');if(!a)return;const av=Math.min(a.clientWidth-16,a.clientHeight-16);CO=Math.floor(av/11.5);CE=Math.floor((av-CO*2)/9);SZ=CO*2+CE*9;canvas.width=SZ;canvas.height=SZ;draw();}
+function cellPos(id){const c=CE,co=CO,s=SZ;if(id===0)return{x:s-co,y:s-co,w:co,h:co};if(id<=9)return{x:s-co-id*c,y:s-co,w:c,h:co};if(id===10)return{x:0,y:s-co,w:co,h:co};if(id<=19)return{x:0,y:s-co-(id-10)*c,w:co,h:c};if(id===20)return{x:0,y:0,w:co,h:co};if(id<=29)return{x:(id-20)*c,y:0,w:c,h:co};if(id===30)return{x:s-co,y:0,w:co,h:co};if(id<=39)return{x:s-co,y:(id-30)*c,w:co,h:c};}
 function cellCenter(id){const p=cellPos(id);return p?{x:p.x+p.w/2,y:p.y+p.h/2}:{x:0,y:0};}
+function getOwner(id){if(!GS)return null;const p=GS.properties?.find(p=>p.id===id);if(!p?.ownerId)return null;return GS.players?.find(pl=>pl.id===p.ownerId)||null;}
 
 function draw(){
   if(!SZ)return;
   ctx.clearRect(0,0,SZ,SZ);
-  ctx.fillStyle='#0a1a0d'; ctx.fillRect(0,0,SZ,SZ);
-  ctx.fillStyle='#060e08'; ctx.fillRect(CO,CO,SZ-CO*2,SZ-CO*2);
-  ctx.save();
-  ctx.font=`bold ${CO*.37}px Space Mono,monospace`;
-  ctx.fillStyle='#4ade80'; ctx.textAlign='center';
-  ctx.fillText('GIGAPOLY',SZ/2,SZ/2-CO*.12);
-  ctx.font=`${CO*.145}px Outfit,sans-serif`;
-  ctx.fillStyle='rgba(232,234,246,.22)';
-  ctx.fillText('🎲 Ukraine Edition',SZ/2,SZ/2+CO*.13);
-  ctx.restore();
-  BOARD.forEach((sp,id)=>{
-    const p=cellPos(id); if(!p)return;
-    drawCell(sp,p,id);
-  });
-  if(GS) drawTokens();
-}
-
-function getOwner(id){
-  if(!GS)return null;
-  const prop=GS.properties?.find(p=>p.id===id);
-  if(!prop?.ownerId)return null;
-  return GS.players?.find(p=>p.id===prop.ownerId)||null;
+  ctx.fillStyle='#1e2139';ctx.fillRect(0,0,SZ,SZ);
+  ctx.fillStyle='#16182b';ctx.fillRect(CO,CO,SZ-CO*2,SZ-CO*2);
+  ctx.save();ctx.font=`bold ${CO*.35}px Outfit,sans-serif`;ctx.fillStyle='#7c3aed';ctx.textAlign='center';
+  ctx.fillText('GIGAPOLY',SZ/2,SZ/2-CO*.1);
+  ctx.font=`${CO*.14}px Outfit,sans-serif`;ctx.fillStyle='rgba(226,232,240,.2)';
+  ctx.fillText('🎲 Ukraine Edition',SZ/2,SZ/2+CO*.13);ctx.restore();
+  BOARD.forEach((sp,id)=>{const p=cellPos(id);if(p)drawCell(sp,p,id);});
+  if(GS)drawTokens();
 }
 
 function drawCell(sp,{x,y,w,h},id){
   const owner=getOwner(id);
-  if(owner){
-    ctx.fillStyle=owner.color; ctx.globalAlpha=.48; ctx.fillRect(x,y,w,h); ctx.globalAlpha=1;
-    ctx.fillStyle='rgba(0,0,0,.28)'; ctx.fillRect(x,y,w,h);
-  } else {
-    ctx.fillStyle='#111827'; ctx.fillRect(x,y,w,h);
-  }
-  ctx.strokeStyle=owner?owner.color:'rgba(110,231,247,.16)';
-  ctx.lineWidth=owner?2:1; ctx.strokeRect(x,y,w,h);
-
-  if(sp.color){
-    ctx.fillStyle=sp.color;
-    const sh=h*.19,sw=w*.19;
-    if(id>=1&&id<=9)   ctx.fillRect(x,y,w,sh);
-    if(id>=11&&id<=19) ctx.fillRect(x+w-sw,y,sw,h);
-    if(id>=21&&id<=29) ctx.fillRect(x,y+h-sh,w,sh);
-    if(id>=31&&id<=39) ctx.fillRect(x,y,sw,h);
-  }
-
-  if(owner&&GS){
-    const prop=GS.properties?.find(p=>p.id===id);
-    if(prop?.hotel){
-      ctx.fillStyle='#f87171';
-      ctx.fillRect(x+w*.27,y+h*.28,w*.46,h*.2);
-    } else if(prop?.houses>0){
-      ctx.fillStyle='#4ade80';
-      for(let i=0;i<prop.houses;i++) ctx.fillRect(x+3+i*7,y+h*.3,5,h*.16);
-    }
-    ctx.beginPath(); ctx.arc(x+w-6,y+6,5,0,Math.PI*2);
-    ctx.fillStyle=owner.color; ctx.fill();
-    ctx.strokeStyle='rgba(255,255,255,.6)'; ctx.lineWidth=1.2; ctx.stroke();
-  }
-
+  const prop=GS?.properties?.find(p=>p.id===id);
+  const mtg=prop?.mortgaged;
+  if(owner&&!mtg){ctx.fillStyle=owner.color;ctx.globalAlpha=.42;ctx.fillRect(x,y,w,h);ctx.globalAlpha=1;ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(x,y,w,h);}
+  else if(mtg){ctx.fillStyle='rgba(245,158,11,.08)';ctx.fillRect(x,y,w,h);}
+  else{ctx.fillStyle='#1e2139';ctx.fillRect(x,y,w,h);}
+  ctx.strokeStyle=owner&&!mtg?owner.color:mtg?'rgba(245,158,11,.35)':'rgba(255,255,255,.1)';
+  ctx.lineWidth=owner&&!mtg?2:1;ctx.strokeRect(x,y,w,h);
+  if(sp.color&&!mtg){ctx.fillStyle=sp.color;const sh=h*.18,sw=w*.18;if(id>=1&&id<=9)ctx.fillRect(x,y,w,sh);if(id>=11&&id<=19)ctx.fillRect(x+w-sw,y,sw,h);if(id>=21&&id<=29)ctx.fillRect(x,y+h-sh,w,sh);if(id>=31&&id<=39)ctx.fillRect(x,y,sw,h);}
+  if(owner&&prop&&!mtg){if(prop.hotel){ctx.fillStyle='#ef4444';ctx.fillRect(x+w*.27,y+h*.29,w*.46,h*.19);ctx.fillStyle='#fff';ctx.font=`bold ${h*.12}px Outfit,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('H',x+w*.5,y+h*.38);}else if(prop.houses>0){ctx.fillStyle='#22c55e';for(let i=0;i<prop.houses;i++)ctx.fillRect(x+3+i*(w*.16+1),y+h*.3,w*.14,h*.15);}ctx.beginPath();ctx.arc(x+w-7,y+7,5,0,Math.PI*2);ctx.fillStyle=owner.color;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.7)';ctx.lineWidth=1.2;ctx.stroke();}
+  if(mtg){ctx.save();ctx.font=`bold ${Math.min(w,h)*.14}px Space Mono,monospace`;ctx.fillStyle='rgba(245,158,11,.55)';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('M',x+w/2,y+h*.38);ctx.restore();}
   const icons={go:'🏁',jail:'🔒',parking:'🅿️',gotojail:'👮',tax:'💸',community:'📦',chance:'❓',station:'✈️',utility:'⚡'};
-  if(icons[sp.type]){
-    ctx.font=`${Math.min(w,h)*.25}px sans-serif`;
-    ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillText(icons[sp.type],x+w/2,y+h*.4);
-  }
-  const lines=sp.name.split('\n');
-  const fs=Math.min(w,h)*.116;
-  const lh=fs*1.22;
-  ctx.font=`bold ${fs}px Outfit,sans-serif`;
-  ctx.textAlign='center'; ctx.textBaseline='bottom';
-  lines.forEach((ln,i)=>{
-    const ty=y+h-2-(lines.length-1-i)*lh;
-    ctx.fillStyle='rgba(0,0,0,.7)'; ctx.fillText(ln,x+w/2+.8,ty+.8,w-4);
-    ctx.fillStyle=owner?'#fff':'rgba(232,234,246,.95)'; ctx.fillText(ln,x+w/2,ty,w-4);
-  });
-  if(sp.price&&!owner){
-    ctx.font=`${Math.min(w,h)*.086}px Space Mono,monospace`;
-    ctx.fillStyle='rgba(0,0,0,.5)'; ctx.fillText('$'+sp.price,x+w/2+.6,y+h-.5+.6,w-3);
-    ctx.fillStyle='#fbbf24'; ctx.fillText('$'+sp.price,x+w/2,y+h-.5,w-3);
-  }
+  if(icons[sp.type]){ctx.font=`${Math.min(w,h)*.23}px sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(icons[sp.type],x+w/2,y+h*.4);}
+  const lines=sp.name.split('\n');const fs=Math.min(w,h)*.112;const lh=fs*1.2;
+  ctx.font=`700 ${fs}px Outfit,sans-serif`;ctx.textAlign='center';ctx.textBaseline='bottom';
+  lines.forEach((ln,i)=>{const ty=y+h-2-(lines.length-1-i)*lh;ctx.fillStyle='rgba(0,0,0,.75)';ctx.fillText(ln,x+w/2+.8,ty+.8,w-3);ctx.fillStyle=owner&&!mtg?'#fff':'rgba(226,232,240,.92)';ctx.fillText(ln,x+w/2,ty,w-3);});
+  if(sp.price&&!owner&&!mtg){ctx.font=`${Math.min(w,h)*.086}px Space Mono,monospace`;ctx.fillStyle='rgba(0,0,0,.55)';ctx.fillText(sp.price+'$',x+w/2+.6,y+h-.4+.6,w-2);ctx.fillStyle='#f59e0b';ctx.fillText(sp.price+'$',x+w/2,y+h-.4,w-2);}
 }
 
 function drawTokens(){
   const byPos={};
-  GS.players.forEach(p=>{
-    if(!p.bankrupt){
-      const anim=tokenAnims[p.id];
-      if(anim&&anim.progress<1)return;
-      if(!byPos[p.position]) byPos[p.position]=[];
-      byPos[p.position].push(p);
-    }
-  });
-  // Animated
-  GS.players.forEach(p=>{
-    if(p.bankrupt)return;
-    const anim=tokenAnims[p.id];
-    if(anim&&anim.progress<1){
-      const from=cellCenter(anim.from), to=cellCenter(anim.to);
-      const t=easeOut(anim.progress);
-      const cx=from.x+(to.x-from.x)*t;
-      const cy=(from.y+(to.y-from.y)*t)-Math.sin(anim.progress*Math.PI)*24;
-      drawToken(p,cx,cy,1.1+Math.sin(anim.progress*Math.PI)*.12);
-    }
-  });
-  // Static
-  Object.entries(byPos).forEach(([pos,players])=>{
-    const cell=cellPos(+pos); if(!cell)return;
-    const r=Math.min(cell.w,cell.h)*.14;
-    players.forEach((p,i)=>{
-      const cx=cell.x+cell.w/2+(i-(players.length-1)/2)*(r*2.5);
-      drawToken(p,cx,cell.y+cell.h/2,1);
-    });
-  });
+  GS.players.forEach(p=>{if(p.bankrupt)return;const a=tokenAnims[p.id];if(a&&a.t<1)return;if(!byPos[p.position])byPos[p.position]=[];byPos[p.position].push(p);});
+  GS.players.forEach(p=>{if(p.bankrupt)return;const a=tokenAnims[p.id];if(a&&a.t<1){const pi=Math.floor(a.t*a.path.length);const pj=Math.min(pi+1,a.path.length-1);const lt=(a.t*a.path.length)%1;const fc=cellCenter(a.path[pi]);const tc=cellCenter(a.path[pj]);const cx=fc.x+(tc.x-fc.x)*easeOut(lt);const cy=fc.y+(tc.y-fc.y)*easeOut(lt);drawToken(p,cx,cy,1.1);}});
+  Object.entries(byPos).forEach(([pos,ps])=>{const cell=cellPos(+pos);if(!cell)return;const r=Math.min(cell.w,cell.h)*.14;ps.forEach((p,i)=>{const cx=cell.x+cell.w/2+(i-(ps.length-1)/2)*(r*2.5);drawToken(p,cx,cell.y+cell.h/2,1);});});
 }
-
-function drawToken(p,cx,cy,scale=1){
-  const r=Math.min(CO,CE)*.14*scale;
-  ctx.save(); ctx.translate(cx,cy);
-  ctx.beginPath(); ctx.arc(1,2,r,0,Math.PI*2); ctx.fillStyle='rgba(0,0,0,.45)'; ctx.fill();
-  ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fillStyle=p.color; ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,.8)'; ctx.lineWidth=2; ctx.stroke();
-  ctx.fillStyle='#060811'; ctx.font=`bold ${r*.88}px Outfit,sans-serif`;
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText(p.username[0].toUpperCase(),0,0);
-  ctx.restore();
-}
-
+function drawToken(p,cx,cy,s=1){const r=Math.min(CO,CE)*.135*s;ctx.save();ctx.translate(cx,cy);ctx.beginPath();ctx.arc(1,2,r,0,Math.PI*2);ctx.fillStyle='rgba(0,0,0,.5)';ctx.fill();ctx.beginPath();ctx.arc(0,0,r,0,Math.PI*2);ctx.fillStyle=p.color;ctx.fill();ctx.strokeStyle='rgba(255,255,255,.85)';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#fff';ctx.font=`800 ${r*.88}px Outfit,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(p.username[0].toUpperCase(),0,.5);ctx.restore();}
 function easeOut(t){return 1-(1-t)*(1-t)*(1-t);}
+function buildPath(from,to){const path=[];let c=from;while(c!==to){c=(c+1)%40;path.push(c);}return path.length?path:[to];}
+function animToken(pid,from,to,cb){const path=buildPath(from,to);const dur=110*path.length;const start=performance.now();tokenAnims[pid]={path,t:0};(function frame(now){const p=Math.min((now-start)/dur,1);tokenAnims[pid].t=p;draw();if(p<1)requestAnimationFrame(frame);else{delete tokenAnims[pid];if(cb)cb();draw();}})(start);}
 
-function animToken(pid,from,to,cb){
-  const start=performance.now(), dur=640;
-  tokenAnims[pid]={from,to,progress:0};
-  (function frame(now){
-    const p=Math.min((now-start)/dur,1);
-    tokenAnims[pid].progress=p; draw();
-    if(p<1) requestAnimationFrame(frame);
-    else{ delete tokenAnims[pid]; if(cb)cb(); }
-  })(start);
-}
-
-// ── CENTER NOTIF ──────────────────────────────
-let nHide=null;
-function showNotif(d1,d2,who,msg,sub,autoHide=true){
-  const el=document.getElementById('cnBox');
-  const FACES=['','⚀','⚁','⚂','⚃','⚄','⚅'];
-  const n1=document.getElementById('cd1'),n2=document.getElementById('cd2');
-  n1.classList.add('rolling'); n2.classList.add('rolling');
-  let c=0;
-  const t=setInterval(()=>{
-    n1.textContent=FACES[Math.floor(Math.random()*6)+1];
-    n2.textContent=FACES[Math.floor(Math.random()*6)+1];
-    if(++c>10){clearInterval(t);n1.textContent=d1?FACES[d1]:'🎲';n2.textContent=d2?FACES[d2]:'🎲';n1.classList.remove('rolling');n2.classList.remove('rolling');}
-  },72);
-  document.getElementById('cdSum').textContent=(d1&&d2)?d1+d2:'';
-  const po=GS?.players.find(p=>p.username===who||p.id===who);
-  const wEl=document.getElementById('cdWho');
-  wEl.textContent=who||''; wEl.style.color=po?.color||'var(--text)';
-  document.getElementById('cdMsg').textContent=msg||'';
-  document.getElementById('cdSub').textContent=sub||'';
-  el.classList.add('show'); clearTimeout(nHide);
-  if(autoHide) nHide=setTimeout(()=>el.classList.remove('show'),3800);
-}
-
-function showRentFloat(x,y,amount){
-  const area=document.getElementById('boardArea');
-  const div=document.createElement('div');
-  div.className='rent-float'; div.textContent='-$'+amount;
-  div.style.left=x+'px'; div.style.top=y+'px';
-  area.appendChild(div); setTimeout(()=>div.remove(),1450);
-}
-
-// ── SOCKET ────────────────────────────────────
-socket.on('connect',()=>socket.emit('auth',token));
-socket.on('auth_ok',(u)=>{
-  myId=u.id; setLoader('Joining '+roomCode+'...');
-  socket.emit('join_room',roomCode);
-  setTimeout(()=>socket.emit('set_color',myColor),300);
+canvas.addEventListener('click',e=>{
+  if(!GS)return;
+  const rect=canvas.getBoundingClientRect();
+  const mx=(e.clientX-rect.left)*(SZ/rect.width),my=(e.clientY-rect.top)*(SZ/rect.height);
+  for(let id=0;id<40;id++){const p=cellPos(id);if(!p)continue;if(mx>=p.x&&mx<=p.x+p.w&&my>=p.y&&my<=p.y+p.h){const sp=BOARD[id];if(['property','station','utility'].includes(sp.type)){openPropCard(id);return;}}}
 });
+
+function showRentFloat(x,y,amt){const a=document.getElementById('boardArea');const d=document.createElement('div');d.className='rent-float';d.textContent='-$'+amt;d.style.left=x+'px';d.style.top=y+'px';a.appendChild(d);setTimeout(()=>d.remove(),1450);}
+
+// PROPERTY CARD
+function openPropCard(id){
+  const sp=BOARD[id];const prop=GS?.properties?.find(p=>p.id===id);const owner=getOwner(id);const me=GS?.players.find(p=>p.id===myId);const isMine=prop&&prop.ownerId===myId;openPropId=id;
+  document.getElementById('pch').style.background=sp.color||'rgba(255,255,255,.06)';document.getElementById('pch').style.borderRadius='18px 18px 0 0';document.getElementById('pctitle').textContent=sp.name.replace('\n',' ');
+  const mb=document.getElementById('pcmbtn'),mbadge=document.getElementById('pcmbadge');
+  if(isMine&&GS?.settings?.mortgage!==false){mb.style.display='flex';if(prop.mortgaged){mb.className='pcmbtn pcm-u';mb.innerHTML=`💰 Get back for $${Math.floor(sp.price*.55)}`;mbadge.style.display='block';}else{mb.className='pcmbtn pcm-m';mb.innerHTML=`💰 Mortgage for $${Math.floor(sp.price*.5)}`;mbadge.style.display='none';}}
+  else{mb.style.display='none';mbadge.style.display='none';}
+  const tbl=document.getElementById('pcrt');
+  if(sp.type==='property'&&sp.rent){tbl.innerHTML=['with rent','with one house','with two houses','with three houses','with four houses','with a hotel'].map((l,i)=>`<tr><td class="rla">${l}</td><td class="rva">$${sp.rent[i]}</td></tr>`).join('');}
+  else if(sp.type==='station'){tbl.innerHTML=`<tr><td class="rla">1 station</td><td class="rva">$25</td></tr><tr><td class="rla">2 stations</td><td class="rva">$50</td></tr><tr><td class="rla">3 stations</td><td class="rva">$100</td></tr><tr><td class="rla">4 stations</td><td class="rva">$200</td></tr>`;}
+  else if(sp.type==='utility'){tbl.innerHTML=`<tr><td class="rla">If one owned</td><td class="rva">4× dice</td></tr><tr><td class="rla">If two owned</td><td class="rva">10× dice</td></tr>`;}
+  else tbl.innerHTML='';
+  const bbs=document.getElementById('pcbbs');
+  if(isMine&&sp.type==='property'&&!prop.mortgaged&&ownsFullSet(id)){bbs.style.display='flex';document.getElementById('pcbu').disabled=!!prop.hotel;document.getElementById('pcbd').disabled=prop.houses===0&&!prop.hotel;}
+  else bbs.style.display='none';
+  const oel=document.getElementById('pcow');
+  if(owner)oel.innerHTML=`<div class="pcow-av" style="background:${owner.color};color:#fff">${owner.username[0]}</div>${esc(owner.username)}`;
+  else oel.innerHTML='<span style="color:var(--muted)">Unowned</span>';
+  document.getElementById('pcpg').innerHTML=`<div class="pcpi"><div class="pcpl">PRICE</div><div class="pcpv">$${sp.price||'-'}</div></div>${sp.houseCost?`<div class="pcpi"><div class="pcpl">🏠</div><div class="pcpv">$${sp.houseCost}</div></div><div class="pcpi"><div class="pcpl">🏨</div><div class="pcpv">$${sp.houseCost}</div></div>`:''}`;
+  document.getElementById('propCard').classList.add('show');document.getElementById('pcBg').classList.add('show');
+}
+function closePropCard(){document.getElementById('propCard').classList.remove('show');document.getElementById('pcBg').classList.remove('show');openPropId=null;}
+function ownsFullSet(id){const sp=BOARD[id];if(!sp.color)return false;const me=GS?.players.find(p=>p.id===myId);if(!me)return false;return BOARD.filter(s=>s.color===sp.color).every(s=>me.properties?.includes(s.id));}
+function doMortgage(){if(openPropId===null)return;const prop=GS?.properties?.find(p=>p.id===openPropId);if(!prop||prop.ownerId!==myId)return;socket.emit('game_action',{type:prop.mortgaged?'unmortgage':'mortgage',propertyId:openPropId});closePropCard();}
+function doBuild(d){if(openPropId===null)return;socket.emit('game_action',{type:'build',propertyId:openPropId,delta:d});closePropCard();}
+function doSell(){if(openPropId===null)return;if(!confirm('Sell for half price?'))return;socket.emit('game_action',{type:'sell_property',propertyId:openPropId});closePropCard();}
+
+// SOCKET
+socket.on('connect',()=>socket.emit('auth',token));
+socket.on('auth_ok',u=>{myId=u.id;setLoader('Joining '+roomCode+'...');socket.emit('join_room',roomCode);setTimeout(()=>socket.emit('set_color',myColor),300);});
 socket.on('auth_error',()=>location.href='/');
 socket.on('room_update',room=>showLobby(room));
-socket.on('settings_update',settings=>{
-  roomSettings={...roomSettings,...settings};
-  renderSettingsUI();
-});
-socket.on('game_start',({gameState:gs})=>{
-  GS=gs; showGame(); updateUI(); draw();
-  showNotif(null,null,null,'Game Started! 🎲','Good luck everyone!',true);
-});
-socket.on('game_update',({gameState:gs,event})=>{
-  const prev=GS; GS=gs; handleEvent(event,prev); updateUI(); draw();
-});
-socket.on('game_over',({winner})=>{
-  document.getElementById('winnerName').textContent=winner;
-  document.getElementById('winnerScreen').classList.add('show');
-});
-socket.on('game_chat',({username:u,text,color})=>{
-  const el=document.getElementById('chatMsgs');
-  const d=document.createElement('div'); d.className='cmsg';
-  d.innerHTML=`<span class="cn" style="color:${color||'var(--accent)'}">${esc(u)}</span>${esc(text)}`;
-  el.appendChild(d); el.scrollTop=el.scrollHeight;
-});
-// ── TRADE EVENTS ── (privacy-correct: only receiver gets toast)
-socket.on('trade_offer',(offer)=>{
-  pendingTrade=offer;
-  const offerer=GS?.players.find(p=>p.id===offer.fromId);
-  addToTradeHistory({...offer,status:'pending',fromUsername:offerer?.username||'?'});
-  showTradeToast(offer,offerer);
-  // Switch to trades tab to show it
-  document.querySelector('[onclick="showTab(\'trades\',this)"]')?.click();
-});
-socket.on('trade_result',({accepted,tradeId,offerer,receiver,offerMoney,wantMoney,offerProps,wantProps})=>{
-  updateTradeInHistory(tradeId,accepted?'accepted':'declined');
-  if(accepted){
-    addLog(`🤝 Trade done! ${offerer} ↔ ${receiver}`,true,'good');
-    showNotif(null,null,null,'Trade Completed! 🤝',`${offerer} ↔ ${receiver}`,true);
-  } else {
-    addLog(`❌ ${receiver} declined trade from ${offerer}`);
-  }
-  hideTradeToast();
-  closeTrade();
-  renderTradeHistory();
-});
-socket.on('error',(msg)=>{
-  if(document.getElementById('loader').style.display!=='none'){
-    setLoader('⚠ '+msg); setTimeout(()=>location.href='/',2000);
-  } else addLog('⚠ '+msg);
-});
-// ── CARD: only shown to the player who received it ──
-socket.on('my_card',(card)=>{
-  // Only this player receives this event
-  document.getElementById('cardText').textContent=card.text;
-  document.getElementById('cardIcon').textContent=card.type==='community'?'📦':'❓';
-  document.getElementById('cardTitle').textContent=card.type==='community'?'Community Chest':'Chance';
-  document.getElementById('cardModal').classList.add('show');
-});
+socket.on('settings_update',s=>{S={...S,...s};renderSettings();});
+socket.on('game_start',({gameState:gs})=>{GS=gs;showGame();updateUI();draw();});
+socket.on('game_update',({gameState:gs,event})=>{const prev=GS;GS=gs;handleEvent(event,prev);updateUI();draw();if(openPropId!==null)openPropCard(openPropId);});
+socket.on('game_over',({winner})=>{document.getElementById('wName').textContent=winner;document.getElementById('winnerScreen').classList.add('show');});
+socket.on('game_chat',({username:u,text,color})=>{const el=document.getElementById('chatMsgs');const nm=el.querySelector('.nomsg');if(nm)nm.remove();const d=document.createElement('div');d.className='cmsg';d.innerHTML=`<span class="cn" style="color:${color||'var(--accL)'}">${esc(u)}</span>${esc(text)}`;el.appendChild(d);el.scrollTop=el.scrollHeight;});
+socket.on('my_card',card=>{document.getElementById('cttype').textContent=card.type==='community'?'📦 Community Chest':'❓ Chance';document.getElementById('cttype').style.color=card.type==='community'?'var(--cyan)':'var(--gold)';document.getElementById('cttext').textContent=card.text;document.getElementById('cardToast').classList.add('show');setTimeout(()=>document.getElementById('cardToast').classList.remove('show'),10000);});
+socket.on('trade_offer',offer=>{pendingTrade=offer;const off=GS?.players.find(p=>p.id===offer.fromId);addActiveTrade(offer,off);showInTrade(offer,off);});
+socket.on('trade_result',({accepted,tradeId,offerer,receiver})=>{addLog(accepted?`🤝 Trade: ${offerer} ↔ ${receiver}`:`❌ ${receiver} declined`,true,accepted?'good':'bad');document.getElementById('inTM').style.display='none';pendingTrade=null;document.getElementById('atrades').innerHTML='<div style="font-size:.76rem;color:var(--muted);padding:4px 0;">No active trades</div>';});
+socket.on('error',msg=>{if(document.getElementById('loader').style.display!=='none'){setLoader('⚠ '+msg);setTimeout(()=>location.href='/',2000);}else addLog('⚠ '+msg);});
 
-// ── EVENT HANDLER ─────────────────────────────
 function handleEvent(ev,prev){
   if(!ev)return;
   const FACES=['','⚀','⚁','⚂','⚃','⚄','⚅'];
   if(ev.type==='moved'){
     const d1=GS.dice[0],d2=GS.dice[1];
-    animSideDice(d1,d2);
+    const e1=document.getElementById('cnD1'),e2=document.getElementById('cnD2');
+    e1.classList.add('rolling');e2.classList.add('rolling');let n=0;
+    const t=setInterval(()=>{e1.textContent=FACES[Math.floor(Math.random()*6)+1];e2.textContent=FACES[Math.floor(Math.random()*6)+1];if(++n>12){clearInterval(t);e1.textContent=FACES[d1];e2.textContent=FACES[d2];e1.classList.remove('rolling');e2.classList.remove('rolling');}},70);
     const mover=GS.players.find(p=>p.username===ev.player);
-    if(mover){
-      const pPrev=prev?.players.find(p=>p.id===mover.id);
-      const from=pPrev?.position??mover.position;
-      if(from!==mover.position){
-        animToken(mover.id,from,mover.position,()=>{
-          draw();
-          if(ev.landEvent?.type==='can_buy'){
-            const sp=BOARD[mover.position];
-            document.getElementById('ppN').textContent=sp.name.replace('\n',' ');
-            document.getElementById('ppP').textContent='$'+sp.price;
-            document.getElementById('propPop').classList.add('show');
-          }
-        });
-      }
-    }
+    if(mover){const pPrev=prev?.players.find(p=>p.id===mover.id);const from=pPrev?.position??mover.position;if(from!==mover.position)animToken(mover.id,from,mover.position,()=>draw());}
     const ls=BOARD[mover?.position||0];
-    showNotif(d1,d2,ev.player,`Rolled ${d1}+${d2}=${d1+d2}`,ls?`→ ${ls.name.replace('\n',' ')}`:'',true);
+    document.getElementById('cnMsg').textContent=`${ev.player} rolled ${d1}+${d2} → ${ls?.name.replace('\n',' ')}`;
   }
-  if(ev.landEvent?.type==='rent'){
-    const payer=GS.players.find(p=>p.username===ev.player);
-    if(payer){
-      const c=cellCenter(payer.position);
-      const r=canvas.getBoundingClientRect(), a=document.getElementById('boardArea').getBoundingClientRect();
-      showRentFloat(r.left-a.left+c.x,r.top-a.top+c.y-30,ev.landEvent.amount);
-    }
-    addLog(`💸 ${ev.player} paid $${ev.landEvent.amount} rent to ${ev.landEvent.to}`,true,'bad');
-  }
-  if(ev.type==='bought'){
-    addLog(`🏙️ ${ev.player} bought ${ev.property}!`,true,'good');
-    showNotif(null,null,ev.player,`Bought ${ev.property}!`,null,true);
-  }
-  if(ev.type==='jail'){
-    showNotif(null,null,ev.player,'Sent to Jail! 🚔',null,true);
-  }
-  // CARD: handled via private socket.on('my_card') — not from game_update
+  if(ev.landEvent?.type==='rent'){const payer=GS.players.find(p=>p.username===ev.player);if(payer){const c=cellCenter(payer.position);const r=canvas.getBoundingClientRect(),a=document.getElementById('boardArea').getBoundingClientRect();showRentFloat(r.left-a.left+c.x,r.top-a.top+c.y-30,ev.landEvent.amount);}addLog(`💸 ${ev.player} paid $${ev.landEvent.amount} to ${ev.landEvent.to}`,false,'bad');}
+  if(ev.type==='bought')addLog(`🏙 ${ev.player} bought ${ev.property}!`,true,'good');
+  if(ev.type==='jail')addLog(`🚔 ${ev.player} sent to jail`,false,'bad');
+  if(ev.type==='built')addLog(`🏗 ${ev.player} built on ${ev.property}`,true,'good');
+  if(ev.type==='mortgaged')addLog(`💰 ${ev.player} mortgaged ${ev.property}`,true);
+  if(ev.type==='trade')addLog(`🤝 Trade completed`,true,'good');
 }
 
-function animSideDice(d1,d2){
-  const FACES=['','⚀','⚁','⚂','⚃','⚄','⚅'];
-  const e1=document.getElementById('sd1'),e2=document.getElementById('sd2');
-  let n=0;
-  const t=setInterval(()=>{
-    e1.textContent=FACES[Math.floor(Math.random()*6)+1];
-    e2.textContent=FACES[Math.floor(Math.random()*6)+1];
-    if(++n>10){clearInterval(t);e1.textContent=FACES[d1];e2.textContent=FACES[d2];document.getElementById('sdSum').textContent=d1+d2;}
-  },72);
-}
-
-// ── SCREENS ───────────────────────────────────
-function setLoader(msg){
-  document.getElementById('loader').style.display='flex';
-  document.getElementById('lobbyScreen').classList.remove('show');
-  document.getElementById('gameScreen').classList.remove('show');
-  document.getElementById('loader').querySelector('.ring-text').textContent=msg;
-}
-
+function setLoader(msg){document.getElementById('loader').style.display='flex';document.getElementById('lobbyScreen').classList.remove('show');document.getElementById('gameScreen').classList.remove('show');document.getElementById('loader').querySelector('.sp-t').textContent=msg;}
 function showLobby(room){
-  document.getElementById('loader').style.display='none';
-  document.getElementById('lobbyScreen').classList.add('show');
-  document.getElementById('gameScreen').classList.remove('show');
-  document.getElementById('lobbyCode').textContent=room.code;
-  renderColorPicker();
-  document.getElementById('lobbyPlayers').innerHTML=room.players.map((p,i)=>`
-    <div class="player-card">
-      <div class="pc-av" style="background:${p.color||COLORS[i%COLORS.length]}">${p.username[0].toUpperCase()}</div>
-      <span class="pc-name">${esc(p.username)}${p.username===myUsername?' (you)':''}</span>
-      ${room.hostId===p.id?'<span style="font-size:.72rem;color:var(--gold)">👑 Host</span>':''}
-    </div>`).join('');
-  const n=room.players.length;
-  const me=room.players.find(p=>p.username===myUsername);
-  isHost=!!(me&&room.hostId===me.id);
-  const sb=document.getElementById('startBtn');
-  if(isHost){
-    sb.style.display='';sb.disabled=n<2;
-    document.getElementById('lobbyStatus').textContent=n<2?`Need ${2-n} more player${n<1?'s':''}`:`${n} players — ready to start!`;
-    document.getElementById('hostOnlyNote').style.display='none';
-    // Enable settings
-    document.querySelectorAll('#settingsPanel input,#settingsPanel select,#settingsPanel .step-btn,.cash-pill').forEach(el=>el.disabled=false);
-  } else {
-    sb.style.display='none';
-    document.getElementById('lobbyStatus').textContent=`Waiting for host... (${n}/6)`;
-    document.getElementById('hostOnlyNote').style.display='block';
-    // Disable settings for non-host
-    document.querySelectorAll('#settingsPanel input,#settingsPanel select,#settingsPanel .step-btn,.cash-pill').forEach(el=>el.disabled=true);
-  }
-  if(room.settings) { roomSettings={...roomSettings,...room.settings}; renderSettingsUI(); }
+  document.getElementById('loader').style.display='none';document.getElementById('lobbyScreen').classList.add('show');document.getElementById('gameScreen').classList.remove('show');
+  document.getElementById('lCode').textContent=room.code;renderColorPicker();
+  const me=room.players.find(p=>p.username===myUsername);isHost=!!(me&&room.hostId===me.id);
+  document.getElementById('lPlayers').innerHTML=room.players.map((p,i)=>`<div class="lplayer"><div class="lav" style="background:${p.color||COLORS[i%COLORS.length]}">${p.username[0].toUpperCase()}</div><span class="lpn">${esc(p.username)}${p.username===myUsername?' (you)':''}</span>${room.hostId===p.id?'<span style="font-size:.72rem;color:var(--gold)">👑</span>':''}</div>`).join('');
+  const n=room.players.length,sb=document.getElementById('lStart');
+  if(isHost){sb.style.display='';sb.disabled=n<2;document.getElementById('lStatus').textContent=n<2?`Need ${2-n} more`:`${n} players — ready!`;document.getElementById('hostNote').style.display='none';document.querySelectorAll('#settingsPanel input,.stb,.cpill').forEach(el=>el.disabled=false);}
+  else{sb.style.display='none';document.getElementById('lStatus').textContent=`Waiting for host... (${n}/6)`;document.getElementById('hostNote').style.display='block';document.querySelectorAll('#settingsPanel input,.stb,.cpill').forEach(el=>el.disabled=true);}
+  if(room.settings){S={...S,...room.settings};renderSettings();}
 }
+function showGame(){document.getElementById('loader').style.display='none';document.getElementById('lobbyScreen').classList.remove('show');document.getElementById('gameScreen').classList.add('show');document.getElementById('gRoom').textContent='Room: '+roomCode;document.getElementById('cnBox').classList.add('show');document.getElementById('cnMsg').textContent='';setTimeout(resize,80);}
 
-function showGame(){
-  document.getElementById('loader').style.display='none';
-  document.getElementById('lobbyScreen').classList.remove('show');
-  document.getElementById('gameScreen').classList.add('show');
-  setTimeout(resize,60);
-}
-
-// ── SETTINGS ──────────────────────────────────
-function renderSettingsUI(){
-  document.getElementById('sv-maxPlayers').textContent=roomSettings.maxPlayers;
-  document.getElementById('tog-randomOrder').checked=!!roomSettings.randomOrder;
-  document.getElementById('tog-doubleRent').checked=!!roomSettings.doubleRent;
-  document.getElementById('tog-auction').checked=!!roomSettings.auction;
-  document.getElementById('tog-noJailRent').checked=!!roomSettings.noJailRent;
-  document.getElementById('tog-parkingJackpot').checked=!!roomSettings.parkingJackpot;
-  document.getElementById('tog-trades').checked=!!roomSettings.trades;
-  // Cash pills
-  document.getElementById('cashPills').innerHTML=CASH_OPTIONS.map(v=>`
-    <button class="cash-pill${roomSettings.startingCash===v?' active':''}" onclick="setCash(${v})">$${v.toLocaleString()}</button>`).join('');
-}
-
-function stepSetting(key,delta){
-  if(!isHost)return;
-  const limits={maxPlayers:{min:2,max:8}};
-  const lim=limits[key]||{min:1,max:100};
-  roomSettings[key]=Math.max(lim.min,Math.min(lim.max,(roomSettings[key]||2)+delta));
-  renderSettingsUI();
-  socket.emit('update_settings',roomSettings);
-}
-function updateSetting(key,val){
-  if(!isHost)return;
-  roomSettings[key]=val;
-  socket.emit('update_settings',roomSettings);
-}
-function setCash(val){
-  if(!isHost)return;
-  roomSettings.startingCash=val;
-  renderSettingsUI();
-  socket.emit('update_settings',roomSettings);
-}
-
-// ── UI UPDATE ─────────────────────────────────
 function updateUI(){
   if(!GS)return;
-  const cp=GS.players[GS.currentPlayerIndex];
-  const me=GS.players.find(p=>p.id===myId);
-  const isMyTurn=cp?.id===myId;
-
-  const tn=document.getElementById('gtopTurn');
-  tn.textContent=(cp?.username||'-')+"'s turn";
-  tn.style.color=cp?.color||'var(--accent)';
-  tn.style.borderColor=cp?.color||'var(--accent)';
-  tn.style.background=isMyTurn?`${cp.color}22`:'transparent';
-
-  document.getElementById('turnName').textContent=cp?.username||'-';
-  document.getElementById('turnName').style.color=cp?.color||'var(--text)';
-  if(me){
-    document.getElementById('myMoney').textContent='$'+me.money;
-    document.getElementById('myMoney').style.color=me.money<300?'var(--red)':me.money>2000?'var(--green)':'var(--text)';
-  }
-
-  const roll=document.getElementById('btnRoll');
-  const buy =document.getElementById('btnBuy');
-  const pass=document.getElementById('btnPass');
-  const jail=document.getElementById('btnJail');
-  const trade=document.getElementById('btnTrade');
-
-  roll.disabled=!isMyTurn||GS.phase!=='roll';
-  buy.style.display =(isMyTurn&&GS.phase==='buy')?'':'none';
-  pass.style.display=(isMyTurn&&(GS.phase==='buy'||GS.phase==='action'))?'':'none';
-  jail.style.display=(isMyTurn&&cp?.inJail&&GS.phase==='roll')?'':'none';
-  trade.style.display=(GS.settings?.trades!==false&&GS.players.filter(p=>!p.bankrupt).length>1)?'':'none';
-  buy.disabled=false; pass.disabled=false; jail.disabled=me?.money<50; trade.disabled=false;
-  if(isMyTurn&&(GS.phase==='buy'||GS.phase==='action')) pass.classList.add('my-turn');
-  else pass.classList.remove('my-turn');
-
-  document.getElementById('playersList').innerHTML=GS.players.map((p,i)=>`
-    <div class="prow${i===GS.currentPlayerIndex?' active':''}${p.bankrupt?' bankrupt':''}">
-      <div class="pav" style="background:${p.color}">${p.username[0].toUpperCase()}</div>
-      <div class="pinfo">
-        <div class="pname">${esc(p.username)}${p.id===myId?' ✦':''}</div>
-        <div class="pmoney">$${p.money}</div>
-      </div>
-      <span class="pbadge">${i===GS.currentPlayerIndex?'▶':''}${p.bankrupt?'💀':''}${p.inJail?'🔒':''}</span>
-    </div>`).join('');
-
-  // My cities
-  const me2=GS.players.find(p=>p.id===myId);
-  const pids=me2?.properties||[];
-  document.getElementById('citiesList').innerHTML=pids.length===0
-    ?'<div class="cempty">🏙️ No properties yet.<br>Buy your first city!</div>'
-    :pids.map(pid=>{
-        const sp=BOARD[pid];
-        const prop=GS.properties?.find(p=>p.id===pid);
-        return`<div class="citem" style="border-left-color:${sp.color||me2.color}">
-          <div style="flex:1"><div class="cname">${sp.name.replace('\n',' ')}</div><div class="cmeta">$${sp.price}</div></div>
-          <div class="cblds">${prop?.hotel?'<div class="cht"></div>':Array.from({length:prop?.houses||0},()=>'<div class="ch"></div>').join('')}</div>
-        </div>`;
-      }).join('');
-
-  document.getElementById('logList').innerHTML=(GS.log||[]).slice(-50).reverse().map((l,i)=>`
-    <div class="li${i===0?' hi':''}">${esc(l)}</div>`).join('');
+  const cp=GS.players[GS.currentPlayerIndex],me=GS.players.find(p=>p.id===myId),isMyTurn=cp?.id===myId;
+  const bt=document.getElementById('btTurn');bt.textContent=(cp?.username||'-')+"'s turn";bt.style.color=cp?.color||'var(--accL)';bt.style.borderColor=cp?.color||'var(--accL)';bt.style.background=isMyTurn?`${cp.color}22`:'transparent';
+  document.getElementById('btMoney').textContent='$'+(me?.money||0);document.getElementById('btMoney').style.color=(me?.money||0)<300?'var(--red)':(me?.money||0)>2000?'var(--green)':'var(--text)';
+  document.getElementById('cnRoll').disabled=!isMyTurn||GS.phase!=='roll';
+  const buy=document.getElementById('btnBuy'),pass=document.getElementById('btnPass'),jail=document.getElementById('btnJail'),trade=document.getElementById('btnTrade');
+  buy.style.display=(isMyTurn&&GS.phase==='buy')?'':'none';pass.style.display=(isMyTurn&&(GS.phase==='buy'||GS.phase==='action'))?'':'none';jail.style.display=(isMyTurn&&cp?.inJail&&GS.phase==='roll')?'':'none';trade.style.display=GS.settings?.trades!==false&&GS.players.filter(p=>!p.bankrupt).length>1?'':'none';
+  buy.disabled=false;pass.disabled=false;jail.disabled=(me?.money||0)<50;trade.disabled=false;
+  document.getElementById('trcbtn').style.display=GS.settings?.trades!==false?'flex':'none';
+  document.getElementById('playersList').innerHTML=GS.players.map((p,i)=>`<div class="prow${i===GS.currentPlayerIndex?' active':''}${p.bankrupt?' bankrupt':''}"><div class="pav" style="background:${p.color}">${p.username[0].toUpperCase()}</div><div class="pinfo"><div class="pname">${esc(p.username)}${p.id===myId?' ✦':''}</div><div class="pmoney">$${p.money}</div></div><span class="pbadge">${i===GS.currentPlayerIndex?'▶':''}${p.bankrupt?'💀':''}${p.inJail?'🔒':''}</span></div>`).join('');
+  const mp=me?.properties||[];document.getElementById('prh').textContent=`My properties (${mp.length})`;
+  const hint=document.getElementById('hintb');if(mp.length>0)hint.classList.add('show');
+  document.getElementById('propsList').innerHTML=mp.length===0?'<div class="pempty">No properties yet.<br/>Buy your first city!</div>':mp.map(pid=>{const sp=BOARD[pid];const prop=GS.properties?.find(p=>p.id===pid);const h=prop?.houses||0,hot=prop?.hotel,mtg=prop?.mortgaged;return`<div class="prow2" onclick="openPropCard(${pid})"><div class="pdot" style="background:${sp.color||me.color};${mtg?'opacity:.4':''}"></div><span class="pn" style="${mtg?'opacity:.5':''}">${sp.name.replace('\n',' ')}</span>${mtg?'<span class="pmtg">MTG</span>':''}<div class="pblds">${hot?'<div class="pht"></div>':Array.from({length:h},()=>'<div class="ph"></div>').join('')}</div></div>`;}).join('');
+  document.getElementById('logList').innerHTML=(GS.log||[]).slice(-50).reverse().map((l,i)=>`<div class="li${i===0?' hi':''}">${esc(l)}</div>`).join('');
 }
+function addLog(t,hi=false,cls=''){const el=document.getElementById('logList');const d=document.createElement('div');d.className='li'+(hi?' hi':'')+(cls?' '+cls:'');d.textContent=t;el.prepend(d);}
 
-function addLog(text,hi=false,cls=''){
-  const el=document.getElementById('logList');
-  const d=document.createElement('div');
-  d.className='li'+(hi?` hi ${cls}`:'');
-  d.textContent=text; el.prepend(d);
-}
-
-// ── ACTIONS ───────────────────────────────────
-function act(type){
-  socket.emit('game_action',{type});
-  document.getElementById('propPop').classList.remove('show');
-  document.getElementById('cnBox').classList.remove('show');
-}
-function sendChat(){
-  const i=document.getElementById('chatInp');
-  const t=i.value.trim(); if(!t)return;
-  socket.emit('game_chat',t); i.value='';
-}
+function act(type){socket.emit('game_action',{type});}
+function sendChat(){const i=document.getElementById('chatInp');const t=i.value.trim();if(!t)return;socket.emit('game_chat',t);i.value='';}
 function startGame(){socket.emit('start_game');}
 function leaveGame(){socket.emit('leave_room');location.href='/';}
 
-function showTab(name,btn){
-  document.querySelectorAll('.stab').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.spanel').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('sp-'+name).classList.add('active');
+function renderSettings(){
+  document.getElementById('sv-maxPlayers').textContent=S.maxPlayers;
+  ['randomOrder','doubleRent','auction','noJailRent','parkingJackpot','mortgage','trades'].forEach(k=>{const el=document.getElementById('t-'+k);if(el)el.checked=!!S[k];});
+  document.getElementById('cashPills').innerHTML=CASH.map(v=>`<button class="cpill${S.startingCash===v?' on':''}" onclick="setCash(${v})">$${v.toLocaleString()}</button>`).join('');
 }
+function stepSet(k,d){if(!isHost)return;const lim={maxPlayers:{min:2,max:8}};const l=lim[k]||{min:1,max:99};S[k]=Math.max(l.min,Math.min(l.max,(S[k]||2)+d));renderSettings();socket.emit('update_settings',S);}
+function setSetting(k,v){if(!isHost)return;S[k]=v;socket.emit('update_settings',S);}
+function setCash(v){if(!isHost)return;S.startingCash=v;renderSettings();socket.emit('update_settings',S);}
+function renderColorPicker(){document.getElementById('colorRow').innerHTML=COLORS.map(c=>`<div class="csw${c===myColor?' sel':''}" style="background:${c}" onclick="pickColor('${c}')"></div>`).join('');}
+function pickColor(c){myColor=c;localStorage.setItem('gpColor',c);renderColorPicker();socket.emit('set_color',c);}
 
-// ── COLOR PICKER ──────────────────────────────
-function renderColorPicker(){
-  document.getElementById('colorRow').innerHTML=COLORS.map(c=>`
-    <div class="cswatch${c===myColor?' sel':''}" style="background:${c}" onclick="pickColor('${c}')"></div>`).join('');
-}
-function pickColor(c){
-  myColor=c; localStorage.setItem('gpColor',c);
-  renderColorPicker(); socket.emit('set_color',c);
-}
-
-// ── TRADE SYSTEM ──────────────────────────────
-function openTradeModal(){
-  if(!GS)return;
-  const others=GS.players.filter(p=>p.id!==myId&&!p.bankrupt);
-  if(!others.length){alert('No other players to trade with!');return;}
-  const me=GS.players.find(p=>p.id===myId);
-  const sel=document.getElementById('tradeSel');
-  sel.innerHTML=others.map(p=>`<option value="${p.id}">${esc(p.username)}</option>`).join('');
-  sel.onchange=()=>refreshWantProps();
-  const myProps=me?.properties||[];
-  document.getElementById('offerProps').innerHTML=myProps.length===0
-    ?'<div class="tempty">No properties to offer</div>'
-    :myProps.map(pid=>{const sp=BOARD[pid];return`<div class="tprop-item" data-pid="${pid}" onclick="this.classList.toggle('sel')"><div class="tprop-dot" style="background:${sp.color||'#888'}"></div><span class="tprop-name">${sp.name.replace('\n',' ')}</span><span class="tprop-price">$${sp.price}</span></div>`;}).join('');
-  refreshWantProps();
-  document.getElementById('offerM').value='';
-  document.getElementById('wantM').value='';
-  document.getElementById('tradeModal').classList.add('show');
-}
-function refreshWantProps(){
-  const tid=document.getElementById('tradeSel').value;
-  const t=GS?.players.find(p=>p.id===tid);
-  const tp=t?.properties||[];
-  document.getElementById('wantProps').innerHTML=tp.length===0
-    ?'<div class="tempty">They have no properties</div>'
-    :tp.map(pid=>{const sp=BOARD[pid];return`<div class="tprop-item" data-pid="${pid}" onclick="this.classList.toggle('sel')"><div class="tprop-dot" style="background:${sp.color||'#888'}"></div><span class="tprop-name">${sp.name.replace('\n',' ')}</span><span class="tprop-price">$${sp.price}</span></div>`;}).join('');
-}
+// TRADE
+function openTrade(){if(!GS)return;const others=GS.players.filter(p=>p.id!==myId&&!p.bankrupt);if(!others.length){alert('No other players!');return;}const me=GS.players.find(p=>p.id===myId);const sel=document.getElementById('tradeSel');sel.innerHTML=others.map(p=>`<option value="${p.id}">${esc(p.username)}</option>`).join('');document.getElementById('offerSl').max=me?.money||0;document.getElementById('offerSl').value=0;document.getElementById('offerLbl').textContent='$0';sel.onchange=()=>refreshWant();refreshOffer();refreshWant();document.getElementById('tradeModal').classList.add('show');}
+function upSl(s){const el=document.getElementById(s==='offer'?'offerSl':'wantSl');document.getElementById(s==='offer'?'offerLbl':'wantLbl').textContent='$'+el.value;}
+function refreshOffer(){const me=GS?.players.find(p=>p.id===myId);const mp=me?.properties||[];document.getElementById('offerProps').innerHTML=mp.length===0?'<div class="tempty">No properties</div>':mp.map(pid=>{const sp=BOARD[pid];return`<div class="tpi" data-pid="${pid}" onclick="this.classList.toggle('sel')"><div class="tpd" style="background:${sp.color||'#888'}"></div><span class="tpn">${sp.name.replace('\n',' ')}</span><span class="tpp">$${sp.price}</span></div>`;}).join('');}
+function refreshWant(){const tid=document.getElementById('tradeSel').value;const t=GS?.players.find(p=>p.id===tid);document.getElementById('wantSl').max=t?.money||0;document.getElementById('wantSl').value=0;document.getElementById('wantLbl').textContent='$0';const tp=t?.properties||[];document.getElementById('wantProps').innerHTML=tp.length===0?'<div class="tempty">No properties</div>':tp.map(pid=>{const sp=BOARD[pid];return`<div class="tpi" data-pid="${pid}" onclick="this.classList.toggle('sel')"><div class="tpd" style="background:${sp.color||'#888'}"></div><span class="tpn">${sp.name.replace('\n',' ')}</span><span class="tpp">$${sp.price}</span></div>`;}).join('');}
 function closeTrade(){document.getElementById('tradeModal').classList.remove('show');}
-function sendTrade(){
-  const targetId=document.getElementById('tradeSel').value;
-  const offerMoney=parseInt(document.getElementById('offerM').value)||0;
-  const wantMoney=parseInt(document.getElementById('wantM').value)||0;
-  const offerProps=[...document.querySelectorAll('#offerProps .sel')].map(el=>+el.dataset.pid);
-  const wantProps=[...document.querySelectorAll('#wantProps .sel')].map(el=>+el.dataset.pid);
-  if(!offerMoney&&!offerProps.length&&!wantMoney&&!wantProps.length){alert('Add something to the trade!');return;}
-  socket.emit('trade_offer',{targetId,offerMoney,wantMoney,offerProps,wantProps});
-  closeTrade(); addLog('📨 Trade offer sent...');
+function sendTrade(){const tid=document.getElementById('tradeSel').value;const om=parseInt(document.getElementById('offerSl').value)||0;const wm=parseInt(document.getElementById('wantSl').value)||0;const op=[...document.querySelectorAll('#offerProps .sel')].map(el=>+el.dataset.pid);const wp=[...document.querySelectorAll('#wantProps .sel')].map(el=>+el.dataset.pid);if(!om&&!op.length&&!wm&&!wp.length){alert('Add something!');return;}socket.emit('trade_offer',{targetId:tid,offerMoney:om,wantMoney:wm,offerProps:op,wantProps:wp});closeTrade();addLog('📨 Trade sent...');}
+function addActiveTrade(offer,offerer){document.getElementById('atrades').innerHTML=`<div class="tchip"><span>${esc(offerer?.username||'?')}</span><span style="color:var(--muted)">↔</span><span>${esc(myUsername)}</span></div>`;}
+function showInTrade(offer,offerer){
+  document.getElementById('inTFrom').textContent=`From: ${offerer?.username||'?'}`;
+  const ol=[],wl=[];if(offer.offerMoney>0)ol.push('$'+offer.offerMoney);(offer.offerProps||[]).forEach(pid=>ol.push(BOARD[pid]?.name.replace('\n',' ')));if(offer.wantMoney>0)wl.push('$'+offer.wantMoney);(offer.wantProps||[]).forEach(pid=>wl.push(BOARD[pid]?.name.replace('\n',' ')));
+  document.getElementById('inTSum').innerHTML=`<div class="tsrow"><div class="tsside"><div class="tssit">They offer</div>${ol.length?ol.map(l=>`<div class="tsi" style="color:var(--green)">+ ${esc(l)}</div>`).join(''):'<div class="tsi" style="color:var(--muted)">Nothing</div>'}</div><div class="tsarrow">⇄</div><div class="tsside"><div class="tssit">They want</div>${wl.length?wl.map(l=>`<div class="tsi" style="color:var(--red)">- ${esc(l)}</div>`).join(''):'<div class="tsi" style="color:var(--muted)">Nothing</div>'}</div></div>`;
+  document.getElementById('inTM').style.display='flex';
 }
-
-// Trade toast (incoming offer — shown only to target)
-function showTradeToast(offer,offerer){
-  const lines=[];
-  if(offer.offerMoney>0) lines.push(`They offer $${offer.offerMoney}`);
-  (offer.offerProps||[]).forEach(pid=>lines.push(`+ ${BOARD[pid]?.name.replace('\n',' ')}`));
-  if(offer.wantMoney>0) lines.push(`They want $${offer.wantMoney}`);
-  (offer.wantProps||[]).forEach(pid=>lines.push(`- ${BOARD[pid]?.name.replace('\n',' ')}`));
-  document.getElementById('ttTitle').textContent=`🤝 Trade from ${offerer?.username||'?'}`;
-  document.getElementById('ttText').textContent=lines.join(' · ')||'Empty offer';
-  document.getElementById('tradeToast').classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(hideTradeToast,30000); // auto-hide after 30s
-}
-function hideTradeToast(){
-  document.getElementById('tradeToast').classList.remove('show');
-  clearTimeout(toastTimer);
-}
-function respondTrade(accept){
-  if(!pendingTrade)return;
-  socket.emit('trade_response',{tradeId:pendingTrade.id,accept});
-  hideTradeToast();
-}
-
-// Trade History
-function addToTradeHistory(trade){
-  tradeHistory.unshift(trade);
-  if(tradeHistory.length>20) tradeHistory.pop();
-  renderTradeHistory();
-  // Badge the trades tab
-  const tab=document.getElementById('tradeTab');
-  if(tab) tab.textContent='Trades 🔴';
-}
-function updateTradeInHistory(tradeId,status){
-  const t=tradeHistory.find(t=>t.id===tradeId);
-  if(t) t.status=status;
-  renderTradeHistory();
-}
-function renderTradeHistory(){
-  const el=document.getElementById('tradesList');
-  if(!tradeHistory.length){
-    el.innerHTML='<div class="trades-empty">🤝 No trades yet.<br>Propose a trade during your turn!</div>';
-    return;
-  }
-  el.innerHTML=tradeHistory.map(tr=>{
-    const offerLines=[];
-    if(tr.offerMoney>0) offerLines.push(`$${tr.offerMoney}`);
-    (tr.offerProps||[]).forEach(pid=>offerLines.push(BOARD[pid]?.name.replace('\n',' ')));
-    const wantLines=[];
-    if(tr.wantMoney>0) wantLines.push(`$${tr.wantMoney}`);
-    (tr.wantProps||[]).forEach(pid=>wantLines.push(BOARD[pid]?.name.replace('\n',' ')));
-    const isPending=tr.status==='pending'&&tr.targetId===myId;
-    return`<div class="trade-entry">
-      <div class="te-header">
-        <span class="te-from">From ${esc(tr.fromUsername||'?')}</span>
-        <span class="te-status ${tr.status}">${tr.status}</span>
-      </div>
-      <div class="te-body">
-        <span style="color:var(--green)">Offers: ${offerLines.join(', ')||'nothing'}</span><br>
-        <span style="color:var(--red)">Wants: ${wantLines.join(', ')||'nothing'}</span>
-      </div>
-      ${isPending?`<div class="te-btns">
-        <button class="te-btn te-btn-accept" onclick="respondTrade(true)">✓ Accept</button>
-        <button class="te-btn te-btn-decline" onclick="respondTrade(false)">✕ Decline</button>
-      </div>`:''}
-    </div>`;
-  }).join('');
-}
-
-function closeCard(){document.getElementById('cardModal').classList.remove('show');}
+function respondTrade(accept){if(!pendingTrade)return;socket.emit('trade_response',{tradeId:pendingTrade.id,accept});document.getElementById('inTM').style.display='none';pendingTrade=null;}
 function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
-
 document.getElementById('chatInp').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat();});
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){closeTrade();document.getElementById('cardModal').classList.remove('show');}
-});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeTrade();closePropCard();document.getElementById('inTM').style.display='none';}});
 window.addEventListener('resize',resize);
-
-// Init settings UI
-renderSettingsUI();
+document.getElementById('hintb').addEventListener('click',()=>document.getElementById('hintb').classList.remove('show'));
+renderSettings();
 </script>
 </body>
 </html>
