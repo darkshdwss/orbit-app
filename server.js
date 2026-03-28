@@ -610,6 +610,66 @@ function processAction(room,userId,action,socket){
       gs.log.push(`${cp.username} paid $50 to leave jail.`);
       event={type:'paid_jail',player:cp.username};
     }
+
+  } else if(action.type==='mortgage'){
+    const pid=action.propertyId;
+    const sp=BOARD.find(s=>s.id===pid);
+    const prop=gs.properties.find(p=>p.id===pid);
+    if(prop&&prop.ownerId===cp.id&&!prop.mortgaged&&sp){
+      const val=Math.floor(sp.price*.5);
+      prop.mortgaged=true; cp.money+=val;
+      gs.log.push(`${cp.username} mortgaged ${sp.name} for $${val}.`);
+      event={type:'mortgaged',player:cp.username,property:sp.name};
+    }
+
+  } else if(action.type==='unmortgage'){
+    const pid=action.propertyId;
+    const sp=BOARD.find(s=>s.id===pid);
+    const prop=gs.properties.find(p=>p.id===pid);
+    if(prop&&prop.ownerId===cp.id&&prop.mortgaged&&sp){
+      const cost=Math.floor(sp.price*.55);
+      if(cp.money>=cost){
+        prop.mortgaged=false; cp.money-=cost;
+        gs.log.push(`${cp.username} lifted mortgage on ${sp.name} for $${cost}.`);
+        event={type:'unmortgaged',player:cp.username,property:sp.name};
+      } else {
+        socket.emit('error','Not enough money to unmortgage');
+      }
+    }
+
+  } else if(action.type==='build'){
+    const pid=action.propertyId;
+    const sp=BOARD.find(s=>s.id===pid);
+    const prop=gs.properties.find(p=>p.id===pid);
+    if(!prop||prop.ownerId!==cp.id||!sp||prop.mortgaged) return{error:'Cannot build here'};
+    const delta=action.delta||1;
+    if(delta>0){
+      if(prop.hotel) return{error:'Already has hotel'};
+      if(cp.money<sp.houseCost) return{error:'Not enough money'};
+      // Check full set owned
+      const colorProps=BOARD.filter(s=>s.color===sp.color);
+      const ownsAll=colorProps.every(s=>{const p=gs.properties.find(pr=>pr.id===s.id);return p&&p.ownerId===cp.id;});
+      if(!ownsAll) return{error:'Need full color set first'};
+      cp.money-=sp.houseCost;
+      if(prop.houses>=4){prop.houses=0;prop.hotel=true;gs.log.push(`${cp.username} built a hotel on ${sp.name}!`);}
+      else{prop.houses++;gs.log.push(`${cp.username} built house #${prop.houses} on ${sp.name}.`);}
+      event={type:'built',player:cp.username,property:sp.name};
+    } else {
+      if(prop.hotel){prop.hotel=false;prop.houses=4;cp.money+=Math.floor(sp.houseCost*.5);gs.log.push(`${cp.username} downgraded hotel on ${sp.name}.`);}
+      else if(prop.houses>0){prop.houses--;cp.money+=Math.floor(sp.houseCost*.5);gs.log.push(`${cp.username} sold house on ${sp.name}.`);}
+    }
+
+  } else if(action.type==='sell_property'){
+    const pid=action.propertyId;
+    const sp=BOARD.find(s=>s.id===pid);
+    const prop=gs.properties.find(p=>p.id===pid);
+    if(prop&&prop.ownerId===cp.id&&sp){
+      const val=Math.floor(sp.price*.5);
+      cp.money+=val; prop.ownerId=null; prop.houses=0; prop.hotel=false; prop.mortgaged=false;
+      cp.properties=cp.properties.filter(p=>p!==pid);
+      gs.log.push(`${cp.username} sold ${sp.name} for $${val}.`);
+      event={type:'sold',player:cp.username,property:sp.name};
+    }
   }
 
   // Bankruptcy check
